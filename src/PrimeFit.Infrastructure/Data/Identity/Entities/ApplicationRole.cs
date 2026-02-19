@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PrimeFit.Infrastructure.Data.Identity.Entities
 {
-    internal class ApplicationRole : IdentityRole<int>
+    public class ApplicationRole : IdentityRole<int>
     {
         public ApplicationRole()
         {

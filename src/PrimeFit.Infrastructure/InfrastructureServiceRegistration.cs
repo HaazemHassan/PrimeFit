@@ -91,7 +91,7 @@ public static class InfrastructureServiceRegistration
          .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
          .UseSimpleAssemblyNameTypeSerializer()
          .UseRecommendedSerializerSettings()
-         .UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+         .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddHangfireServer();
 

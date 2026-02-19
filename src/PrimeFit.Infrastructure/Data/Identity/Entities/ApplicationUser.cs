@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 using PrimeFit.Domain.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeFit.Infrastructure.Data.Identity.Entities
 {
-    internal class ApplicationUser : IdentityUser<int>
+    public class ApplicationUser : IdentityUser<int>
     {
 
 

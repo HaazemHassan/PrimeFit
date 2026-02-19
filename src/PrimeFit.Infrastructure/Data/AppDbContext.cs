@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System.Reflection;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Domain.Common.Auditing;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace PrimeFit.Infrastructure.Data
 {
-    internal class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         private readonly ICurrentUserService _currentUserService;
 
