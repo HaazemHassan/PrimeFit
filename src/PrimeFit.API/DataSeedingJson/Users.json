@@ -1,0 +1,20 @@
+[ 
+  {
+    "FirstName": "Admin",
+    "LastName": "User",
+    "Email": "admin@project.com",
+    "PhoneNumber": "01234567891",
+    "Address": "Alexandria, Egypt",
+    "Password": "123",
+    "Role": "Admin"
+  },
+  {
+    "FirstName": "Test",
+    "LastName": "User",
+    "Email": "user@project.com",
+    "PhoneNumber": "01234567892",
+    "Address": "Giza, Egypt",
+    "Password": "123",
+    "Role": "User"
+  }
+]

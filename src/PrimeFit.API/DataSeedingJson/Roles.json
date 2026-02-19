@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Admin",
+    "Permissions": [
+      "UsersRead",
+      "UsersWrite",
+      "UsersDelete"
+    ]
+  }, 
+  {
+    "Name": "User",
+    "Permissions": []
+  }
+]
+
