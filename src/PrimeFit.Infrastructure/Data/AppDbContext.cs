@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Domain.Common.Auditing;
 using PrimeFit.Domain.Entities;
+using PrimeFit.Domain.Entities.Contracts;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 using System.Linq.Expressions;
 using System.Reflection;

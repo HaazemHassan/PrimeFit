@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
 
-namespace PrimeFit.Domain.Specifications
+namespace PrimeFit.Application.Specifications
 {
     public static class SpecificationBuilderExtensions
     {

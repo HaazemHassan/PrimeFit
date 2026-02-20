@@ -4,7 +4,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Infrastructure.Data.Repositories
 {

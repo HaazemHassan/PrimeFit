@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Infrastructure.Data.Transactions
 {

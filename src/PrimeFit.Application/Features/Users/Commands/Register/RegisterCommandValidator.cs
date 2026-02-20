@@ -9,8 +9,8 @@ namespace PrimeFit.Application.Features.Users.Commands.Register
     public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
     {
         private readonly IPhoneNumberService _phoneNumberService;
-        private readonly PasswordSettings _passwordSettings;
-        public RegisterCommandValidator(PasswordSettings passwordSettings, IPhoneNumberService phoneNumberService)
+        private readonly AppPasswordOptions _passwordSettings;
+        public RegisterCommandValidator(AppPasswordOptions passwordSettings, IPhoneNumberService phoneNumberService)
         {
             _passwordSettings = passwordSettings;
             _phoneNumberService = phoneNumberService;

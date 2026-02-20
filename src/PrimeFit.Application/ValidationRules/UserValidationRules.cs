@@ -40,7 +40,7 @@ namespace PrimeFit.Application.ValidationRules
 
         public static IRuleBuilderOptions<T, string?> ApplyPasswordRules<T>(
              this IRuleBuilder<T, string> ruleBuilder,
-             PasswordSettings settings
+             AppPasswordOptions settings
         )
         {
             var rule = (IRuleBuilderOptions<T, string>)ruleBuilder;

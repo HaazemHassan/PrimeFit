@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Domain.Common.Auditing {
+﻿namespace PrimeFit.Domain.Entities.Contracts {
     public interface ISoftDeletableEntity {
         bool IsDeleted { get; set; }
         DateTime? DeletedAt { get; set; }

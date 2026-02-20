@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 using PrimeFit.Infrastructure.Data.Transactions;
 
 namespace PrimeFit.Infrastructure.Data;

@@ -1,5 +1,5 @@
 ﻿namespace PrimeFit.Infrastructure.Common.Options {
-    public class JwtSettings {
+    public class JwtOptions {
         public const string SectionName = "JwtSettings";
 
         public string Secret { get; set; } = string.Empty;

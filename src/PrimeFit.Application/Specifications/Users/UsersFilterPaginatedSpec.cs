@@ -1,6 +1,5 @@
 ﻿using Ardalis.Specification;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Specifications;
 
 namespace PrimeFit.Application.Specifications.Users
 {

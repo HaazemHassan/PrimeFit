@@ -5,11 +5,11 @@ using PrimeFit.Application.ValidationRules.Common;
 
 namespace PrimeFit.Application.Features.Users.Commands.ChangePassword {
     public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand> {
-        public ChangePasswordCommandValidator(PasswordSettings passwordSettings) {
+        public ChangePasswordCommandValidator(AppPasswordOptions passwordSettings) {
             ApplyValidationRules(passwordSettings);
         }
 
-        private void ApplyValidationRules(PasswordSettings passwordSettings) {
+        private void ApplyValidationRules(AppPasswordOptions passwordSettings) {
             RuleFor(x => x.CurrentPassword).Required();
             RuleFor(x => x.NewPassword).Required();
             RuleFor(x => x.ConfirmNewPassword).Required();

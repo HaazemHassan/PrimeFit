@@ -3,8 +3,8 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Domain.Contracts.Repositories;
 using PrimeFit.Domain.Entities;
+using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Users.Commands.AddUser
 {

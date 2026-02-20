@@ -7,7 +7,7 @@ using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 using PrimeFit.Infrastructure.Data;
@@ -49,8 +49,8 @@ public static class InfrastructureServiceRegistration
     private static IServiceCollection AddIdentityConfigurations(IServiceCollection services, IConfiguration configuration)
     {
 
-        var passwordSettings = new PasswordSettings();
-        configuration.GetSection(PasswordSettings.SectionName).Bind(passwordSettings);
+        var passwordSettings = new AppPasswordOptions();
+        configuration.GetSection(AppPasswordOptions.SectionName).Bind(passwordSettings);
         services.AddSingleton(passwordSettings);
 
         services.AddIdentity<ApplicationUser, ApplicationRole>(option =>

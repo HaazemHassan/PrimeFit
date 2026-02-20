@@ -4,8 +4,8 @@ using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Contracts.Repositories;
 using PrimeFit.Domain.Entities;
+using PrimeFit.Domain.Repositories;
 using PrimeFit.Infrastructure.Data.Identity;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 

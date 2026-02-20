@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Domain.Common.Auditing {
+﻿namespace PrimeFit.Domain.Entities.Contracts {
     public interface IHasModificationTime {
         DateTime? UpdatedAt { get; set; }
     }

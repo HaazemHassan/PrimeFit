@@ -1,6 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.Logging;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs {
     public class RefreshTokensCleanupJob {

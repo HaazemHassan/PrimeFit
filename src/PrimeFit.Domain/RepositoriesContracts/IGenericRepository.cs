@@ -1,7 +1,7 @@
 ﻿using Ardalis.Specification;
 using System.Linq.Expressions;
 
-namespace PrimeFit.Domain.Contracts.Repositories;
+namespace PrimeFit.Domain.Repositories;
 
 public interface IGenericRepository<T> : IRepositoryBase<T> where T : class
 {

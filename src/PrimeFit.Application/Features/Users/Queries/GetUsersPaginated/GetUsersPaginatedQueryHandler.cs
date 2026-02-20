@@ -1,7 +1,7 @@
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Specifications.Users;
-using PrimeFit.Domain.Contracts.Repositories;
+using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.Specifications.Users;
 
 namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated

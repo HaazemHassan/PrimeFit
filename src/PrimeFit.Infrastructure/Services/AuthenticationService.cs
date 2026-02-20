@@ -4,28 +4,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Domain.Common.Constants;
-using PrimeFit.Domain.Contracts.Repositories;
 using PrimeFit.Domain.Entities;
+using PrimeFit.Domain.Repositories;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
-using PrimeFit.Infrastructure.Specifications.RefreshTokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PrimeFit.Infrastructure.Services
 {
     internal class AuthenticationService : IAuthenticationService
     {
 
-        private readonly JwtSettings _jwtSettings;
+        private readonly JwtOptions _jwtSettings;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
@@ -38,7 +37,7 @@ namespace PrimeFit.Infrastructure.Services
 
 
 
-        public AuthenticationService(JwtSettings jwtSettings, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IApplicationUserService applicationUserService, IMapper mapper /*IEmailService emailService*/, RoleManager<ApplicationRole> roleManager, ICurrentUserService currentUserService, AppDbContext dbContext, ILogger<AuthenticationService> logger)
+        public AuthenticationService(JwtOptions jwtSettings, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IApplicationUserService applicationUserService, IMapper mapper /*IEmailService emailService*/, RoleManager<ApplicationRole> roleManager, ICurrentUserService currentUserService, AppDbContext dbContext, ILogger<AuthenticationService> logger)
         {
             _jwtSettings = jwtSettings;
             _userManager = userManager;

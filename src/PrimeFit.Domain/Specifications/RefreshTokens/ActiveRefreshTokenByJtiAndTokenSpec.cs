@@ -1,9 +1,12 @@
 ﻿using Ardalis.Specification;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Infrastructure.Specifications.RefreshTokens {
-    public class ActiveRefreshTokenByJtiAndTokenSpec : Specification<RefreshToken> {
-        public ActiveRefreshTokenByJtiAndTokenSpec(string accessTokenJti, string refreshToken, int userId) {
+namespace PrimeFit.Domain.Specifications.RefreshTokens
+{
+    public class ActiveRefreshTokenByJtiAndTokenSpec : Specification<RefreshToken>
+    {
+        public ActiveRefreshTokenByJtiAndTokenSpec(string accessTokenJti, string refreshToken, int userId)
+        {
             Query.Where(x =>
                     x.AccessTokenJTI == accessTokenJti &&
                     x.Token == refreshToken &&

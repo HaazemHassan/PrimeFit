@@ -1,4 +1,4 @@
-﻿using PrimeFit.Domain.Common.Auditing;
+﻿using PrimeFit.Domain.Entities.Contracts;
 using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Domain.Entities

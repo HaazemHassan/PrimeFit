@@ -1,4 +1,4 @@
-namespace PrimeFit.Domain.Contracts.Repositories;
+namespace PrimeFit.Domain.Repositories;
 
 public interface IDatabaseExecutionStrategy
 {

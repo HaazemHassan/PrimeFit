@@ -5,11 +5,11 @@ using PrimeFit.Application.ValidationRules.Common;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.SignIn {
     public class SignInCommandValidator : AbstractValidator<SignInCommand> {
-        public SignInCommandValidator(PasswordSettings passwordSettings) {
+        public SignInCommandValidator(AppPasswordOptions passwordSettings) {
             ApplyValidationRules(passwordSettings);
         }
 
-        private void ApplyValidationRules(PasswordSettings passwordSettings) {
+        private void ApplyValidationRules(AppPasswordOptions passwordSettings) {
             RuleFor(x => x.Email).Required();
             RuleFor(x => x.Password).Required();
 

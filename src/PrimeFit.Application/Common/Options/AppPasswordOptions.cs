@@ -1,6 +1,6 @@
 namespace PrimeFit.Application.Common.Options {
 
-    public class PasswordSettings {
+    public class AppPasswordOptions {
         public const string SectionName = "PasswordSettings";
 
 
