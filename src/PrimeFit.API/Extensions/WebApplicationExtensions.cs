@@ -6,6 +6,7 @@ using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Seeding;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PrimeFit.API.Extentions
 {
@@ -52,7 +53,10 @@ namespace PrimeFit.API.Extentions
                     string usersJson = await File.ReadAllTextAsync("DataSeedingJson/Users.json");
 
                     List<RoleSeedDto>? rolesSeedData = JsonSerializer.Deserialize<List<RoleSeedDto>>(rolesJson);
-                    List<UserSeedDto>? usersSeedData = JsonSerializer.Deserialize<List<UserSeedDto>>(usersJson);
+
+
+                    var options = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
+                    List<UserSeedDto>? usersSeedData = JsonSerializer.Deserialize<List<UserSeedDto>>(usersJson, options);
 
                     await seederService.SeedRolesAsync(rolesSeedData!);
                     await seederService.SeedUsersAsync(usersSeedData!);

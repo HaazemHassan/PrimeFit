@@ -9,8 +9,10 @@ using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.Specifications.RefreshTokens;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
@@ -129,10 +131,9 @@ namespace PrimeFit.Infrastructure.Services
 
         public async Task<ErrorOr<Success>> LogoutAsync(string refreshToken, CancellationToken ct = default)
         {
-            if (!_currentUserService.IsAuthenticated)
-                return Error.Unauthorized(code: ErrorCodes.Authentication.AlreadySignedOut, description: "You're already signed out!");
 
-            int domainUserId = _currentUserService.UserId!.Value;
+            var domainUserId = _currentUserService.UserId!.Value;
+
             var appUser = await _userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
             if (appUser is null)
             {
@@ -196,7 +197,9 @@ namespace PrimeFit.Infrastructure.Services
                 ExpirationDate = refreshToken.Expires
             };
 
-            var userResponse = _mapper.Map<UserResponse>(appUser.DomainUser);
+            var userResponse = _mapper.Map<BaseUserResponse>(appUser.DomainUser);
+            bool isOwner = await _userManager.IsInRoleAsync(appUser, UserRole.Owner.ToString());
+            userResponse.Role = isOwner ? UserRole.Owner : UserRole.Member;
             AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);
 
 

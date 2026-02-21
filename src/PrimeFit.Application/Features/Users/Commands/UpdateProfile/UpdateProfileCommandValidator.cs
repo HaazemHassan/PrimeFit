@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
+using PrimeFit.Application.Common;
+using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.ValidationRules;
 
 namespace PrimeFit.Application.Features.Users.Commands.UpdateProfile
 {
@@ -20,12 +21,12 @@ namespace PrimeFit.Application.Features.Users.Commands.UpdateProfile
         {
             When(x => !string.IsNullOrWhiteSpace(x.FirstName), () =>
             {
-                RuleFor(x => x.FirstName).ApplyNameRules();
+                RuleFor(x => x.FirstName).ApplyUserNameRules();
             });
 
             When(x => !string.IsNullOrWhiteSpace(x.LastName), () =>
             {
-                RuleFor(x => x.LastName).ApplyNameRules();
+                RuleFor(x => x.LastName).ApplyUserNameRules();
             });
 
             When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber), () =>
@@ -33,10 +34,7 @@ namespace PrimeFit.Application.Features.Users.Commands.UpdateProfile
                 RuleFor(x => x.PhoneNumber).ApplyPhoneNumberRules(_phoneNumberService);
             });
 
-            When(x => !string.IsNullOrWhiteSpace(x.Address), () =>
-            {
-                RuleFor(x => x.Address).ApplyAddressRules();
-            });
+
         }
 
         private void ApplyCustomValidations()
@@ -50,7 +48,6 @@ namespace PrimeFit.Application.Features.Users.Commands.UpdateProfile
         {
             return command.FirstName != null ||
                    command.LastName != null ||
-                   command.Address != null ||
                    command.PhoneNumber != null;
         }
     }

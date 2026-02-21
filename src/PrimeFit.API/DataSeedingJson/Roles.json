@@ -1,14 +1,10 @@
 [
   {
-    "Name": "Admin",
-    "Permissions": [
-      "UsersRead",
-      "UsersWrite",
-      "UsersDelete"
-    ]
+    "Name": "Owner",
+    "Permissions": []
   }, 
   {
-    "Name": "User",
+    "Name": "Member",
     "Permissions": []
   }
 ]

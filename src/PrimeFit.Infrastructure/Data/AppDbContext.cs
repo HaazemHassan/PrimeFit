@@ -15,8 +15,13 @@ namespace PrimeFit.Infrastructure.Data
         private readonly ICurrentUserService _currentUserService;
 
 
-        public virtual DbSet<RolePermission> RolePermissions { get; set; }
-        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<Branch> Branches => Set<Branch>();
+        public DbSet<BranchWorkingHour> BranchWorkingHours => Set<BranchWorkingHour>();
+        public DbSet<BranchReview> BranchReviews => Set<BranchReview>();
+        public DbSet<Governorate> Governorates => Set<Governorate>();
+
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService) : base(options)

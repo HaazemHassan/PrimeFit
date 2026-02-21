@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
+using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
-using PrimeFit.Application.ValidationRules;
-using PrimeFit.Application.ValidationRules.Common;
+using PrimeFit.Application.Features.Users.Common;
 
 namespace PrimeFit.Application.Features.Users.Commands.ChangePassword {
     public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand> {

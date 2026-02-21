@@ -5,7 +5,10 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PrimeFit.Application.Common.Exceptions;
 
-public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IHostEnvironment environment) : IExceptionHandler
+public sealed class GlobalExceptionHandler(
+    ILogger<GlobalExceptionHandler> logger,
+    IHostEnvironment environment)
+    : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger = logger;
     private readonly IHostEnvironment _environment = environment;
@@ -20,79 +23,163 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
         var isDevelopment = _environment.IsDevelopment();
         var traceId = httpContext.TraceIdentifier;
 
-        // 1. هنجهز قائمة الأخطاء اللي هنملاها بناءً على نوع الـ Exception
-        var errors = new List<object>();
-        int statusCode;
-        string title;
-
-        // 2. معالجة كل Exception بالـ Logging بتاعه والـ Details
         switch (exception)
         {
+            case ValidationException validationException:
+            return await HandleValidationException(
+                httpContext,
+                validationException,
+                requestPath,
+                userId,
+                traceId,
+                cancellationToken);
+
             case UnauthorizedException e:
-            _logger.LogWarning(e, "Unauthorized - Path: {Path}, User: {User}, TraceId: {TraceId}", requestPath, userId, traceId);
-            statusCode = StatusCodes.Status401Unauthorized;
-            title = "Unauthorized Access";
-            errors.Add(new { Code = "Auth.Unauthorized", Description = e.Message });
-            break;
+            _logger.LogWarning(e, "Unauthorized - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                requestPath, userId, traceId);
+
+            return await WriteProblemDetails(
+                httpContext,
+                StatusCodes.Status401Unauthorized,
+                "Unauthorized Access",
+                new
+                {
+                    Code = "Auth.Unauthorized",
+                    Description = e.Message
+                },
+                traceId,
+                cancellationToken);
 
             case ForbiddenException e:
-            _logger.LogWarning(e, "Forbidden - Path: {Path}, User: {User}, TraceId: {TraceId}", requestPath, userId, traceId);
-            statusCode = StatusCodes.Status403Forbidden;
-            title = "Forbidden Action";
-            errors.Add(new { Code = "Auth.Forbidden", Description = "You do not have permission to perform this action." });
-            break;
+            _logger.LogWarning(e, "Forbidden - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                requestPath, userId, traceId);
 
-            case ValidationException e:
-            _logger.LogWarning(e, "Validation error - Path: {Path}, User: {User}", requestPath, userId);
-            statusCode = StatusCodes.Status400BadRequest;
-            title = "Validation Failed";
-            errors.AddRange(e.Errors.Select(v => new { Code = v.PropertyName, Description = v.ErrorMessage }));
-            break;
+            return await WriteProblemDetails(
+                httpContext,
+                StatusCodes.Status403Forbidden,
+                "Forbidden Action",
+                new
+                {
+                    Code = "Auth.Forbidden",
+                    Description = "You do not have permission to perform this action."
+                },
+                traceId,
+                cancellationToken);
 
             case KeyNotFoundException e:
-            _logger.LogWarning(e, "Not Found - Path: {Path}, User: {User}", requestPath, userId);
-            statusCode = StatusCodes.Status404NotFound;
-            title = "Resource Not Found";
-            errors.Add(new { Code = "Resource.NotFound", Description = e.Message });
-            break;
+            _logger.LogWarning(e,
+                "Not Found - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                requestPath, userId, traceId);
 
-            case SqlException e:
+            return await WriteProblemDetails(
+                httpContext,
+                StatusCodes.Status404NotFound,
+                "Resource Not Found",
+                new
+                {
+                    Code = "Resource.NotFound",
+                    Description = e.Message
+                },
+                traceId,
+                cancellationToken);
+
+            case SqlException:
             case DbUpdateException:
-            _logger.LogError(exception, "Database error - Path: {Path}, User: {User}, TraceId: {TraceId}", requestPath, userId, traceId);
-            statusCode = StatusCodes.Status500InternalServerError;
-            title = "Database Error";
-            errors.Add(new
-            {
-                Code = "Database.Error",
-                Description = isDevelopment ? exception.Message : "A database error occurred."
-            });
-            break;
+            _logger.LogError(exception,
+                "Database error - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                requestPath, userId, traceId);
+
+            return await WriteProblemDetails(
+                httpContext,
+                StatusCodes.Status500InternalServerError,
+                "Database Error",
+                new
+                {
+                    Code = "Database.Error",
+                    Description = isDevelopment
+                        ? exception.Message
+                        : "A database error occurred."
+                },
+                traceId,
+                cancellationToken);
 
             default:
-            _logger.LogError(exception, "Unhandled exception - Path: {Path}, User: {User}, TraceId: {TraceId}", requestPath, userId, traceId);
-            statusCode = StatusCodes.Status500InternalServerError;
-            title = "Unexpected Error";
-            errors.Add(new
-            {
-                Code = "Server.Error",
-                Description = isDevelopment ? exception.Message : "An unexpected error occurred."
-            });
-            break;
-        }
+            _logger.LogError(exception,
+                "Unhandled exception - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                requestPath, userId, traceId);
 
-        var problemDetails = new ProblemDetails
+            return await WriteProblemDetails(
+                httpContext,
+                StatusCodes.Status500InternalServerError,
+                "Unexpected Error",
+                new
+                {
+                    Code = "Server.Error",
+                    Description = isDevelopment
+                        ? exception.Message
+                        : "An unexpected error occurred."
+                },
+                traceId,
+                cancellationToken);
+        }
+    }
+
+    private async Task<bool> HandleValidationException(
+        HttpContext httpContext,
+        ValidationException exception,
+        string path,
+        string userId,
+        string traceId,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogWarning(exception,
+            "Validation error - Path: {Path}, User: {User}, TraceId: {TraceId}",
+            path, userId, traceId);
+
+        var errors = exception.Errors
+            .GroupBy(x => x.PropertyName)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(x => x.ErrorMessage).ToArray()
+            );
+
+        var problemDetails = new ValidationProblemDetails(errors)
         {
-            Status = statusCode,
-            Title = title,
-            Instance = requestPath,
-            Detail = isDevelopment ? exception.ToString() : null
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Validation Failed",
+            Instance = path
         };
 
-        problemDetails.Extensions["errors"] = errors;
+        problemDetails.Extensions["traceId"] = traceId;
+
+        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+        httpContext.Response.ContentType = "application/problem+json";
+
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+        return true;
+    }
+
+    private static async Task<bool> WriteProblemDetails(
+        HttpContext httpContext,
+        int statusCode,
+        string title,
+        object error,
+        string traceId,
+        CancellationToken cancellationToken)
+    {
+        var problemDetails = new ProblemDetails
+        {
+
+            Status = statusCode,
+            Title = title,
+            Instance = httpContext.Request.Path
+        };
+
+        problemDetails.Extensions["errors"] = new[] { error };
         problemDetails.Extensions["traceId"] = traceId;
 
         httpContext.Response.StatusCode = statusCode;
-        httpContext.Response.ContentType = "application/problem+json";
 
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 

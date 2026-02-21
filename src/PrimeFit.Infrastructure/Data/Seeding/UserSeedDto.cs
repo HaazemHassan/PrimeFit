@@ -1,4 +1,6 @@
-﻿namespace PrimeFit.Infrastructure.Data.Seeding
+﻿using PrimeFit.Domain.Common.Enums;
+
+namespace PrimeFit.Infrastructure.Data.Seeding
 {
     public class UserSeedDto
     {
@@ -8,6 +10,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
+        public UserRole Role { get; set; }
     }
 }

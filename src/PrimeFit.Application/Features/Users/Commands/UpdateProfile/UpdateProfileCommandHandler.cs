@@ -46,8 +46,7 @@ namespace PrimeFit.Application.Features.Users.Commands.UpdateProfile
             userFromDb.UpdateInfo(
                 firstName: request.FirstName,
                 lastName: request.LastName,
-                phoneNumber: request.PhoneNumber,
-                address: request.Address
+                phoneNumber: request.PhoneNumber
             );
 
             await _unitOfWork.Users.UpdateAsync(userFromDb, cancellationToken);

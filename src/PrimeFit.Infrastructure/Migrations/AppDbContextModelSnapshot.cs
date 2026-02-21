@@ -125,7 +125,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,168 @@ namespace PrimeFit.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BranchStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BranchType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("GovernorateId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GovernorateId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Branches");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("UserId", "BranchId")
+                        .IsUnique();
+
+                    b.ToTable("BranchReviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_BranchReview_Rating_Range", "[Rating] >= 1 AND [Rating] <= 5");
+                        });
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchWorkingHour", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly?>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsClosed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<TimeOnly?>("OpenTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "Day")
+                        .IsUnique();
+
+                    b.ToTable("BranchWorkingHours");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -182,6 +343,161 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("DomainUser");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Governorate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Governorates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Cairo"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Giza"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Alexandria"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Dakahlia"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Red Sea"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Beheira"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Fayoum"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Gharbia"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Ismailia"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Menoufia"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Minya"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Qalyubia"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "New Valley"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Suez"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Aswan"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Assiut"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Beni Suef"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "Port Said"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "Damietta"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "Sharkia"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "South Sinai"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "Kafr El Sheikh"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Name = "Matrouh"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Name = "Luxor"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Name = "Qena"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "North Sinai"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "Sohag"
+                        });
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.RefreshToken", b =>
@@ -396,6 +712,54 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Governorate", "Governorate")
+                        .WithMany()
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Governorate");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany("Reviews")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", "User")
+                        .WithMany("BranchReviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchWorkingHour", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany("WorkingHours")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+                });
+
             modelBuilder.Entity("PrimeFit.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
@@ -424,6 +788,18 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
+                {
+                    b.Navigation("Reviews");
+
+                    b.Navigation("WorkingHours");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
+                {
+                    b.Navigation("BranchReviews");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationRole", b =>

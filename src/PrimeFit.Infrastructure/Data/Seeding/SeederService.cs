@@ -136,12 +136,10 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                         userData.FirstName,
                         userData.LastName,
                         userData.Email,
-                        normalizedPhone,
-                        userData.Address
+                        normalizedPhone
                     );
 
-                    var result = await _applicationUserService
-                        .AddUser(domainUser, userData.Password);
+                    var result = await _applicationUserService.AddUser(domainUser, userData.Password, userData.Role);
 
                     if (result.IsError)
                         throw new Exception(

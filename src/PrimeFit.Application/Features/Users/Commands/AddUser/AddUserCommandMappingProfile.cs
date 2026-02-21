@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Features.Users.Commands.AddUser
@@ -8,8 +7,7 @@ namespace PrimeFit.Application.Features.Users.Commands.AddUser
     {
         public AddUserCommandMappingProfile()
         {
-            CreateMap<DomainUser, AddUserCommandResponse>()
-                .IncludeBase<DomainUser, UserResponse>();
+            CreateMap<DomainUser, AddUserCommandResponse>();
         }
 
     }

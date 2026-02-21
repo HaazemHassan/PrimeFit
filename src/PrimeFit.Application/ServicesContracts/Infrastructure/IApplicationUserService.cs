@@ -6,7 +6,7 @@ namespace PrimeFit.Application.Contracts.Infrastructure
 {
     public interface IApplicationUserService
     {
-        public Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole role = UserRole.User, CancellationToken ct = default);
+        public Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole role = UserRole.Member, CancellationToken ct = default);
 
 
     }

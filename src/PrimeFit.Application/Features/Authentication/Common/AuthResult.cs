@@ -3,14 +3,14 @@ using PrimeFit.Application.Features.Users.Common;
 
 namespace PrimeFit.Application.Features.Authentication.Common
 {
-    public class AuthResult(string accessToken, RefreshTokenDTO refreshToken, UserResponse user)
+    public class AuthResult(string accessToken, RefreshTokenDTO refreshToken, BaseUserResponse user)
     {
         public string AccessToken { get; set; } = accessToken;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public RefreshTokenDTO? RefreshToken { get; set; } = refreshToken;
 
-        public UserResponse User { get; set; } = user;
+        public BaseUserResponse User { get; set; } = user;
     }
 
 

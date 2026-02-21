@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
-using PrimeFit.API.Common.Filters;
 using PrimeFit.API.Requests.Client.Users;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Features.Users.Commands.Register;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 using PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability;
 using PrimeFit.Application.Features.Users.Queries.GetUserById;
@@ -22,36 +20,7 @@ namespace PrimeFit.API.Controllers
     {
 
 
-        /// <summary>
-        /// Register a new user account
-        /// </summary>
-        /// <param name="command">User registration details including username, email, password, and personal information</param>
-        /// <returns>JWT token with user information if registration is successful</returns>
-        /// <response code="201">User registered successfully and JWT token returned</response>
-        /// <response code="400">Invalid input data or registration failed</response>
-        /// <response code="409">User with the same email, username, or phone number already exists</response>
-        /// <response code="403">User is already authenticated (anonymous only endpoint)</response>
-        [HttpPost()]
-        [AnonymousOnly]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
-        {
-            var result = await Mediator.Send(command);
 
-            if (result.IsError)
-                return Problem(result.Errors);
-
-            return CreatedAtRoute(
-                            routeName: RouteNames.Users.GetUserById,
-                            routeValues: new { id = result.Value!.Id },
-                            value: result.Value
-             );
-
-
-        }
 
 
         /// <summary>
@@ -134,9 +103,12 @@ namespace PrimeFit.API.Controllers
         {
             var command = _mapper.Map<UpdateProfileCommand>(request);
             command.OwnerUserId = _currentUserService.UserId!.Value;
+
             var result = await Mediator.Send(command);
+
             if (result.IsError)
                 return Problem(result.Errors);
+
             return Ok(result.Value);
         }
 

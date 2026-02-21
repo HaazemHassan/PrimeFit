@@ -7,5 +7,10 @@
             public const string GetUserById = nameof(GetUserById);
 
         }
+
+        public static class Branches
+        {
+            public const string GetBranchById = nameof(GetBranchById);
+        }
     }
 }

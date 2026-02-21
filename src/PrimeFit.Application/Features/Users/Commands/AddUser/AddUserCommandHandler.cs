@@ -28,7 +28,7 @@ namespace PrimeFit.Application.Features.Users.Commands.AddUser
         {
             var phoneNumberNormalized = _phoneNumberService.Normalize(request.PhoneNumber!);
 
-            var domainUser = new DomainUser(request.FirstName, request.LastName, request.Email, phoneNumberNormalized, request.Address);
+            var domainUser = new DomainUser(request.FirstName, request.LastName, request.Email, phoneNumberNormalized);
             var addUserResult = await _applicationUserService.AddUser(domainUser, request.Password, request.UserRole, cancellationToken);
 
             if (addUserResult.IsError)

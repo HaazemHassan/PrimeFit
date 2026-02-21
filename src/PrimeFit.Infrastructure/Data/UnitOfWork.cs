@@ -13,6 +13,10 @@ internal class UnitOfWork : IUnitOfWork
 
     private IUserRepository? _userRepository;
     private IRefreshTokenRepository? _refreshTokenRepository;
+    private IBranchRepository? _branchRepository;
+    private IBranchReviewRepository? _branchReviewRepository;
+    private IBranchWorkingHourRepository? _branchWorkingHourRepository;
+    private IGovernorateRepository? _governorateRepository;
 
     public UnitOfWork(AppDbContext context, IServiceProvider serviceProvider)
     {
@@ -22,6 +26,10 @@ internal class UnitOfWork : IUnitOfWork
 
     public IUserRepository Users => _serviceProvider.GetRequiredService<IUserRepository>();
     public IRefreshTokenRepository RefreshTokens => _serviceProvider.GetRequiredService<IRefreshTokenRepository>();
+    public IBranchRepository Branches => _serviceProvider.GetRequiredService<IBranchRepository>();
+    public IBranchReviewRepository BranchReviews => _serviceProvider.GetRequiredService<IBranchReviewRepository>();
+    public IBranchWorkingHourRepository BranchWorkingHours => _serviceProvider.GetRequiredService<IBranchWorkingHourRepository>();
+    public IGovernorateRepository Governorates => _serviceProvider.GetRequiredService<IGovernorateRepository>();
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

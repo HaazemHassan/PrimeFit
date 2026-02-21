@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Branches\Queries\" />
     <Folder Include="ServicesContracts\Application\" />
     <Folder Include="Services\" />
   </ItemGroup>

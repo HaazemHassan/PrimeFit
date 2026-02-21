@@ -1,6 +1,6 @@
 using FluentValidation;
-using PrimeFit.Application.ValidationRules;
-using PrimeFit.Application.ValidationRules.Common;
+using PrimeFit.Application.Common;
+using PrimeFit.Application.Features.Users.Common;
 
 namespace PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability {
     public class CheckEmailAvailabilityQueryValidator : AbstractValidator<CheckEmailAvailabilityQuery> {

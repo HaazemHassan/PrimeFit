@@ -115,6 +115,11 @@ public static class InfrastructureServiceRegistration
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBranchRepository, BranchRepository>();
+        services.AddScoped<IBranchReviewRepository, BranchReviewRepository>();
+        services.AddScoped<IBranchWorkingHourRepository, BranchWorkingHourRepository>();
+        services.AddScoped<IGovernorateRepository, GovernorateRepository>();
+
 
 
 

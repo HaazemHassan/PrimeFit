@@ -27,7 +27,7 @@ namespace PrimeFit.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole role = UserRole.User, CancellationToken ct = default)
+        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole role = UserRole.Member, CancellationToken ct = default)
         {
             var userByPhone = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == user.PhoneNumber, ct);
 

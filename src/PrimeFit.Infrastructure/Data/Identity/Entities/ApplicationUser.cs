@@ -33,11 +33,6 @@ namespace PrimeFit.Infrastructure.Data.Identity.Entities
             DomainUser = domainUser;
         }
 
-        public void ConfirmEmail()
-        {
-            if (EmailConfirmed)
-                throw new InvalidOperationException("Email is already confirmed.");
-            EmailConfirmed = true;
-        }
+
     }
 }

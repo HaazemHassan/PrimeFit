@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Common.Filters;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Authentication.Commands.RefreshToken;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
+using PrimeFit.Application.Features.Owner.Commands.RegisterOwner;
+using PrimeFit.Application.Features.Users.Commands.RegisterUser;
 using PrimeFit.Infrastructure.Common.Options;
 
 namespace PrimeFit.API.Controllers
@@ -17,6 +20,73 @@ namespace PrimeFit.API.Controllers
     {
         private readonly JwtOptions _jwtSettings = jwtSettings;
         private readonly IClientContextService _clientContextService = clientContextService;
+
+
+
+
+
+
+        /// <summary>
+        /// Register a new user account
+        /// </summary>
+        /// <param name="command">User registration details including username, email, password, and personal information</param>
+        /// <returns>JWT token with user information if registration is successful</returns>
+        /// <response code="201">User registered successfully and JWT token returned</response>
+        /// <response code="400">Invalid input data or registration failed</response>
+        /// <response code="409">User with the same email, username, or phone number already exists</response>
+        /// <response code="403">User is already authenticated (anonymous only endpoint)</response>
+        [HttpPost("register-user")]
+        [AnonymousOnly]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+        {
+            var result = await Mediator.Send(command);
+
+            if (result.IsError)
+                return Problem(result.Errors);
+
+            return CreatedAtRoute(
+                            routeName: RouteNames.Users.GetUserById,
+                            routeValues: new { id = result.Value!.Id },
+                            value: result.Value
+             );
+
+
+        }
+
+
+
+
+        [HttpPost("register-owner")]
+        public async Task<IActionResult> RegisterAsOwner([FromBody] RegisterOwnerCommand command)
+        {
+            var result = await Mediator.Send(command);
+
+            if (result.IsError)
+                return Problem(result.Errors);
+
+            return CreatedAtRoute(
+                            routeName: RouteNames.Users.GetUserById,
+                            routeValues: new { id = result.Value!.Id },
+                            value: result.Value
+             );
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Authenticate a user with username and password
@@ -38,7 +108,7 @@ namespace PrimeFit.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-        public async Task<IActionResult> Login([FromBody] SignInCommand command)
+        public async Task<IActionResult> Login([FromBody] SignInWithPasswordCommand command)
         {
             var result = await Mediator.Send(command);
             if (result.IsError)

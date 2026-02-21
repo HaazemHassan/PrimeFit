@@ -28,4 +28,10 @@ public static class ErrorCodes
         public const string UnknownPolicy = "UNKNOWN_POLICY";
         public const string NotAuthenticated = "NOT_AUTHENTICATED";
     }
+
+    public static class Branch
+    {
+        public const string BranchNotFound = "BRANCH_NOT_FOUND";
+        public const string GovernorateNotFound = "GOVERNORATE_NOT_FOUND";
+    }
 }

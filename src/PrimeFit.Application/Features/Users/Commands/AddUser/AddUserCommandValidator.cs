@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
+using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
+using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.ValidationRules;
-using PrimeFit.Application.ValidationRules.Common;
 
 namespace PrimeFit.Application.Features.Users.Commands.AddUser
 {
@@ -32,13 +32,13 @@ namespace PrimeFit.Application.Features.Users.Commands.AddUser
 
             When(x => !string.IsNullOrWhiteSpace(x.FirstName), () =>
             {
-                RuleFor(x => x.FirstName).ApplyNameRules();
+                RuleFor(x => x.FirstName).ApplyUserNameRules();
             });
 
 
             When(x => !string.IsNullOrWhiteSpace(x.LastName), () =>
             {
-                RuleFor(x => x.LastName).ApplyNameRules();
+                RuleFor(x => x.LastName).ApplyUserNameRules();
             });
 
 
