@@ -34,4 +34,10 @@ public static class ErrorCodes
         public const string BranchNotFound = "BRANCH_NOT_FOUND";
         public const string GovernorateNotFound = "GOVERNORATE_NOT_FOUND";
     }
+
+    public static class WorkingHours
+    {
+        public const string InvalidWorkingHours = "INVALID_WORKING_HOURS";
+        public const string ShiftDurationTooShort = "SHIFT_DURATION_TOO_SHORT";
+    }
 }

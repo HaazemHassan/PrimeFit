@@ -78,7 +78,46 @@ namespace PrimeFit.Domain.Entities
             return OwnerId == userId;
         }
 
+        public bool IsOpenNow()
+        {
+            DateTime currentDateTime = DateTime.UtcNow;
 
+            if (!_workingHours.Any())
+                return false;
+
+            var today = currentDateTime.DayOfWeek;
+            var yesterday = currentDateTime.AddDays(-1).DayOfWeek;
+
+            foreach (var workingHour in _workingHours)
+            {
+                if (workingHour.IsClosed)
+                    continue;
+
+                var open = workingHour.OpenTime;
+                var close = workingHour.CloseTime;
+                var now = TimeOnly.FromDateTime(currentDateTime);
+
+                bool crossesMidnight = close <= open;
+
+                if (!crossesMidnight)
+                {
+                    if (workingHour.Day == today &&
+                        now >= open &&
+                        now < close)
+                        return true;
+                }
+                else
+                {
+                    if (
+                        (workingHour.Day == today && now >= open) ||
+                        (workingHour.Day == yesterday && now < close)
+                       )
+                        return true;
+                }
+            }
+
+            return false;
+        }
 
     }
 }

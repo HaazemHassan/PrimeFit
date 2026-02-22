@@ -37,14 +37,21 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
                 return Error.Unauthorized();
             }
 
-            var workingHours = request.WorkingHours
-                .Select(wh => new BranchWorkingHour(
-                    wh.Day,
-                    wh.OpenTime,
-                    wh.CloseTime,
-                    wh.IsClosed,
-                    request.BranchId))
-                .ToList();
+
+
+            var workingHours = new List<BranchWorkingHour>();
+
+            foreach (var wh in request.WorkingHours)
+            {
+                var createResult = BranchWorkingHour.Create(wh.Day, wh.OpenTime, wh.CloseTime, wh.IsClosed, request.BranchId);
+
+                if (createResult.IsError)
+                {
+                    return createResult.Errors;
+                }
+                workingHours.Add(createResult.Value);
+
+            }
 
             branch.SetWorkingHours(workingHours);
             return Result.Success;

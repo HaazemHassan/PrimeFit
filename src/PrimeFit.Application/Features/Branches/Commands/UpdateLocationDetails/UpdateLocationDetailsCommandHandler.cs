@@ -1,4 +1,3 @@
-using AutoMapper;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
@@ -10,13 +9,11 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
     public class UpdateLocationDetailsCommandHandler : IRequestHandler<UpdateLocationDetailsCommand, ErrorOr<Success>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
 
-        public UpdateLocationDetailsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService)
+        public UpdateLocationDetailsCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _currentUserService = currentUserService;
         }
 
@@ -26,7 +23,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
 
             if (branch is null)
             {
-                return Error.NotFound(ErrorCodes.Branch.BranchNotFound, "Branch not found");
+                return Error.NotFound(ErrorCodes.Branch.BranchNotFound
+                    , "Branch not found");
             }
 
             if (!branch.IsOwner(_currentUserService.UserId!.Value))
@@ -38,7 +36,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
 
             if (governorate is null)
             {
-                return Error.NotFound(ErrorCodes.Branch.GovernorateNotFound, "Governorate not found");
+                return Error.NotFound(ErrorCodes.Branch.GovernorateNotFound
+                    , "Governorate not found");
             }
 
             branch.SetLocationDetails(governorate, request.Address);

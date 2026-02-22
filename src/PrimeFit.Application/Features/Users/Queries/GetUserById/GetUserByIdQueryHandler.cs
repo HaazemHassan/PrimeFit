@@ -1,7 +1,7 @@
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Specifications.Users;
+using PrimeFit.Application.Specifications.Shared;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
