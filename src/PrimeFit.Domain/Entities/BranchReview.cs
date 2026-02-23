@@ -15,16 +15,18 @@ namespace PrimeFit.Domain.Entities
         }
 
         public int BranchId { get; private set; }
+        public Branch Branch { get; private set; } = null!;
+
+
+
         public int UserId { get; private set; }
+        public DomainUser User { get; private set; } = null!;
 
 
         public int Rating { get; private set; }
-
         public string? Comment { get; private set; }
 
 
-        public DomainUser User { get; private set; } = null!;
-        public Branch Branch { get; private set; } = null!;
 
 
 

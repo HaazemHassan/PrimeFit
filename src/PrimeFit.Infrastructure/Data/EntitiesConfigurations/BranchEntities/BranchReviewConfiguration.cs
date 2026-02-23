@@ -19,7 +19,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
             builder.Property(x => x.UserId)
                 .IsRequired();
 
-            builder.HasOne(x => x.User).WithMany(u => u.BranchReviews).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Branch).WithMany(b => b.Reviews).HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.Cascade);
 
 
