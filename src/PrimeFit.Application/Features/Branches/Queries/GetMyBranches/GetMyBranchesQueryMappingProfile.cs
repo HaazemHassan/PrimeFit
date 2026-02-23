@@ -8,6 +8,7 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
         public GetMyBranchesQueryMappingProfile()
         {
             CreateMap<Branch, GetMyBranchesQueryResponse>();
+            CreateMap<Governorate, GovernorateDto>();
 
         }
 

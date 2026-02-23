@@ -195,7 +195,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -238,7 +238,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("BranchReviews", t =>
+                    b.ToTable("BranchReviews", null, t =>
                         {
                             t.HasCheckConstraint("CK_BranchReview_Rating_Range", "[Rating] >= 1 AND [Rating] <= 5");
                         });
@@ -286,7 +286,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("BranchId", "Day")
                         .IsUnique();
 
-                    b.ToTable("BranchWorkingHours");
+                    b.ToTable("BranchWorkingHours", (string)null);
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
@@ -342,7 +342,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
-                    b.ToTable("DomainUser");
+                    b.ToTable("DomainUser", (string)null);
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Governorate", b =>
@@ -360,7 +360,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Governorates");
+                    b.ToTable("Governorates", (string)null);
 
                     b.HasData(
                         new
@@ -563,7 +563,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Package", t =>
+                    b.ToTable("Package", null, t =>
                         {
                             t.HasCheckConstraint("CK_Package_DurationInMonths_Positive", "[DurationInMonths] > 0");
 
@@ -691,7 +691,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscription", t =>
+                    b.ToTable("Subscription", null, t =>
                         {
                             t.HasCheckConstraint("CK_Subscription_AllowedFreezeCount_NonNegative", "[AllowedFreezeCount] >= 0");
 
@@ -739,7 +739,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("SubscriptionFreeze", t =>
+                    b.ToTable("SubscriptionFreeze", null, t =>
                         {
                             t.HasCheckConstraint("CK_SubscriptionFreeze_MaxDays_Positive", "[MaxDays] > 0");
                         });

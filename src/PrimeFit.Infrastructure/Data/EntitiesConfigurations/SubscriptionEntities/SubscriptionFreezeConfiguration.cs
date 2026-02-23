@@ -26,6 +26,8 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
                 .HasForeignKey(x => x.SubscriptionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasQueryFilter(x => !x.Subscription.IsDeleted);
+
             builder.Ignore(x => x.TotalDays);
 
             builder.ToTable(t =>

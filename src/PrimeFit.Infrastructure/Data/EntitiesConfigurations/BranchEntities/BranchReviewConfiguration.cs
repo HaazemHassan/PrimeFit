@@ -25,6 +25,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
 
             builder.HasIndex(x => new { x.UserId, x.BranchId }).IsUnique();
 
+            builder.HasQueryFilter(x => !x.Branch.IsDeleted);
 
             builder.ToTable(t =>
             {

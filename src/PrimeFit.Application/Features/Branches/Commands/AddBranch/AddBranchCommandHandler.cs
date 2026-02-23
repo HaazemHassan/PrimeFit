@@ -2,13 +2,14 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.Branches.Commands.AddBranch;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails
 {
-    public class AddBranchCommandHandler : IRequestHandler<AddBranchCommand, ErrorOr<int>>
+    public class AddBranchCommandHandler : IRequestHandler<AddBranchCommand, ErrorOr<AddBranchCommandResponse>>
     {
 
         private readonly IUnitOfWork _unitOfWork;
@@ -24,7 +25,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDeta
             _currentUserService = currentUserService;
         }
 
-        public async Task<ErrorOr<int>> Handle(AddBranchCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<AddBranchCommandResponse>> Handle(AddBranchCommand request, CancellationToken cancellationToken)
         {
             var curUserId = _currentUserService.UserId;
 
@@ -36,7 +37,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDeta
             await _unitOfWork.Branches.AddAsync(branch, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return branch.Id;
+            return new AddBranchCommandResponse(branch.Id);
         }
     }
 }

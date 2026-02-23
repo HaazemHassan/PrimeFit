@@ -23,6 +23,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasQueryFilter(x => !x.Branch.IsDeleted);
 
             builder.HasIndex(x => new { x.BranchId, x.Day }).IsUnique();
         }

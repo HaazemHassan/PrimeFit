@@ -15,6 +15,8 @@ namespace PrimeFit.Application.Specifications.Branches
                 Query.Where(u => u.Name.Contains(search));
             }
 
+            Query.Include(b => b.Governorate);
+
             if (sortBy == "name_desc")
                 Query.OrderByDescending(u => u.Name);
             else

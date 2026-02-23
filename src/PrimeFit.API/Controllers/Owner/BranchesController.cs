@@ -25,7 +25,7 @@ namespace PrimeFit.API.Controllers.Owner
             {
                 return Problem(result.Errors);
             }
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value }, null);
+            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
         }
 
 
