@@ -27,12 +27,18 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDeta
 
         public async Task<ErrorOr<AddBranchCommandResponse>> Handle(AddBranchCommand request, CancellationToken cancellationToken)
         {
-            var curUserId = _currentUserService.UserId;
+            int curUserId = _currentUserService.UserId!.Value;
 
             var phoneNumberNormalized = _phoneNumberService.Normalize(request.PhoneNumber!);
 
-            var branch = new Branch(curUserId!.Value);
-            branch.SetBussinessDetails(request.Name, request.Email, phoneNumberNormalized, request.BranchType);
+            var createBranchResult = Branch.Create(curUserId, request.Name, request.Email, phoneNumberNormalized, request.BranchType);
+            if (createBranchResult.IsError)
+            {
+                return createBranchResult.Errors;
+
+            }
+
+            var branch = createBranchResult.Value;
 
             await _unitOfWork.Branches.AddAsync(branch, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

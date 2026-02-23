@@ -40,7 +40,9 @@ public static class InfrastructureServiceRegistration
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
+            options.UseSqlServer(
+                configuration["ConnectionStrings:DefaultConnection"],
+                x => x.UseNetTopologySuite());
         });
 
     }

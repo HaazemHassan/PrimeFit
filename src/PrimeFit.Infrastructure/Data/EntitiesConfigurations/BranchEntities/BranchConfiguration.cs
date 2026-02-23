@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NetTopologySuite.Geometries;
 using PrimeFit.Domain.Entities;
+using PrimeFit.Domain.ValueObjects;
 
 namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
 {
@@ -37,6 +39,18 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
             .HasForeignKey(b => b.GovernorateId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Owner)
+                .WithMany()
+                .HasForeignKey(b => b.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(s => s.Location)
+           .HasConversion(
+               geo => new Point(geo.Coordinate.Longitude, geo.Coordinate.Latitude) { SRID = 4326 },
+               point => GeoLocation.Create(point.Y, point.X).Value!
+           )
+           .HasColumnType("geography");
 
         }
     }

@@ -1,23 +1,28 @@
-﻿using PrimeFit.Domain.Common.Enums;
+﻿using ErrorOr;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities.Base;
+using PrimeFit.Domain.ValueObjects;
 
 namespace PrimeFit.Domain.Entities
 {
     public class Branch : FullAuditableEntity<int>
     {
 
-        public Branch(int ownerId)
+        public Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
         {
-            OwnerId = ownerId;
-            Owner = null!;
-
-            Name = string.Empty;
-            Email = string.Empty;
-            PhoneNumber = string.Empty;
 
             _workingHours = new();
             _reviews = new();
             BranchStatus = BranchStatus.Draft;
+
+
+            OwnerId = ownerId;
+            Owner = null!;
+
+            Name = name;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            BranchType = branchType;
         }
 
         public string Name { get; private set; }
@@ -28,10 +33,10 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public string? Address { get; private set; }
         public int? GovernorateId { get; private set; }
         public Governorate? Governorate { get; private set; }
-
+        public string? Address { get; private set; }
+        public GeoLocation? Location { get; private set; }
 
 
 
@@ -48,13 +53,19 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public void SetBussinessDetails(string branchName, string email, string phone, BranchType branchType)
+
+
+        public static ErrorOr<Branch> Create(int ownerId, string branchName, string email, string phoneNumber, BranchType branchType)
         {
-            Name = branchName;
-            Email = email;
-            PhoneNumber = phone;
-            BranchType = branchType;
+            if (ownerId <= 0)
+                return Error.Validation(description: "OwnerId is required.");
+
+
+            return new Branch(ownerId, branchName, email, phoneNumber, branchType);
+
+
         }
+
 
         public void SetLocationDetails(Governorate governorate, string address)
         {
