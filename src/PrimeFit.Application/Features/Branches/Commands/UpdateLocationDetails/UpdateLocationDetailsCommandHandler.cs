@@ -40,7 +40,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
                     , "Governorate not found");
             }
 
-            branch.SetLocationDetails(governorate, request.Address);
+            branch.UpdateLocationDetails(governorate, request.Address);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

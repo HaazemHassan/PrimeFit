@@ -16,6 +16,7 @@ using PrimeFit.Infrastructure.Data.Repositories;
 using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
+using PrimeFit.Infrastructure.Storage;
 
 namespace PrimeFit.Infrastructure;
 
@@ -28,7 +29,7 @@ public static class InfrastructureServiceRegistration
         AddDbContextConfiguations(services, configuration);
         AddIdentityConfigurations(services, configuration);
         AddRepositories(services);
-        AddServices(services);
+        AddServices(services, configuration);
         AddHangfireConfiguration(services, configuration);
         AddBackgroundJobs(services);
 
@@ -128,20 +129,24 @@ public static class InfrastructureServiceRegistration
         return services;
     }
 
-    private static IServiceCollection AddServices(IServiceCollection services)
+    private static IServiceCollection AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<ISeederService, SeederService>();
-        services.AddTransient<IApplicationUserService, ApplicationUserService>();
-        services.AddTransient<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<ISeederService, SeederService>();
+        services.AddScoped<IApplicationUserService, ApplicationUserService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IPolicyEnforcer, PolicyEnforcer>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
 
 
+        services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));
+        services.AddScoped<IImageService, CloudinaryImageService>();
 
 
         return services;
     }
+
+
 
 
 }

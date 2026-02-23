@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities.Base;
 using PrimeFit.Domain.ValueObjects;
@@ -8,12 +9,14 @@ namespace PrimeFit.Domain.Entities
     public class Branch : FullAuditableEntity<int>
     {
 
-        public Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
-        {
+        public const int MaxImageCount = 6;
 
+        private Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
+        {
             _workingHours = new();
             _reviews = new();
             BranchStatus = BranchStatus.Draft;
+            _images = new();
 
 
             OwnerId = ownerId;
@@ -40,11 +43,11 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        private List<BranchWorkingHour> _workingHours;
+        private readonly List<BranchWorkingHour> _workingHours;
         public IReadOnlyCollection<BranchWorkingHour> WorkingHours => _workingHours;
 
 
-        private List<BranchReview> _reviews;
+        private readonly List<BranchReview> _reviews;
         public IReadOnlyCollection<BranchReview> Reviews => _reviews;
 
 
@@ -53,27 +56,35 @@ namespace PrimeFit.Domain.Entities
 
 
 
+        private readonly List<BranchImage> _images;
+        public IReadOnlyList<BranchImage> Images => _images.AsReadOnly();
+        public BranchImage? Logo => _images.FirstOrDefault(i => i.Type == BranchImageType.Logo);
+        public IReadOnlyList<BranchImage> MarketPlaceImages =>
+            _images.Where(i => i.Type == BranchImageType.MarketPlace).ToList();
+
+
+
 
 
         public static ErrorOr<Branch> Create(int ownerId, string branchName, string email, string phoneNumber, BranchType branchType)
         {
             if (ownerId <= 0)
+            {
                 return Error.Validation(description: "OwnerId is required.");
 
-
+            }
             return new Branch(ownerId, branchName, email, phoneNumber, branchType);
-
 
         }
 
 
-        public void SetLocationDetails(Governorate governorate, string address)
+        public void UpdateLocationDetails(Governorate governorate, string address)
         {
             Governorate = governorate;
             Address = address;
         }
 
-        public void SetWorkingHours(List<BranchWorkingHour> branchWorkingHours)
+        public void UpdateWorkingHours(List<BranchWorkingHour> branchWorkingHours)
         {
             _workingHours.Clear();
 
@@ -89,9 +100,8 @@ namespace PrimeFit.Domain.Entities
             return OwnerId == userId;
         }
 
-        public bool IsOpenNow()
+        public bool IsOpenNow(DateTime currentDateTime)
         {
-            DateTime currentDateTime = DateTime.UtcNow;
 
             if (!_workingHours.Any())
                 return false;
@@ -128,6 +138,51 @@ namespace PrimeFit.Domain.Entities
             }
 
             return false;
+        }
+
+
+        public ErrorOr<Success> AddImage(string url, string publicId, BranchImageType type)
+        {
+
+            if (_images.Count > MaxImageCount)
+            {
+                return Error.Validation(
+                    code: ErrorCodes.Branch.ImagesCountLimitExceeded,
+                    description: $"Cannot add more than {MaxImageCount} images to a branch."
+                 );
+            }
+
+            if (type == BranchImageType.Logo && _images.Any(i => i.Type == BranchImageType.Logo))
+            {
+                return Error.Conflict(
+                    code: ErrorCodes.Branch.LogoAlreadyExists,
+                    description: "Branch already has a logo"
+                 );
+
+            }
+
+            var image = BranchImage.Create(url, publicId, type, Id);
+
+            _images.Add(image);
+
+            return Result.Success;
+        }
+        public ErrorOr<Success> RemoveImage(int imageId)
+        {
+            var image = _images.FirstOrDefault(i => i.Id == imageId);
+
+            if (image is null)
+            {
+                return Error.NotFound(
+                    code: ErrorCodes.Branch.ImageNotFound,
+                    description: "Image not found."
+                );
+            }
+
+
+            _images.Remove(image);
+
+            return Result.Success;
         }
 
     }

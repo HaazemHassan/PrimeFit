@@ -33,6 +33,10 @@ public static class ErrorCodes
     {
         public const string BranchNotFound = "BRANCH_NOT_FOUND";
         public const string GovernorateNotFound = "GOVERNORATE_NOT_FOUND";
+        public const string LogoAlreadyExists = "BRANCH_LOGO_ALREADY_EXISTS";
+        public const string ImageNotFound = "BRANCH_IMAGE_NOT_FOUND";
+        public const string ImagesCountLimitExceeded = "BRANCH_IMAGES_COUNT_LIMIT_EXCEEDED";
+
     }
 
     public static class WorkingHours
@@ -40,4 +44,11 @@ public static class ErrorCodes
         public const string InvalidWorkingHours = "INVALID_WORKING_HOURS";
         public const string ShiftDurationTooShort = "SHIFT_DURATION_TOO_SHORT";
     }
+
+    public static class Cloudinary
+    {
+        public const string ImageUploadFailed = "IMAGE_UPLOD_FAILED";
+        public const string ImageDeleteFailed = "IMAGE_DELETE_FAILED";
+    }
+
 }

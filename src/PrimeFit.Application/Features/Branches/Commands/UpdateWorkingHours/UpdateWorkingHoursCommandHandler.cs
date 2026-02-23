@@ -53,7 +53,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
 
             }
 
-            branch.SetWorkingHours(workingHours);
+            branch.UpdateWorkingHours(workingHours);
             return Result.Success;
         }
     }

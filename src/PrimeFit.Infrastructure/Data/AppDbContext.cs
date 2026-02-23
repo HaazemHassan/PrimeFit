@@ -20,7 +20,11 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<Branch> Branches => Set<Branch>();
         public DbSet<BranchWorkingHour> BranchWorkingHours => Set<BranchWorkingHour>();
         public DbSet<BranchReview> BranchReviews => Set<BranchReview>();
+        public DbSet<BranchImage> BranchImages => Set<BranchImage>();
         public DbSet<Governorate> Governorates => Set<Governorate>();
+        public DbSet<Package> Packages => Set<Package>();
+        public DbSet<Subscription> Subscriptions => Set<Subscription>();
+        public DbSet<SubscriptionFreeze> SubscriptionFreezes => Set<SubscriptionFreeze>();
 
 
 
@@ -37,7 +41,6 @@ namespace PrimeFit.Infrastructure.Data
 
 
             #region query filters
-            // Apply global query filter for soft-deleted entities
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(ISoftDeletableEntity).IsAssignableFrom(entityType.ClrType))
