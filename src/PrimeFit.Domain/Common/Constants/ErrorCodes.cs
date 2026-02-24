@@ -47,7 +47,7 @@ public static class ErrorCodes
 
     public static class Cloudinary
     {
-        public const string ImageUploadFailed = "IMAGE_UPLOD_FAILED";
+        public const string ImageUploadFailed = "IMAGE_UPLOAD_FAILED";
         public const string ImageDeleteFailed = "IMAGE_DELETE_FAILED";
     }
 

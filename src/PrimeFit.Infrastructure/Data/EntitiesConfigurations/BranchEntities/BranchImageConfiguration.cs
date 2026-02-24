@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
@@ -6,7 +6,6 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
 {
     internal class BranchImageConfiguration : IEntityTypeConfiguration<BranchImage>
     {
-
         public void Configure(EntityTypeBuilder<BranchImage> builder)
         {
             builder.HasKey(i => i.Id);
@@ -28,9 +27,11 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .IsRequired();
 
             builder.HasOne(i => i.Branch)
-                .WithMany()
+                .WithMany(b => b.Images)
                 .HasForeignKey(i => i.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
 
             builder.HasQueryFilter(i => !i.Branch.IsDeleted);
 

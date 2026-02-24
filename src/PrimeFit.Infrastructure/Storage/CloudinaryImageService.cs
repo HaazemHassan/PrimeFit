@@ -2,6 +2,7 @@
 using CloudinaryDotNet.Actions;
 using ErrorOr;
 using Microsoft.Extensions.Options;
+using PrimeFit.Application.Common.DTOS;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 
@@ -23,7 +24,7 @@ namespace PrimeFit.Infrastructure.Storage
             _cloudinary.Api.Secure = true;
         }
 
-        public async Task<ErrorOr<string>> UploadAsync(Stream fileStream, string fileName)
+        public async Task<ErrorOr<ImageUploadDTO>> UploadAsync(Stream fileStream, string fileName)
         {
             var uploadParams = new ImageUploadParams
             {
@@ -33,17 +34,23 @@ namespace PrimeFit.Infrastructure.Storage
                 Overwrite = false
             };
 
-            var result = await _cloudinary.UploadAsync(uploadParams);
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-            if (result.Error is not null)
+            if (uploadResult.Error is not null)
             {
                 return ErrorOr.Error.Failure(
                     code: ErrorCodes.Cloudinary.ImageUploadFailed,
-                    description: result.Error.Message
+                    description: uploadResult.Error.Message
                 );
             }
 
-            return result.SecureUrl.ToString();
+            var response = new ImageUploadDTO
+            {
+                PublicId = uploadResult.PublicId,
+                SecureUrl = uploadResult.SecureUrl.ToString()
+            };
+
+            return response;
         }
 
         public async Task<ErrorOr<Success>> DeleteAsync(string publicId)

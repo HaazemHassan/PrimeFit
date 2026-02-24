@@ -3,28 +3,12 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Branches
 {
-    public class BranchesPaginatedSpec : Specification<Branch>
+    public class BranchWithImagesSpec : Specification<Branch>
     {
-        public BranchesPaginatedSpec(int? ownerId, int pageNumber, int pageSize, string? search, string? sortBy)
+        public BranchWithImagesSpec(int ownerId, int branchId)
         {
-            if (ownerId.HasValue)
-                Query.Where(u => u.OwnerId == ownerId);
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                Query.Where(u => u.Name.Contains(search));
-            }
-
-            Query.Include(b => b.Governorate);
-
-            if (sortBy == "name_desc")
-                Query.OrderByDescending(u => u.Name);
-            else
-                Query.OrderBy(u => u.Name);
-
-            Query.Paginate(pageNumber, pageSize);
-
-            Query.AsNoTracking();
+            Query.Where(b => b.Id == branchId && b.OwnerId == ownerId);
+            Query.Include(b => b.Images);
 
         }
     }

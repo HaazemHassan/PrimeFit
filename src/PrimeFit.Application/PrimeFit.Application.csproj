@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="16.0.0" />
 	<PackageReference Include="ErrorOr" Version="2.0.1" />
 	<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
@@ -19,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="ServicesContracts\Application\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

@@ -20,6 +20,7 @@ namespace PrimeFit.API.Requests
             CreateMap<UpdateLocationDetailsRequest, UpdateLocationDetailsCommand>();
             CreateMap<UpdateWorkingHoursRequest, UpdateWorkingHoursCommand>();
 
+
         }
 
     }

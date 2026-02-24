@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.RateLimiting;
+using PrimeFit.API.Common;
 using PrimeFit.API.RateLimiting;
 using PrimeFit.API.Services;
 using PrimeFit.Application;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Infrastructure;
 using PrimeFit.Infrastructure.Common.Options;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.RateLimiting;
 
 
 
@@ -39,6 +41,7 @@ namespace PrimeFit.API
             AddAuthenticationConfigurations(services, configuration);
             AddSwaggerConfigurations(services);
             AddRateLimitingConfigurations(services, configuration);
+            services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
 
             // Register Exception Handler
             services.AddExceptionHandler<GlobalExceptionHandler>();

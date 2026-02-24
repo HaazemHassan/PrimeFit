@@ -52,6 +52,8 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
            )
            .HasColumnType("geography");
 
+            builder.Ignore(b => b.MarketPlaceImages);
+
         }
     }
 }

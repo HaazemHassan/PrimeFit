@@ -141,9 +141,9 @@ namespace PrimeFit.Domain.Entities
         }
 
 
-        public ErrorOr<Success> AddImage(string url, string publicId, BranchImageType type)
-        {
 
+        public ErrorOr<Success> CanAddImage(BranchImageType type)
+        {
             if (_images.Count > MaxImageCount)
             {
                 return Error.Validation(
@@ -160,6 +160,16 @@ namespace PrimeFit.Domain.Entities
                  );
 
             }
+
+            return Result.Success;
+
+        }
+
+        public ErrorOr<Success> AddImage(string url, string publicId, BranchImageType type)
+        {
+            var canAddImageResult = CanAddImage(type);
+            if (canAddImageResult.IsError)
+                return canAddImageResult.Errors;
 
             var image = BranchImage.Create(url, publicId, type, Id);
 
