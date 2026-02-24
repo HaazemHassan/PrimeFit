@@ -8,6 +8,7 @@ using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 using PrimeFit.Infrastructure.Data;
@@ -104,6 +105,7 @@ public static class InfrastructureServiceRegistration
     private static IServiceCollection AddBackgroundJobs(IServiceCollection services)
     {
         services.AddScoped<RefreshTokensCleanupJob>();
+        services.AddScoped<IImageBackgroundService, HangfireImageBackgroundServicee>();
 
         return services;
     }
@@ -122,6 +124,8 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IBranchReviewRepository, BranchReviewRepository>();
         services.AddScoped<IBranchWorkingHourRepository, BranchWorkingHourRepository>();
         services.AddScoped<IGovernorateRepository, GovernorateRepository>();
+        services.AddScoped<IBranchImageRepository, BranchImageRepostiory>();
+
 
 
 

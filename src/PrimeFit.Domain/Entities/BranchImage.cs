@@ -1,4 +1,5 @@
-﻿using PrimeFit.Domain.Common.Enums;
+﻿using ErrorOr;
+using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Domain.Entities
 {
@@ -18,12 +19,27 @@ namespace PrimeFit.Domain.Entities
         private BranchImage() { }
 
         public static BranchImage Create(string url, string publicId, BranchImageType type, int branchId)
-            => new()
+        {
+            return new()
             {
                 Url = url,
                 PublicId = publicId,
                 Type = type,
                 BranchId = branchId
             };
+
+        }
+
+
+        public ErrorOr<Success> UpdateImage(string newUrl, string newPublicId)
+        {
+            if (string.IsNullOrWhiteSpace(newUrl))
+            {
+                return Error.Validation(description: "Image URL cannot be empty.");
+            }
+            Url = newUrl;
+            PublicId = newPublicId;
+            return Result.Success;
+        }
     }
 }

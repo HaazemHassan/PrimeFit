@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.API.Requests.Owner.Branches.AddBranchImage;
+using PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
+using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 
 namespace PrimeFit.API.Controllers.Owner
@@ -16,11 +18,13 @@ namespace PrimeFit.API.Controllers.Owner
     {
         private readonly IMapper _mapper;
         private readonly IValidator<AddBranchImageRequest> _addBranchImageValidator;
+        private readonly IValidator<UpdateBranchImageRequest> _updateLocationDetailsValidator;
 
-        public BranchesController(IMapper mapper, IValidator<AddBranchImageRequest> addBranchImageValidator)
+        public BranchesController(IMapper mapper, IValidator<AddBranchImageRequest> addBranchImageValidator, IValidator<UpdateBranchImageRequest> updateLocationDetailsValidator)
         {
             _mapper = mapper;
             _addBranchImageValidator = addBranchImageValidator;
+            _updateLocationDetailsValidator = updateLocationDetailsValidator;
         }
 
         [HttpPost()]
@@ -75,7 +79,7 @@ namespace PrimeFit.API.Controllers.Owner
                 throw new ValidationException("Validation Exception", validationResult.Errors);
             }
 
-            using var stream = request.File.OpenReadStream();
+            using var stream = request.ImageFile.OpenReadStream();
 
             var command = new AddBranchImageCommand
             {
@@ -90,7 +94,35 @@ namespace PrimeFit.API.Controllers.Owner
             {
                 return Problem(result.Errors);
             }
-            return NoContent();
+            return Ok(result.Value);
+
+        }
+
+        [HttpPatch("{branchId:int}/images/{imageId}")]
+        public async Task<IActionResult> UpdateBranchImage(int branchId, int imageId, UpdateBranchImageRequest request)
+        {
+            var validationResult = await _updateLocationDetailsValidator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException("Validation Exception", validationResult.Errors);
+            }
+
+            using var stream = request.ImageFile.OpenReadStream();
+
+            var command = new UpdateBranchImageCommand
+            {
+                BranchId = branchId,
+                ImageId = imageId,
+                ImageStream = stream,
+            };
+
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
 
         }
 

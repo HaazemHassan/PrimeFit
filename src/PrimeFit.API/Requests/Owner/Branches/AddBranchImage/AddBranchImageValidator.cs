@@ -3,11 +3,11 @@ using PrimeFit.API.Extensions;
 
 namespace PrimeFit.API.Requests.Owner.Branches.AddBranchImage
 {
-    public class UploadBranchImageValidator : AbstractValidator<AddBranchImageRequest>
+    public class AddBranchImageValidator : AbstractValidator<AddBranchImageRequest>
     {
-        public UploadBranchImageValidator()
+        public AddBranchImageValidator()
         {
-            RuleFor(x => x.File).ApplyImageRules();
+            RuleFor(x => x.ImageFile).ApplyImageRules();
         }
     }
 }

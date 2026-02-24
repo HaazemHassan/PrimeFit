@@ -4,7 +4,7 @@ namespace PrimeFit.API.Requests.Owner.Branches.AddBranchImage
 {
     public class AddBranchImageRequest
     {
-        public IFormFile File { get; set; } = null!;
+        public IFormFile ImageFile { get; set; } = null!;
         public BranchImageType ImageType { get; set; }
     }
 }

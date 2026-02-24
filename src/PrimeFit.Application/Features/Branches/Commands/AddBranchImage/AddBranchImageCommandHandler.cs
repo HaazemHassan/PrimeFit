@@ -13,15 +13,19 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
+        private readonly IImageBackgroundService _imageBackgroundQueue;
+
 
         public AddBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
-            IImageService imageService)
+            IImageService imageService,
+            IImageBackgroundService imageBackgroundQueue)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _imageBackgroundQueue = imageBackgroundQueue;
         }
 
         public async Task<ErrorOr<AddBranchImageCommandResponse>> Handle(AddBranchImageCommand request, CancellationToken cancellationToken)
@@ -57,20 +61,29 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
 
             var uploadedImageData = imageUploadResult.Value;
 
-            var addImageToBranchResult = branch.AddImage(
-                uploadedImageData.SecureUrl,
-                uploadedImageData.PublicId,
-                request.ImageType);
+            var addImageToBranchResult = branch.AddImage(uploadedImageData.SecureUrl,
+                                                        uploadedImageData.PublicId,
+                                                        request.ImageType);
 
             if (addImageToBranchResult.IsError)
             {
-                await _imageService.DeleteAsync(uploadedImageData.PublicId);
+                _imageBackgroundQueue.DeleteImage(uploadedImageData.PublicId!);
                 return addImageToBranchResult.Errors;
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return new AddBranchImageCommandResponse(uploadedImageData.SecureUrl);
+            }
+            catch
+            {
+                _imageBackgroundQueue.DeleteImage(uploadedImageData.PublicId!);
+                throw;
+            }
+
+            var image = addImageToBranchResult.Value;
+            return new AddBranchImageCommandResponse(image.Id, uploadedImageData.SecureUrl);
         }
 
     }

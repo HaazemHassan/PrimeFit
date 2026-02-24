@@ -165,7 +165,7 @@ namespace PrimeFit.Domain.Entities
 
         }
 
-        public ErrorOr<Success> AddImage(string url, string publicId, BranchImageType type)
+        public ErrorOr<BranchImage> AddImage(string url, string publicId, BranchImageType type)
         {
             var canAddImageResult = CanAddImage(type);
             if (canAddImageResult.IsError)
@@ -175,9 +175,9 @@ namespace PrimeFit.Domain.Entities
 
             _images.Add(image);
 
-            return Result.Success;
+            return image;
         }
-        public ErrorOr<Success> RemoveImage(int imageId)
+        public ErrorOr<string> DeleteImage(int imageId)
         {
             var image = _images.FirstOrDefault(i => i.Id == imageId);
 
@@ -192,8 +192,9 @@ namespace PrimeFit.Domain.Entities
 
             _images.Remove(image);
 
-            return Result.Success;
+            return image.PublicId;
         }
+
 
     }
 }

@@ -13,15 +13,19 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
+        private readonly IImageBackgroundService _imageBackgroundQueue;
+
 
         public DeleteBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
-            IImageService imageService)
+            IImageService imageService,
+            IImageBackgroundService imageBackgroundQueue)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _imageBackgroundQueue = imageBackgroundQueue;
         }
 
         public async Task<ErrorOr<Success>> Handle(DeleteBranchImageCommand request, CancellationToken cancellationToken)
@@ -38,20 +42,16 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
                     "Branch not found");
             }
 
-            var publicId = branch.Images.FirstOrDefault(i => i.Id == request.ImageId)?.PublicId;
-            var deleteResult = branch.RemoveImage(request.ImageId);
+            var deleteResult = branch.DeleteImage(request.ImageId);
             if (deleteResult.IsError)
             {
                 return deleteResult.Errors;
             }
 
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var deleteFromCloudResult = await _imageService.DeleteAsync(publicId!);
-
-            if (deleteFromCloudResult.IsError)
-            {
-                return deleteFromCloudResult.Errors;
-            }
+            var publicId = deleteResult.Value;
+            _imageBackgroundQueue.DeleteImage(publicId);
 
             return Result.Success;
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using PrimeFit.Application.Common.DTOS;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
+using Error = ErrorOr.Error;
 
 namespace PrimeFit.Infrastructure.Storage
 {
@@ -51,6 +52,34 @@ namespace PrimeFit.Infrastructure.Storage
             };
 
             return response;
+        }
+
+
+        public async Task<ErrorOr<ImageUploadDTO>> ReplaceAsync(Stream fileStream, string existingPublicId, string fileName)
+        {
+
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(fileName, fileStream),
+                PublicId = existingPublicId,
+                Overwrite = true,
+                Invalidate = true,
+                UseFilename = false,
+                UniqueFilename = false
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            if (uploadResult.Error is not null)
+            {
+                return Error.Failure(description: "Failed to update image");
+            }
+
+            return new ImageUploadDTO
+            {
+                PublicId = uploadResult.PublicId,
+                SecureUrl = uploadResult.SecureUrl.ToString()
+            };
         }
 
         public async Task<ErrorOr<Success>> DeleteAsync(string publicId)
