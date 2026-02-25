@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErrorOr;
+using FluentValidation;
 using MediatR;
 
 namespace PrimeFit.Application.Common.Behaviors
@@ -23,9 +24,16 @@ namespace PrimeFit.Application.Common.Behaviors
 
                 if (failures.Count != 0)
                 {
-                    //var message = failures.Select(x => x.PropertyName + ": " + x.ErrorMessage).FirstOrDefault();
+                    var errors = failures.Select(f => Error.Validation(
+                         code: f.ErrorCode,
+                         description: f.ErrorMessage,
+                         metadata: new Dictionary<string, object>
+                         {
+                            { "field", f.PropertyName }
+                         }
+                     )).ToList();
 
-                    throw new ValidationException("Validaion Exception", failures);
+                    return (TResponse)(dynamic)errors;
 
                 }
             }

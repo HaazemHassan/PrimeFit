@@ -22,7 +22,13 @@ namespace PrimeFit.API.Controllers
             var problemDetail = problem.GetType().GetProperty(nameof(ProblemDetails))!.GetValue(problem) as ProblemDetails;
             problemDetail!.Extensions = new Dictionary<string, object?>()
             {
-                ["errors"] = errors.Select(e => new { e.Code, e.Description })
+                ["errors"] = errors.Select(e => new
+                {
+                    e.Code,
+                    e.Description,
+                    Field = e.Metadata != null && e.Metadata.ContainsKey("field") ? e.Metadata["field"] : null
+                }),
+                ["traceId"] = HttpContext.TraceIdentifier
             };
 
 
