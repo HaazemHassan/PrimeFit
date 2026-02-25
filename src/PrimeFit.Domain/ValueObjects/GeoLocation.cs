@@ -4,21 +4,25 @@ namespace PrimeFit.Domain.ValueObjects
 {
     public record GeoLocation
     {
-        public Coordinate Coordinate { get; }
+        public double Latitude { get; }
+        public double Longitude { get; }
 
-        private GeoLocation(Coordinate coordinate)
+        private GeoLocation(double latitude, double longitude)
         {
-            Coordinate = coordinate;
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         public static ErrorOr<GeoLocation> Create(double latitude, double longitude)
         {
-            var coordinateResult = Coordinate.Create(latitude, longitude);
+            if (latitude < -90 || latitude > 90)
+                return Error.Validation(description: "Latitude must be between -90 and 90.");
 
-            if (coordinateResult.IsError)
-                return coordinateResult.Errors;
+            if (longitude < -180 || longitude > 180)
+                return Error.Validation(description: "Longitude must be between -180 and 180.");
 
-            return new GeoLocation(coordinateResult.Value);
+            return new GeoLocation(latitude, longitude);
         }
     }
 }
+

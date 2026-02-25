@@ -114,10 +114,11 @@ namespace PrimeFit.Domain.Entities
 
         }
 
-        public void UpdateLocationDetails(Governorate governorate, string address)
+        public void UpdateLocationDetails(Governorate governorate, string address, GeoLocation location)
         {
             Governorate = governorate;
             Address = address;
+            Location = location;
         }
 
         public void UpdateWorkingHours(List<BranchWorkingHour> branchWorkingHours)

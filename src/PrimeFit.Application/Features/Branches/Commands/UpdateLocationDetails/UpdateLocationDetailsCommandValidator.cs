@@ -15,12 +15,16 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
             RuleFor(x => x.Address).Required();
             RuleFor(x => x.BranchId).Required();
             RuleFor(x => x.GovernorateId).Required();
+            //RuleFor(x => x.Latitude).Required();
+            //RuleFor(x => x.Longitude).Required();
 
 
             When(x => !string.IsNullOrWhiteSpace(x.Address), () =>
             {
                 RuleFor(x => x.Address).ApplyAddressRules();
             });
+
+
         }
     }
 }

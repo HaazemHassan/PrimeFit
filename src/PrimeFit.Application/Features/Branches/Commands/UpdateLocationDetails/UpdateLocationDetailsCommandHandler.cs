@@ -3,6 +3,7 @@ using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.ValueObjects;
 
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
 {
@@ -19,6 +20,14 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
 
         public async Task<ErrorOr<Success>> Handle(UpdateLocationDetailsCommand request, CancellationToken cancellationToken)
         {
+
+            var geoLocatioResult = GeoLocation.Create(request.Latitude, request.Longitude);
+            if (geoLocatioResult.IsError)
+            {
+                return geoLocatioResult.Errors;
+            }
+            var geoLocation = geoLocatioResult.Value;
+
             var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 
             if (branch is null)
@@ -40,7 +49,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
                     , "Governorate not found");
             }
 
-            branch.UpdateLocationDetails(governorate, request.Address);
+            branch.UpdateLocationDetails(governorate, request.Address, geoLocation);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

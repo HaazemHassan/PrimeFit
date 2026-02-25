@@ -11,6 +11,9 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
     {
         public int BranchId { get; set; }
         public int GovernorateId { get; set; }
-        public string Address { get; set; } = string.Empty;
+        public string Address { get; set; }
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

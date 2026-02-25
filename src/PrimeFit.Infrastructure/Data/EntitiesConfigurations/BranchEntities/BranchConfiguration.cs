@@ -46,11 +46,11 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(s => s.Location)
-           .HasConversion(
-               geo => new Point(geo.Coordinate.Longitude, geo.Coordinate.Latitude) { SRID = 4326 },
+              .HasConversion(
+               geo => new Point(geo.Longitude, geo.Latitude) { SRID = 4326 },
                point => GeoLocation.Create(point.Y, point.X).Value!
-           )
-           .HasColumnType("geography");
+              )
+              .HasColumnType("geography");
 
             builder.Ignore(b => b.MarketPlaceImages);
 
