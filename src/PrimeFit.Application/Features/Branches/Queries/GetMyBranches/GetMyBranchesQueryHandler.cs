@@ -23,7 +23,7 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
         {
             int ownerId = _currentUserService.UserId!.Value;
 
-            var dataSpec = new BranchesPaginatedSpec(ownerId, request.PageNumber, request.PageSize, request.Search, request.SortBy);
+            var dataSpec = new BranchesPaginatedForOwnerSpec(ownerId, request.PageNumber, request.PageSize, request.Search, request.SortBy);
             var countSpec = new BranchesSearchSpec(ownerId, request.Search);
 
             var items = await _unitOfWork.Branches.ListAsync<GetMyBranchesQueryResponse>(dataSpec, cancellationToken);

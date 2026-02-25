@@ -32,7 +32,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
         {
             var ownerId = _currentUserService.UserId!.Value;
 
-            var spec = new BranchWithImageForOwnerSpec(ownerId, request.BranchId, request.ImageId);
+            var spec = new BranchWithSpeceficImageForOwnerSpec(ownerId, request.BranchId, request.ImageId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (branch is null)

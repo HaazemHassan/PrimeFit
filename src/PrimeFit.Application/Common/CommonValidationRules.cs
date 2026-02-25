@@ -26,7 +26,6 @@ namespace PrimeFit.Application.Common
             return rule.GreaterThan(0).WithMessage("{PropertyName} can't be empty");
         }
 
-
         public static IRuleBuilderOptions<T, string?> ApplyEmailRules<T>(
             this IRuleBuilder<T, string> ruleBuilder
         )

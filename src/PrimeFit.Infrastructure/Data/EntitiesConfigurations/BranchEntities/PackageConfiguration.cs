@@ -34,7 +34,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .IsRequired();
 
             builder.HasOne(x => x.Branch)
-                .WithMany()
+                .WithMany(b => b.Packages)
                 .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 

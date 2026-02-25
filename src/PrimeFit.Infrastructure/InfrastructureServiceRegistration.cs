@@ -125,6 +125,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IBranchWorkingHourRepository, BranchWorkingHourRepository>();
         services.AddScoped<IGovernorateRepository, GovernorateRepository>();
         services.AddScoped<IBranchImageRepository, BranchImageRepostiory>();
+        services.AddScoped<IPackageRepository, PackageRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ISubscriptionFreezeRepository, SubscriptionFreezeRepository>();
 
 
 

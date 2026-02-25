@@ -33,7 +33,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
             var currentUserId = _currentUserService.UserId!.Value;
 
 
-            var branchWithImagesSpec = new BranchWithImagesSpec(currentUserId, request.BranchId);
+            var branchWithImagesSpec = new BranchWithImagesForOwnerSpec(currentUserId, request.BranchId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(branchWithImagesSpec, cancellationToken);
 
             if (branch is null)

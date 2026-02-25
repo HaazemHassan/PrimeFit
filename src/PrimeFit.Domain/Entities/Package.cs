@@ -1,4 +1,5 @@
-﻿using PrimeFit.Domain.Entities.Base;
+﻿using ErrorOr;
+using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Domain.Entities
 {
@@ -21,5 +22,16 @@ namespace PrimeFit.Domain.Entities
         public Branch Branch { get; set; } = null!;
 
         public ICollection<Subscription> Subscriptions { get; set; }
+
+
+        public ErrorOr<Package> Update(string name, decimal price, int durationInMonths, int numberOfFreezes, int freezeDurationInDays)
+        {
+            Name = name;
+            Price = price;
+            DurationInMonths = durationInMonths;
+            NumberOfFreezes = numberOfFreezes;
+            FreezeDurationInDays = freezeDurationInDays;
+            return this;
+        }
     }
 }

@@ -1,12 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PrimeFit.Application.Features.Users.Queries.GetUsersPaginated;
+using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 {
-    internal class GetBranchByIdQueryResponse
+    public class GetBranchByIdQueryResponse
     {
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
+        public ImageDto Logo { get; set; } = null!;
+        public GovernorateDto Governorate { get; set; } = null!;
+        public string Address { get; private set; } = null!;
+        public BranchType BranchType { get; set; }
+        public BranchStatus BranchStatus { get; set; }
+        public bool IsOpenNow { get; set; }
+        public bool ActivePackages { get; set; }
+        public int ActiveSubscriptions { get; set; }
+
+
     }
 }

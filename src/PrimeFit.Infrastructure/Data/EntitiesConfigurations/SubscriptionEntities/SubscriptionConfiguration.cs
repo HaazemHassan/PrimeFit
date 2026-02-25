@@ -46,7 +46,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.Branch)
-                .WithMany()
+                .WithMany(b => b.Subscriptions)
                 .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -26,6 +26,9 @@ internal class UnitOfWork : IUnitOfWork
     public IBranchReviewRepository BranchReviews => _serviceProvider.GetRequiredService<IBranchReviewRepository>();
     public IBranchWorkingHourRepository BranchWorkingHours => _serviceProvider.GetRequiredService<IBranchWorkingHourRepository>();
     public IGovernorateRepository Governorates => _serviceProvider.GetRequiredService<IGovernorateRepository>();
+    public IPackageRepository Packages => _serviceProvider.GetRequiredService<IPackageRepository>();
+    public ISubscriptionRepository Subscriptions => _serviceProvider.GetRequiredService<ISubscriptionRepository>();
+    public ISubscriptionFreezeRepository SubscriptionFreezes => _serviceProvider.GetRequiredService<ISubscriptionFreezeRepository>();
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

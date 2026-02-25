@@ -12,6 +12,9 @@ public interface IUnitOfWork
     IBranchReviewRepository BranchReviews { get; }
     IBranchWorkingHourRepository BranchWorkingHours { get; }
     IGovernorateRepository Governorates { get; }
+    IPackageRepository Packages { get; }
+    ISubscriptionRepository Subscriptions { get; }
+    ISubscriptionFreezeRepository SubscriptionFreezes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

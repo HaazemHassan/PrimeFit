@@ -9,6 +9,7 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
         public GovernorateDto Governorate { get; set; } = null!;
         public string Address { get; private set; } = null!;
         public BranchType BranchType { get; set; }
+        public ImageDto Logo { get; set; } = null!;
         public BranchStatus BranchStatus { get; set; }
         public int SubscriptionsCount { get; set; }
 
@@ -19,6 +20,13 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
         public int Id { get; set; }
         public string Name { get; set; } = null!;
 
+    }
+
+
+    public class ImageDto
+    {
+        public int Id { get; set; }
+        public string Url { get; set; } = null!;
     }
 
 

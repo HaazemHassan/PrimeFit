@@ -15,8 +15,10 @@ namespace PrimeFit.Domain.Entities
         {
             _workingHours = new();
             _reviews = new();
-            BranchStatus = BranchStatus.Draft;
             _images = new();
+            _packages = new();
+            _subscriptions = new();
+            BranchStatus = BranchStatus.Draft;
 
 
             OwnerId = ownerId;
@@ -61,6 +63,15 @@ namespace PrimeFit.Domain.Entities
         public BranchImage? Logo => _images.FirstOrDefault(i => i.Type == BranchImageType.Logo);
         public IReadOnlyList<BranchImage> MarketPlaceImages =>
             _images.Where(i => i.Type == BranchImageType.MarketPlace).ToList();
+
+
+        private readonly List<Package> _packages;
+        public IReadOnlyList<Package> Packages => _packages.AsReadOnly();
+
+        private readonly List<Subscription> _subscriptions;
+        public IReadOnlyList<Subscription> Subscriptions => _subscriptions.AsReadOnly();
+
+
 
 
 
@@ -193,6 +204,24 @@ namespace PrimeFit.Domain.Entities
             _images.Remove(image);
 
             return image.PublicId;
+        }
+
+        public ErrorOr<Package> AddPackage(string name, decimal price, int durationInMonths, bool isActive, int numberOfFreezes, int freezeDurationInDays)
+        {
+            var package = new Package
+            {
+                BranchId = Id,
+                Name = name,
+                Price = price,
+                DurationInMonths = durationInMonths,
+                IsActive = isActive,
+                NumberOfFreezes = numberOfFreezes,
+                FreezeDurationInDays = freezeDurationInDays
+            };
+
+            _packages.Add(package);
+
+            return package;
         }
 
 

@@ -4,13 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.API.Requests.Owner.Branches.AddBranchImage;
+using PrimeFit.API.Requests.Owner.Branches.AddPackage;
 using PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage;
+using PrimeFit.API.Requests.Owner.Branches.UpdatePackage;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
+using PrimeFit.Application.Features.Branches.Commands.AddPackage;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
+using PrimeFit.Application.Features.Branches.Commands.UpdatePackage;
 
 namespace PrimeFit.API.Controllers.Owner
 {
@@ -145,6 +149,35 @@ namespace PrimeFit.API.Controllers.Owner
             }
             return NoContent();
 
+        }
+
+        [HttpPost("{id:int}/packages")]
+        public async Task<IActionResult> AddPackage([FromRoute] int id, [FromBody] AddPackageRequest request)
+        {
+            var command = _mapper.Map<AddPackageCommand>(request);
+            command.BranchId = id;
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
+        }
+
+        [HttpPatch("{branchId:int}/packages/{packageId:int}")]
+        public async Task<IActionResult> UpdatePackage([FromRoute] int branchId, [FromRoute] int packageId, [FromBody] UpdatePackageRequest request)
+        {
+            var command = _mapper.Map<UpdatePackageCommand>(request);
+            command.BranchId = branchId;
+            command.PackageId = packageId;
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
         }
     }
 }

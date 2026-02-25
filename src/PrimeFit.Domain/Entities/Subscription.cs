@@ -41,16 +41,25 @@ namespace PrimeFit.Domain.Entities
         public int AllowedFreezeDays { get; private set; }
         public int DurationInMonths { get; private set; }
 
+        public SubscriptionStatus Status { get; private set; } = SubscriptionStatus.Scheduled;
+
         public DomainUser User { get; private set; } = null!;
         public Branch Branch { get; private set; } = null!;
         public Package Package { get; private set; } = null!;
 
-        private List<SubscriptionFreeze> _freezes;
+        private readonly List<SubscriptionFreeze> _freezes;
         public IReadOnlyCollection<SubscriptionFreeze> Freezes => _freezes.AsReadOnly();
 
 
+        public bool IsExpired => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Expired;
+        public bool IsActive => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Active;
+        public bool IsCancelled => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Cancelled;
+        public bool IsScheduled => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Scheduled;
+        public bool IsFrozen => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Frozen;
 
-        internal static ErrorOr<Subscription> Create(DomainUser user, Branch branch, Package package)
+
+
+        public static ErrorOr<Subscription> Create(DomainUser user, Branch branch, Package package)
         {
             if (branch.BranchStatus != BranchStatus.Active)
             {
@@ -73,26 +82,22 @@ namespace PrimeFit.Domain.Entities
                 AllowedFreezeCount = package.NumberOfFreezes,
                 AllowedFreezeDays = package.FreezeDurationInDays,
                 DurationInMonths = package.DurationInMonths,
-
             };
+
+            subscription.SyncStatus(DateTime.UtcNow);
             return subscription;
         }
 
 
+        public void SyncStatus(DateTime now)
+        {
+            Status = GetStatus(now);
+        }
+
         public SubscriptionStatus GetStatus(DateTime now)
         {
 
-            if (CancellationDate.HasValue)
-                return SubscriptionStatus.Cancelled;
 
-            if (!ActivationDate.HasValue)
-                return SubscriptionStatus.Scheduled;
-
-            if (now < ActivationDate.Value)
-                return SubscriptionStatus.Scheduled;
-
-            if (IsCurrentlyFrozen(now))
-                return SubscriptionStatus.Frozen;
 
             if (now >= GetEffectiveEndDate(now))
                 return SubscriptionStatus.Expired;
@@ -104,6 +109,8 @@ namespace PrimeFit.Domain.Entities
 
         public DateTime GetEffectiveEndDate(DateTime now)
         {
+            if (EndDate is null)
+                throw new InvalidOperationException("End date must be set to calculate effective end date.");
 
             var totalFreezeDays = _freezes.Sum(f =>
             {
@@ -132,22 +139,19 @@ namespace PrimeFit.Domain.Entities
             return (int)Math.Ceiling((effectiveEnd - now).TotalDays);
         }
 
-        public bool IsCurrentlyFrozen(DateTime now)
-        {
-            return _freezes.Any(f => now >= f.StartDate && (!f.EndDate.HasValue || now <= f.EndDate));
-        }
+
 
 
         public ErrorOr<Success> Activate(DateTime now)
         {
-            var status = GetStatus(now);
-            if (status != SubscriptionStatus.Scheduled)
+            if (Status != SubscriptionStatus.Scheduled)
             {
                 return Error.Validation(description: "Only scheduled subscriptions can be activated.");
             }
 
             ActivationDate = now;
             EndDate = now.AddMonths(DurationInMonths);
+            Status = SubscriptionStatus.Active;
 
             return Result.Success;
 
@@ -155,19 +159,18 @@ namespace PrimeFit.Domain.Entities
 
         public ErrorOr<Success> Cancel(DateTime now)
         {
-            var status = GetStatus(now);
-            if (status == SubscriptionStatus.Cancelled)
+            if (Status == SubscriptionStatus.Cancelled)
             {
                 return Error.Validation(description: "Subscription already cancelled");
             }
 
-            if (status == SubscriptionStatus.Expired)
+            if (Status == SubscriptionStatus.Expired)
             {
                 return Error.Validation(description: "Can't cancel an expired subscription");
             }
 
             CancellationDate = now;
-
+            Status = SubscriptionStatus.Cancelled;
             return Result.Success;
 
         }

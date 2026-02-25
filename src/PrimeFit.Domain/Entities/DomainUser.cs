@@ -29,7 +29,7 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public void UpdateInfo(string? firstName = null, string? lastName = null, string? phoneNumber = null, string? address = null)
+        public void UpdateInfo(string? firstName = null, string? lastName = null, string? phoneNumber = null)
         {
             if (!string.IsNullOrWhiteSpace(firstName))
                 FirstName = firstName;
@@ -39,6 +39,8 @@ namespace PrimeFit.Domain.Entities
 
             if (!string.IsNullOrWhiteSpace(phoneNumber))
                 PhoneNumber = phoneNumber;
+
+
 
         }
 

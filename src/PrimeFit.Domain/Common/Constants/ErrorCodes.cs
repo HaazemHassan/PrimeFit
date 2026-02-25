@@ -36,6 +36,7 @@ public static class ErrorCodes
         public const string LogoAlreadyExists = "BRANCH_LOGO_ALREADY_EXISTS";
         public const string ImageNotFound = "BRANCH_IMAGE_NOT_FOUND";
         public const string ImagesCountLimitExceeded = "BRANCH_IMAGES_COUNT_LIMIT_EXCEEDED";
+        public const string PackageNotFound = "PACKAGE_NOT_FOUND";
 
     }
 

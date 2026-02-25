@@ -3,9 +3,9 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Branches
 {
-    public class BranchesPaginatedSpec : Specification<Branch>
+    public class BranchesPaginatedForOwnerSpec : Specification<Branch>
     {
-        public BranchesPaginatedSpec(int? ownerId, int pageNumber, int pageSize, string? search, string? sortBy)
+        public BranchesPaginatedForOwnerSpec(int? ownerId, int pageNumber, int pageSize, string? search, string? sortBy)
         {
             if (ownerId.HasValue)
                 Query.Where(u => u.OwnerId == ownerId);

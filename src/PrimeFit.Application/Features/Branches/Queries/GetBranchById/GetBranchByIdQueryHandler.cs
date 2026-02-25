@@ -1,21 +1,43 @@
 ﻿//using ErrorOr;
 //using MediatR;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+//using PrimeFit.Application.Contracts.Api;
+//using PrimeFit.Application.Specifications.Branches;
+//using PrimeFit.Domain.Common.Constants;
+//using PrimeFit.Domain.Repositories;
 
 //namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 //{
-//    internal class GetBranchByIdQueryHandler : IRequest<ErrorOr<GetBranchByIdQueryResponse>>, IOwnedResourceRequest
+//    public class GetBranchByIdQueryHandler : IRequestHandler<GetBranchByIdQuery, ErrorOr<GetBranchByIdQueryResponse>>
 //    {
-//        public GetUserByIdQuery(int userId)
+
+//        private readonly IUnitOfWork _unitOfWork;
+//        private readonly ICurrentUserService _currentUserService;
+//        public GetBranchByIdQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
 //        {
-//            OwnerUserId = userId;
+//            _unitOfWork = unitOfWork;
+//            _currentUserService = currentUserService;
 //        }
 
-//        public int OwnerUserId { get; set; }
-//    {
+
+
+//        public async Task<ErrorOr<GetBranchByIdQueryResponse>> Handle(GetBranchByIdQuery request, CancellationToken cancellationToken)
+//        {
+//            int userId = _currentUserService.UserId!.Value;
+//            var spec = new BranchForOwnerSpec(request.BranchId, userId);
+//            var branch = _unitOfWork.Branches.FirstOrDefaultAsync(spec, cancellationToken);
+
+//            if (branchResponse is null)
+//            {
+//                return Error.NotFound(
+//                    ErrorCodes.Branch.BranchNotFound,
+//                    "Branch with the given id was not found or you don't have access to it");
+//            }
+
+//            b
+
+
+
+
+//        }
 //    }
 //}
