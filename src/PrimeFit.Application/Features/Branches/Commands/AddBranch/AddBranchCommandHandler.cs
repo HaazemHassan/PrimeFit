@@ -3,7 +3,6 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Branches.Commands.AddBranch;
-using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;

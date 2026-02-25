@@ -8,7 +8,7 @@ namespace PrimeFit.Application.Specifications.Branches
         public BranchesPaginatedForOwnerSpec(int? ownerId, int pageNumber, int pageSize, string? search, string? sortBy)
         {
             if (ownerId.HasValue)
-                Query.Where(u => u.OwnerId == ownerId);
+                Query.Where(b => b.OwnerId == ownerId);
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -19,8 +19,10 @@ namespace PrimeFit.Application.Specifications.Branches
 
             if (sortBy == "name_desc")
                 Query.OrderByDescending(u => u.Name);
+            else if (sortBy == "name_asc")
+                Query.OrderBy(b => b.Name);
             else
-                Query.OrderBy(u => u.Name);
+                Query.OrderByDescending(b => b.CreatedAt);
 
             Query.Paginate(pageNumber, pageSize);
 

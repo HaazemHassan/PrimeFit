@@ -7,7 +7,7 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Application.Features.Owner.Commands.RegisterOwner
+namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 {
     public class RegisterOwnerCommandHandler : IRequestHandler<RegisterOwnerCommand, ErrorOr<BaseUserResponse>>
     {

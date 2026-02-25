@@ -89,6 +89,31 @@ namespace PrimeFit.Domain.Entities
         }
 
 
+
+        public void UpdateBasicDetails(string? name, string? email, string? phoneNumber, BranchType? branchType)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+                Name = name;
+            }
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                Email = email;
+            }
+
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                PhoneNumber = phoneNumber;
+            }
+
+            if (branchType.HasValue)
+            {
+                BranchType = branchType.Value;
+            }
+
+        }
+
         public void UpdateLocationDetails(Governorate governorate, string address)
         {
             Governorate = governorate;
@@ -222,6 +247,27 @@ namespace PrimeFit.Domain.Entities
             _packages.Add(package);
 
             return package;
+        }
+
+        public ErrorOr<Success> UpdateStatus(BranchStatus branchStatus)
+        {
+            if (BranchStatus == BranchStatus.Draft)
+            {
+                return Error.Conflict(
+                    code: ErrorCodes.Branch.InvalidStatusTransition,
+                    description: "Cannot change status of a branch that is still in draft."
+                );
+            }
+
+            if (branchStatus == BranchStatus.Draft)
+                return Error.Conflict(
+                   code: ErrorCodes.Branch.InvalidStatusTransition,
+                   description: "يامصطفي متخلكش قتيل كدا ببلاش تخليها درافت دلوقتي عشان لسه بظبطها"
+               );
+
+            BranchStatus = branchStatus;
+
+            return Result.Success;
         }
 
 

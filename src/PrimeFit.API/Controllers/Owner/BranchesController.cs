@@ -4,17 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.API.Requests.Owner.Branches.AddBranchImage;
-using PrimeFit.API.Requests.Owner.Branches.AddPackage;
 using PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage;
-using PrimeFit.API.Requests.Owner.Branches.UpdatePackage;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
-using PrimeFit.Application.Features.Branches.Commands.AddPackage;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
+using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
+using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
-using PrimeFit.Application.Features.Branches.Commands.UpdatePackage;
+using PrimeFit.Application.Features.Packages.Commands.AddPackage;
+using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
+using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
+using PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForOwner;
 
 namespace PrimeFit.API.Controllers.Owner
 {
@@ -43,12 +45,30 @@ namespace PrimeFit.API.Controllers.Owner
         }
 
 
-        [HttpPatch("{id:int}/location-details")]
-        public async Task<IActionResult> UpdateLocationDetails([FromRoute] int id, [FromBody] UpdateLocationDetailsRequest request)
+
+        [HttpPatch("{branchId:int}/bussiness-details")]
+        public async Task<IActionResult> UpdateBussinessDetails([FromRoute] int branchId, [FromBody] UpdateBussinessDetailsRequest request)
+        {
+
+            var command = _mapper.Map<UpdateBussinessDetailsCommand>(request);
+            command.BranchId = branchId;
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return NoContent();
+        }
+
+
+        [HttpPatch("{branchId:int}/location-details")]
+        public async Task<IActionResult> UpdateLocationDetails([FromRoute] int branchId, [FromBody] UpdateLocationDetailsRequest request)
         {
 
             var command = _mapper.Map<UpdateLocationDetailsCommand>(request);
-            command.BranchId = id;
+            command.BranchId = branchId;
+
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -57,12 +77,12 @@ namespace PrimeFit.API.Controllers.Owner
             return NoContent();
         }
 
-        [HttpPatch("{id:int}/working-hours")]
-        public async Task<IActionResult> UpdateWorkingHoursDetails([FromRoute] int id, [FromBody] UpdateWorkingHoursRequest request)
+        [HttpPatch("{branchId:int}/working-hours")]
+        public async Task<IActionResult> UpdateWorkingHoursDetails([FromRoute] int branchId, [FromBody] UpdateWorkingHoursRequest request)
         {
 
             var command = _mapper.Map<UpdateWorkingHoursCommand>(request);
-            command.BranchId = id;
+            command.BranchId = branchId;
 
             var result = await Mediator.Send(command);
             if (result.IsError)
@@ -73,9 +93,22 @@ namespace PrimeFit.API.Controllers.Owner
             return NoContent();
         }
 
+        [HttpPatch("{branchId:int}/status")]
+        public async Task<IActionResult> UpdateBranchStatus([FromRoute] int branchId, [FromBody] UpdateBranchStatusRequest request)
+        {
+            var command = new UpdateBranchStatusCommand { BranchId = branchId, BranchStatus = request.BranchStatus };
 
-        [HttpPost("{id:int}/images")]
-        public async Task<IActionResult> AddBranchImage([FromRoute] int id, [FromForm] AddBranchImageRequest request)
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return NoContent();
+        }
+
+
+        [HttpPost("{branchId:int}/images")]
+        public async Task<IActionResult> AddBranchImage([FromRoute] int branchId, [FromForm] AddBranchImageRequest request)
         {
             var validationResult = await _addBranchImageValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
@@ -87,7 +120,7 @@ namespace PrimeFit.API.Controllers.Owner
 
             var command = new AddBranchImageCommand
             {
-                BranchId = id,
+                BranchId = branchId,
                 ImageStream = stream,
                 ImageType = request.ImageType
             };
@@ -151,11 +184,11 @@ namespace PrimeFit.API.Controllers.Owner
 
         }
 
-        [HttpPost("{id:int}/packages")]
-        public async Task<IActionResult> AddPackage([FromRoute] int id, [FromBody] AddPackageRequest request)
+        [HttpPost("{branchId:int}/packages")]
+        public async Task<IActionResult> AddPackage([FromRoute] int branchId, [FromBody] AddPackageRequest request)
         {
             var command = _mapper.Map<AddPackageCommand>(request);
-            command.BranchId = id;
+            command.BranchId = branchId;
 
             var result = await Mediator.Send(command);
             if (result.IsError)
@@ -179,5 +212,37 @@ namespace PrimeFit.API.Controllers.Owner
             }
             return Ok(result.Value);
         }
+
+        [HttpDelete("{branchId:int}/packages/{packageId:int}")]
+        public async Task<IActionResult> DeletePackage([FromRoute] int branchId, [FromRoute] int packageId)
+        {
+            var command = new DeletePackageCommand
+            {
+                BranchId = branchId,
+                PackageId = packageId
+            };
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return NoContent();
+        }
+
+
+        [HttpGet("{branchId:int}/packages")]
+        public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId)
+        {
+            var query = new GetBranchPackagesForOwnerQuery(branchId);
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
+        }
+
+
     }
 }

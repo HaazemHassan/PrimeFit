@@ -4,10 +4,10 @@ using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Common.Filters;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Authentication.Commands.RefreshToken;
+using PrimeFit.Application.Features.Authentication.Commands.RegisterOwner;
+using PrimeFit.Application.Features.Authentication.Commands.RegisterUser;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
-using PrimeFit.Application.Features.Owner.Commands.RegisterOwner;
-using PrimeFit.Application.Features.Users.Commands.RegisterUser;
 using PrimeFit.Infrastructure.Common.Options;
 
 namespace PrimeFit.API.Controllers

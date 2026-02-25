@@ -24,7 +24,7 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        private List<Subscription> _subscriptions { get; set; }
+        private readonly List<Subscription> _subscriptions;
         public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
 
 
@@ -39,7 +39,6 @@ namespace PrimeFit.Domain.Entities
 
             if (!string.IsNullOrWhiteSpace(phoneNumber))
                 PhoneNumber = phoneNumber;
-
 
 
         }

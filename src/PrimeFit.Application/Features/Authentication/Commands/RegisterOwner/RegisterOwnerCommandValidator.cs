@@ -4,7 +4,7 @@ using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Application.Features.Owner.Commands.RegisterOwner
+namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 {
     public class RegisterOwnerCommandValidator : AbstractValidator<RegisterOwnerCommand>
     {

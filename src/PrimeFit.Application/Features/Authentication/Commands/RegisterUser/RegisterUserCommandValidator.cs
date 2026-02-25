@@ -4,7 +4,7 @@ using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Application.Features.Users.Commands.RegisterUser
+namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 {
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {

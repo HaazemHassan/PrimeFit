@@ -23,6 +23,7 @@ namespace PrimeFit.Domain.ValueObjects
                 Error.Validation(description: "Longitude must be between -180 and 180.");
 
 
+
             return new Coordinate(latitude, longitude);
         }
     }

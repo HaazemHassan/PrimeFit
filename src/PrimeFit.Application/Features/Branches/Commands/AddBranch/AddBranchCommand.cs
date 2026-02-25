@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Features.Branches.Commands.AddBranch;
-using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Domain.Common.Enums;

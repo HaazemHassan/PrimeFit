@@ -27,7 +27,7 @@ namespace PrimeFit.Application.Common
         }
 
         public static IRuleBuilderOptions<T, string?> ApplyEmailRules<T>(
-            this IRuleBuilder<T, string> ruleBuilder
+            this IRuleBuilder<T, string?> ruleBuilder
         )
         {
             var rule = ruleBuilder;

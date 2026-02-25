@@ -8,7 +8,7 @@ using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Application.Features.Users.Commands.RegisterUser
+namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ErrorOr<BaseUserResponse>>
     {

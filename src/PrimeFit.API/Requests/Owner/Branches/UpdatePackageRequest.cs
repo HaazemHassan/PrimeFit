@@ -1,9 +1,8 @@
-namespace PrimeFit.Application.Features.Branches.Commands.UpdatePackage
+namespace PrimeFit.API.Requests.Owner.Branches
 {
-    public class UpdatePackageCommandResponse
+    public class UpdatePackageRequest
     {
-        public int PackageId { get; set; }
-        public string Name { get; set; } = default!;
+        public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public int DurationInMonths { get; set; }
         public bool IsActive { get; set; }

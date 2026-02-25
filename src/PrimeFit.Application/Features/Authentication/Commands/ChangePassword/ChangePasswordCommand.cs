@@ -1,7 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 
-namespace PrimeFit.Application.Features.Users.Commands.ChangePassword
+namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword
 {
 
     public class ChangePasswordCommand : IRequest<ErrorOr<Success>>

@@ -3,7 +3,7 @@ using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Features.Users.Common;
 
-namespace PrimeFit.Application.Features.Users.Commands.ChangePassword {
+namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword {
     public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand> {
         public ChangePasswordCommandValidator(AppPasswordOptions passwordSettings) {
             ApplyValidationRules(passwordSettings);

@@ -3,9 +3,9 @@ using MediatR;
 using PrimeFit.Application.Common.Behaviors.Transaction;
 using PrimeFit.Application.Features.Users.Common;
 
-namespace PrimeFit.Application.Features.Users.Commands.RegisterUser
+namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 {
-    public class RegisterUserCommand : IRequest<ErrorOr<BaseUserResponse>>, ITransactionalRequest
+    public class RegisterOwnerCommand : IRequest<ErrorOr<BaseUserResponse>>, ITransactionalRequest
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

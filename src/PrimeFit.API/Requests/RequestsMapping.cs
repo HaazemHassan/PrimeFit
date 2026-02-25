@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using PrimeFit.API.Requests.Client.Users;
 using PrimeFit.API.Requests.Owner.Branches;
-using PrimeFit.API.Requests.Owner.Branches.AddPackage;
-using PrimeFit.API.Requests.Owner.Branches.UpdatePackage;
-using PrimeFit.Application.Features.Branches.Commands.AddPackage;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
+using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
-using PrimeFit.Application.Features.Branches.Commands.UpdatePackage;
+using PrimeFit.Application.Features.Packages.Commands.AddPackage;
+using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 
 namespace PrimeFit.API.Requests
@@ -25,6 +24,7 @@ namespace PrimeFit.API.Requests
             CreateMap<UpdateWorkingHoursRequest, UpdateWorkingHoursCommand>();
             CreateMap<AddPackageRequest, AddPackageCommand>();
             CreateMap<UpdatePackageRequest, UpdatePackageCommand>();
+            CreateMap<UpdateBussinessDetailsRequest, UpdateBussinessDetailsCommand>();
 
 
         }

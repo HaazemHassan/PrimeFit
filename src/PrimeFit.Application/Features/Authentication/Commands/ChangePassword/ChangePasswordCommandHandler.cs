@@ -3,7 +3,7 @@ using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 
-namespace PrimeFit.Application.Features.Users.Commands.ChangePassword
+namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword
 {
 
     public class ChangePasswordCommandHandler(IAuthenticationService _authenticationService, ICurrentUserService _currentUserService)
