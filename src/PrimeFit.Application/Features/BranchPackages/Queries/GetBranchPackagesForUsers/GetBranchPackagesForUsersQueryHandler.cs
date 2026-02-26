@@ -2,7 +2,7 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Specifications.Packages;
+using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForUsers
@@ -22,7 +22,7 @@ namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForUse
         {
 
             var packagesSpec = new ActivePackagesPaginatedForBranchSpec(request.BranchId, request.PageNumber, request.PageSize);
-            var packagesCountSpec = new ActivePackagesCountForBranchSpec(request.BranchId);
+            var packagesCountSpec = new BranchActivePackagesSpec(request.BranchId);
 
 
             var packages = await _unitOfWork.Packages.ListAsync<GetBranchPackagesForUsersQueryResponse>(packagesSpec, cancellationToken);

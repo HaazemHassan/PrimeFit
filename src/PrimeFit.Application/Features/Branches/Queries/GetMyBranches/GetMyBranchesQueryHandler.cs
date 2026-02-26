@@ -2,11 +2,12 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.Users.Queries.GetUsersPaginated;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.Specifications.Users;
 
-namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
+namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
 {
     public class GetMyBranchesQueryHandler : IRequestHandler<GetMyBranchesQuery, ErrorOr<PaginatedResult<GetMyBranchesQueryResponse>>>
     {

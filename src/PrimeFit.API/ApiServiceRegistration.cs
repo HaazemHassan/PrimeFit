@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PrimeFit.API.Common;
+using PrimeFit.API.Common.Exceptions;
 using PrimeFit.API.RateLimiting;
 using PrimeFit.API.Services;
 using PrimeFit.Application;

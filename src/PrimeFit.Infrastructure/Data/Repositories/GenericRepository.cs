@@ -3,8 +3,8 @@ using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using PrimeFit.Domain.Repositories;
+using System.Linq.Expressions;
 
 namespace PrimeFit.Infrastructure.Data.Repositories
 {
@@ -57,6 +57,25 @@ namespace PrimeFit.Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(ct);
         }
 
+        public async Task<decimal> AverageAsync(Expression<Func<T, decimal>> selector, ISpecification<T>? spec = default, CancellationToken? ct = default)
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
 
+            if (spec is not null)
+            {
+                query = ApplySpecification(spec);
+
+            }
+            var projectedQuery = query.Select(selector).Select(x => (decimal?)x);
+
+            if (ct is null)
+            {
+                return await projectedQuery.AverageAsync() ?? 0;
+            }
+
+            return await projectedQuery.AverageAsync(ct.Value) ?? 0;
+
+
+        }
     }
 }

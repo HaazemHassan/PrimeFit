@@ -4,6 +4,7 @@ using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
+using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;

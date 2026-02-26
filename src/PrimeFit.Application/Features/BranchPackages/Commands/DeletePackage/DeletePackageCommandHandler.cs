@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Specifications.Packages;
+using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
 
@@ -22,7 +22,7 @@ namespace PrimeFit.Application.Features.Packages.Commands.DeletePackage
         {
             var currentUserId = _currentUserService.UserId!.Value;
 
-            var spec = new PackageByIdForOwnerSpec(request.PackageId, request.BranchId, currentUserId);
+            var spec = new OwnerBranchPackageByIdSpec(request.PackageId, request.BranchId, currentUserId);
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (package is null)

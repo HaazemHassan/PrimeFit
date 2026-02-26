@@ -18,7 +18,7 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
         public async Task<PaginatedResult<GetUsersPaginatedQueryResponse>> Handle(GetUsersPaginatedQuery request, CancellationToken cancellationToken)
         {
 
-            var dataSpec = new UsersFilterPaginatedSpec(request.PageNumber, request.PageSize, request.Search, request.SortBy);
+            var dataSpec = new UsersPaginatedSpec(request.PageNumber, request.PageSize, request.Search, request.SortBy);
             var countSpec = new UsersSearchSpec(request.Search);
 
             var items = await _unitOfWork.Users.ListAsync<GetUsersPaginatedQueryResponse>(dataSpec, cancellationToken);

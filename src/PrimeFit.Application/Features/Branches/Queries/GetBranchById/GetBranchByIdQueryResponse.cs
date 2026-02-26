@@ -1,4 +1,4 @@
-﻿using PrimeFit.Application.Features.Users.Queries.GetUsersPaginated;
+﻿using PrimeFit.Application.Features.Branches.Queries.GetMyBranches;
 using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById

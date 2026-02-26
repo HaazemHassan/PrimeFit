@@ -3,9 +3,9 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Users
 {
-    public class UsersFilterPaginatedSpec : Specification<DomainUser>
+    public class UsersPaginatedSpec : Specification<DomainUser>
     {
-        public UsersFilterPaginatedSpec(int pageNumber, int pageSize, string? search, string? sortBy)
+        public UsersPaginatedSpec(int pageNumber, int pageSize, string? search, string? sortBy)
         {
             if (!string.IsNullOrEmpty(search))
             {

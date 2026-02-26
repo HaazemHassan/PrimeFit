@@ -13,10 +13,11 @@ using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
+using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
-using PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForOwner;
+using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 
 namespace PrimeFit.API.Controllers.Owner
 {
@@ -211,6 +212,25 @@ namespace PrimeFit.API.Controllers.Owner
                 return Problem(result.Errors);
             }
             return Ok(result.Value);
+        }
+
+
+        [HttpPatch("{branchId:int}/packages/{packageId:int}/status")]
+        public async Task<IActionResult> UpdatePackageStatus([FromRoute] int branchId, [FromRoute] int packageId, [FromBody] UpdatePackageStatusRequest request)
+        {
+            var command = new UpdatePackageStatusCommand
+            {
+                BranchId = branchId,
+                PackageId = packageId,
+                IsActive = request.IsActive
+            };
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return NoContent();
         }
 
         [HttpDelete("{branchId:int}/packages/{packageId:int}")]

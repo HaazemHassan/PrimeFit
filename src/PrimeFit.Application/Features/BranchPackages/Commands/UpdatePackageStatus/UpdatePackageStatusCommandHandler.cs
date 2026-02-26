@@ -2,27 +2,26 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
 using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage
+namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus
 {
-    public class UpdatePackageCommandHandler : IRequestHandler<UpdatePackageCommand, ErrorOr<UpdatePackageCommandResponse>>
+    public class UpdatePackageStatusCommandHandler : IRequestHandler<UpdatePackageStatusCommand, ErrorOr<Success>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public UpdatePackageCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
+        public UpdatePackageStatusCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _mapper = mapper;
         }
 
-        public async Task<ErrorOr<UpdatePackageCommandResponse>> Handle(UpdatePackageCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Success>> Handle(UpdatePackageStatusCommand request, CancellationToken cancellationToken)
         {
 
             var currentUserId = _currentUserService.UserId!.Value;
@@ -38,22 +37,16 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage
                     "Package not found");
             }
 
-            var updatePackageResult = package.Update(
-                request.Name,
-                request.Price,
-                request.DurationInMonths,
-                request.NumberOfFreezes,
-                request.FreezeDurationInDays);
+            var updateResult = package.UpdateStatus(request.IsActive);
 
-            if (updatePackageResult.IsError)
+            if (updateResult.IsError)
             {
-                return updatePackageResult.Errors;
+                return updateResult.Errors;
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return Result.Success;
 
-            var response = _mapper.Map<UpdatePackageCommandResponse>(updatePackageResult.Value);
-            return response;
         }
     }
 }

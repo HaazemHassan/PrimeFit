@@ -1,7 +1,7 @@
 using Ardalis.Specification;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Application.Specifications.Packages
+namespace PrimeFit.Application.Specifications.BranchPackages
 {
     public class ActivePackagesPaginatedForBranchSpec : Specification<Package>
     {
@@ -10,7 +10,7 @@ namespace PrimeFit.Application.Specifications.Packages
             Query.Where(p => p.BranchId == branchId && p.IsActive);
 
 
-            Query.OrderBy(p => p.CreatedAt).ThenBy(p => p.IsActive);
+            Query.OrderBy(p => p.CreatedAt);
             Query.Paginate(pageNumber, pageSize);
             Query.AsNoTracking();
         }

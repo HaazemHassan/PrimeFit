@@ -2,10 +2,10 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Specifications.Packages;
+using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForOwner
+namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner
 {
     public class GetBranchPackagesForOwnerQueryHandler : IRequestHandler<GetBranchPackagesForOwnerQuery, ErrorOr<PaginatedResult<GetBranchPackagesForOwnerQueryResponse>>>
     {
@@ -23,21 +23,35 @@ namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForOwn
             var ownerId = _currentUserService.UserId!.Value;
 
 
-            var packagesForOwnerSpec = new PackagesPaginatedForOwnerSpec(
+            var OwnerBranchPackagesPaginatedSpec = new OwnerBranchPackagesPaginatedSpec(
                 request.BranchId,
                 ownerId,
                 request.PageNumber,
                 request.PageSize);
 
+            var OwnerBranchPackagesSpec = new OwnerBranchPackageSpec(request.BranchId, ownerId);
+            var ActivePackagesSpec = new BranchActivePackagesSpec(request.BranchId);
 
-            var packagesCountForOwnerSpec = new PackagesCountForOwnerSpec(
-                request.BranchId,
-                ownerId);
 
-            var packages = await _unitOfWork.Packages.ListAsync<GetBranchPackagesForOwnerQueryResponse>(packagesForOwnerSpec, cancellationToken);
-            var totalCount = await _unitOfWork.Packages.CountAsync(packagesCountForOwnerSpec, cancellationToken);
+            var packages = await _unitOfWork.Packages.
+                ListAsync<GetBranchPackagesForOwnerQueryResponse>(OwnerBranchPackagesPaginatedSpec, cancellationToken);
 
-            return new PaginatedResult<GetBranchPackagesForOwnerQueryResponse>(packages, totalCount, request.PageNumber, request.PageSize);
+            int totalCount = 0, activeCount = 0;
+            decimal averagePrice = 0;
+
+            if (packages.Count != 0)
+            {
+                totalCount = await _unitOfWork.Packages.CountAsync(OwnerBranchPackagesSpec, cancellationToken);
+                activeCount = await _unitOfWork.Packages.CountAsync(ActivePackagesSpec, cancellationToken);
+                averagePrice = await _unitOfWork.Packages.AverageAsync(p => p.Price, OwnerBranchPackagesSpec, ct: cancellationToken);
+            }
+
+
+
+            var result = new PaginatedResult<GetBranchPackagesForOwnerQueryResponse>(packages, totalCount, request.PageNumber, request.PageSize);
+            result.Meta = new PackagesStatsMeta(totalCount, activeCount, averagePrice);
+
+            return result;
         }
     }
 }

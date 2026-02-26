@@ -33,5 +33,12 @@ namespace PrimeFit.Domain.Entities
             FreezeDurationInDays = freezeDurationInDays;
             return this;
         }
+
+
+        public ErrorOr<Success> UpdateStatus(bool isActive)
+        {
+            IsActive = isActive;
+            return Result.Success;
+        }
     }
 }

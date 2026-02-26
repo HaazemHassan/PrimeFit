@@ -26,7 +26,7 @@ namespace PrimeFit.API.Controllers
                 {
                     e.Code,
                     e.Description,
-                    Field = e.Metadata != null && e.Metadata.ContainsKey("field") ? e.Metadata["field"] : null
+                    Field = e.Metadata != null && e.Metadata.TryGetValue("field", out object? value) ? value : null
                 }),
                 ["traceId"] = HttpContext.TraceIdentifier
             };

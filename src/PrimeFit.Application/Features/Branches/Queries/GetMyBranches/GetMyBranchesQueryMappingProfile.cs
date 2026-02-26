@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using PrimeFit.Application.Features.Users.Queries.GetUsersPaginated;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.ValueObjects;

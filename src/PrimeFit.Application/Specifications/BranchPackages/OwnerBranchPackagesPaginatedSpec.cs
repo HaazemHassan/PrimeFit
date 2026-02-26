@@ -1,11 +1,11 @@
 using Ardalis.Specification;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Application.Specifications.Packages
+namespace PrimeFit.Application.Specifications.BranchPackages
 {
-    public class PackagesPaginatedForOwnerSpec : Specification<Package>
+    public class OwnerBranchPackagesPaginatedSpec : Specification<Package>
     {
-        public PackagesPaginatedForOwnerSpec(int branchId, int ownerId, int pageNumber, int pageSize)
+        public OwnerBranchPackagesPaginatedSpec(int branchId, int ownerId, int pageNumber, int pageSize)
         {
             Query.Where(p => p.BranchId == branchId && p.Branch.OwnerId == ownerId);
 

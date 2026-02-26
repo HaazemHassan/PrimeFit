@@ -5,7 +5,7 @@ using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForOwner
+namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner
 {
 
     [Authorize(Roles = [UserRole.Owner])]
