@@ -8,6 +8,8 @@ using PrimeFit.API.RateLimiting;
 using PrimeFit.API.Services;
 using PrimeFit.Application;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Domain.Services;
+using PrimeFit.Domain.ServicesContracts;
 using PrimeFit.Infrastructure;
 using PrimeFit.Infrastructure.Common.Options;
 using System.Security.Cryptography;
@@ -25,6 +27,7 @@ namespace PrimeFit.API
 
         public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
         {
+            AddDomainServices(services);
             services.AddApplication();
             services.AddInfrastructure(configuration);
             AddApi(services, configuration);
@@ -243,6 +246,14 @@ namespace PrimeFit.API
                 return Convert.ToBase64String(hash);
             }
         }
+
+        private static IServiceCollection AddDomainServices(IServiceCollection services)
+        {
+            services.AddScoped<ISubscriptionDomainService, SubscriptionService>();
+            return services;
+
+        }
+
 
     }
 }

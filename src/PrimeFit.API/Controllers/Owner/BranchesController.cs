@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
+using PrimeFit.API.Requests;
 using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.API.Requests.Owner.Branches.AddBranchImage;
 using PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage;
@@ -13,11 +14,11 @@ using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
+using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
-using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 
 namespace PrimeFit.API.Controllers.Owner
 {
@@ -252,9 +253,12 @@ namespace PrimeFit.API.Controllers.Owner
 
 
         [HttpGet("{branchId:int}/packages")]
-        public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId)
+        public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId, [FromQuery] BasicPaginationRequest request)
         {
-            var query = new GetBranchPackagesForOwnerQuery(branchId);
+
+            var query = _mapper.Map<GetBranchPackagesForOwnerQuery>(request);
+            query.BranchId = branchId;
+
             var result = await Mediator.Send(query);
             if (result.IsError)
             {

@@ -18,7 +18,7 @@ namespace PrimeFit.Domain.Entities
             _images = new();
             _packages = new();
             _subscriptions = new();
-            BranchStatus = BranchStatus.Draft;
+            BranchStatus = BranchStatus.Inactive;
 
 
             OwnerId = ownerId;
@@ -250,26 +250,95 @@ namespace PrimeFit.Domain.Entities
             return package;
         }
 
-        public ErrorOr<Success> UpdateStatus(BranchStatus branchStatus)
+
+
+        public ErrorOr<Success> Activate()
         {
-            if (BranchStatus == BranchStatus.Draft)
+
+            if (BranchStatus == BranchStatus.Active)
+                return Result.Success;
+
+            var canBeActivatedResult = EnsureCanBeActivated();
+            if (canBeActivatedResult.IsError)
             {
-                return Error.Conflict(
-                    code: ErrorCodes.Branch.InvalidStatusTransition,
-                    description: "Cannot change status of a branch that is still in draft."
-                );
+                return canBeActivatedResult.Errors;
             }
 
-            if (branchStatus == BranchStatus.Draft)
-                return Error.Conflict(
-                   code: ErrorCodes.Branch.InvalidStatusTransition,
-                   description: "يامصطفي متخلكش قتيل كدا ببلاش تخليها درافت دلوقتي عشان لسه بظبطها"
-               );
+            BranchStatus = BranchStatus.Active;
+            return Result.Success;
 
-            BranchStatus = branchStatus;
+        }
+
+
+        public ErrorOr<Success> DeActivate()
+        {
+            BranchStatus = BranchStatus.Inactive;
+            return Result.Success;
+
+        }
+
+
+        #region Helpers
+        private ErrorOr<Success> EnsureCanBeActivated()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+                return Error.Validation(
+                    code: ErrorCodes.Branch.NameRequired,
+                    description: "Branch name is required to activate the branch."
+                );
+
+            if (string.IsNullOrWhiteSpace(Email))
+                return Error.Validation(
+                    code: ErrorCodes.Branch.EmailRequired,
+                    description: "Branch email is required to activate the branch."
+                );
+
+            if (string.IsNullOrWhiteSpace(PhoneNumber))
+                return Error.Validation(
+                    code: ErrorCodes.Branch.PhoneRequired,
+                    description: "Branch phone number is required to activate the branch."
+                );
+
+            if (GovernorateId is null)
+                return Error.Validation(
+                    code: ErrorCodes.Branch.GovernorateRequired,
+                    description: "Governorate must be selected to activate the branch."
+                );
+
+            if (string.IsNullOrWhiteSpace(Address))
+                return Error.Validation(
+                    code: ErrorCodes.Branch.AddressRequired,
+                    description: "Branch address is required to activate the branch."
+                );
+
+            if (Location is null)
+                return Error.Validation(
+                    code: ErrorCodes.Branch.LocationRequired,
+                    description: "Branch location must be set to activate the branch."
+                );
+
+            if (_workingHours.Count == 0)
+                return Error.Validation(
+                    code: ErrorCodes.Branch.WorkingHoursRequired,
+                    description: "Working hours must be defined before activating the branch."
+                );
+
+            if (Logo is null)
+                return Error.Validation(
+                    code: ErrorCodes.Branch.LogoRequired,
+                    description: "A logo is required to activate the branch."
+                );
+
+            if (MarketPlaceImages.Count == 0)
+                return Error.Validation(
+                    code: ErrorCodes.Branch.MarketPlaceImagesRequired,
+                    description: "At least one marketplace image is required to activate the branch."
+                );
 
             return Result.Success;
         }
+
+        #endregion
 
 
     }

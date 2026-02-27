@@ -20,7 +20,11 @@ namespace PrimeFit.Domain.Entities
             BranchId = branch.Id;
             PackageId = package.Id;
 
+
             PaidAmount = package.Price;
+            AllowedFreezeCount = package.NumberOfFreezes;
+            AllowedFreezeDays = package.FreezeDurationInDays;
+            DurationInMonths = package.DurationInMonths;
 
         }
 
@@ -33,9 +37,9 @@ namespace PrimeFit.Domain.Entities
         public int UserId { get; private set; }
         public int PackageId { get; private set; }
         public int BranchId { get; private set; }
-        public DateTime? ActivationDate { get; private set; }
-        public DateTime? EndDate { get; private set; }
-        public DateTime? CancellationDate { get; private set; }
+        public DateTimeOffset? ActivationDate { get; private set; }
+        public DateTimeOffset? EndDate { get; private set; }
+        public DateTimeOffset? CancellationDate { get; private set; }
         public decimal PaidAmount { get; private set; }
         public int AllowedFreezeCount { get; private set; }
         public int AllowedFreezeDays { get; private set; }
@@ -51,63 +55,49 @@ namespace PrimeFit.Domain.Entities
         public IReadOnlyCollection<SubscriptionFreeze> Freezes => _freezes.AsReadOnly();
 
 
-        public bool IsExpired => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Expired;
-        public bool IsActive => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Active;
-        public bool IsCancelled => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Cancelled;
-        public bool IsScheduled => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Scheduled;
-        public bool IsFrozen => GetStatus(DateTime.UtcNow) == SubscriptionStatus.Frozen;
-
-
 
         public static ErrorOr<Subscription> Create(DomainUser user, Branch branch, Package package)
         {
+
+            if (package.BranchId != branch.Id)
+            {
+                return Error.Validation(description: "This package doesn't belong to this branch");
+            }
+
+
             if (branch.BranchStatus != BranchStatus.Active)
             {
                 return Error.Validation(description: "Cannot subscribe to an inactive branch.");
 
             }
-            if (package.BranchId != branch.Id)
-            {
-                return Error.Validation(description: "This package doesn't belong to this branch");
 
-            }
             if (!package.IsActive)
             {
                 return Error.Validation(description: "Cannot subscribe to an inactive package.");
             }
 
-            var subscription = new Subscription(user, branch, package)
-            {
+            var subscription = new Subscription(user, branch, package);
 
-                AllowedFreezeCount = package.NumberOfFreezes,
-                AllowedFreezeDays = package.FreezeDurationInDays,
-                DurationInMonths = package.DurationInMonths,
-            };
-
-            subscription.SyncStatus(DateTime.UtcNow);
             return subscription;
         }
 
 
-        public void SyncStatus(DateTime now)
+        public void SyncStatus(DateTimeOffset now)
         {
             Status = GetStatus(now);
         }
 
-        public SubscriptionStatus GetStatus(DateTime now)
+        public SubscriptionStatus GetStatus(DateTimeOffset now)
         {
-
-
-
             if (now >= GetEffectiveEndDate(now))
                 return SubscriptionStatus.Expired;
 
 
-            return SubscriptionStatus.Active;
+            return Status;
         }
 
 
-        public DateTime GetEffectiveEndDate(DateTime now)
+        public DateTimeOffset GetEffectiveEndDate(DateTimeOffset now)
         {
             if (EndDate is null)
                 throw new InvalidOperationException("End date must be set to calculate effective end date.");
@@ -122,7 +112,7 @@ namespace PrimeFit.Domain.Entities
         }
 
 
-        public int GetRemainingDays(DateTime now)
+        public int GetRemainingDays(DateTimeOffset now)
         {
             if (!ActivationDate.HasValue || !EndDate.HasValue)
                 return DurationInMonths * 30;
@@ -142,7 +132,7 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public ErrorOr<Success> Activate(DateTime now)
+        public ErrorOr<Success> Activate(DateTimeOffset now)
         {
             if (Status != SubscriptionStatus.Scheduled)
             {
@@ -157,7 +147,8 @@ namespace PrimeFit.Domain.Entities
 
         }
 
-        public ErrorOr<Success> Cancel(DateTime now)
+
+        public ErrorOr<Success> Cancel(DateTimeOffset now)
         {
             if (Status == SubscriptionStatus.Cancelled)
             {

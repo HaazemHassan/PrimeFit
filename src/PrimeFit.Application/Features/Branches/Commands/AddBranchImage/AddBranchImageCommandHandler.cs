@@ -51,7 +51,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
 
             var generatedFileName = $"branch-{request.BranchId}-{request.ImageType}-{Guid.NewGuid()}";
 
-            var imageUploadResult = await _imageService.UploadAsync(request.ImageStream, generatedFileName);
+            var imageUploadResult = await _imageService.UploadAsync(request.ImageStream, generatedFileName, cancellationToken);
 
             if (imageUploadResult.IsError)
             {

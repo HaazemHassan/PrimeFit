@@ -12,10 +12,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
     public class GetBranchPackagesForOwnerQuery : PaginatedQuery
         , IRequest<ErrorOr<PaginatedResult<GetBranchPackagesForOwnerQueryResponse>>>, IAuthorizedRequest
     {
-        public GetBranchPackagesForOwnerQuery(int branchId)
-        {
-            BranchId = branchId;
-        }
+
         public int BranchId { get; set; }
 
 

@@ -39,6 +39,18 @@ public static class ErrorCodes
         public const string PackageNotFound = "PACKAGE_NOT_FOUND";
         public const string InvalidStatusTransition = "BRANCH_INVALID_STATUS_TRANSITION";
 
+
+        // Activation / Completeness Errors
+        public const string NameRequired = "BRANCH_NAME_REQUIRED";
+        public const string EmailRequired = "BRANCH_EMAIL_REQUIRED";
+        public const string PhoneRequired = "BRANCH_PHONE_REQUIRED";
+        public const string GovernorateRequired = "BRANCH_GOVERNORATE_REQUIRED";
+        public const string AddressRequired = "BRANCH_ADDRESS_REQUIRED";
+        public const string LocationRequired = "BRANCH_LOCATION_REQUIRED";
+        public const string WorkingHoursRequired = "BRANCH_WORKING_HOURS_REQUIRED";
+        public const string LogoRequired = "BRANCH_LOGO_REQUIRED";
+        public const string MarketPlaceImagesRequired = "BRANCH_MARKETPLACE_IMAGES_REQUIRED";
+
     }
 
     public static class WorkingHours

@@ -49,7 +49,9 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage
             var replaceResult = await _imageService.ReplaceAsync(
                 request.ImageStream,
                 image.PublicId,
-                generatedFileName);
+                generatedFileName,
+                cancellationToken
+            );
 
             if (replaceResult.IsError)
             {

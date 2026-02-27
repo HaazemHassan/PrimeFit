@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification;
+using PrimeFit.Application.Common.Pagination;
 
 namespace PrimeFit.Application.Specifications
 {
@@ -11,10 +12,16 @@ namespace PrimeFit.Application.Specifications
             if (pageNumber <= 0)
                 pageNumber = 1;
 
-            if (pageSize <= 0)
-                pageSize = 10;
-            else if (pageSize > 50)
-                pageSize = 50;
+            if (pageSize < PaginationConstants.MinimumPageSize)
+            {
+                pageSize = PaginationConstants.DefaultPageSize;
+
+            }
+            else if (pageSize > PaginationConstants.MaximumPageSize)
+            {
+                pageSize = PaginationConstants.MaximumPageSize;
+
+            }
 
             return builder.Skip((pageNumber - 1) * pageSize)
                           .Take(pageSize);

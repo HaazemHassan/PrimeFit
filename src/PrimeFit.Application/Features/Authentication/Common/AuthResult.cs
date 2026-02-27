@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using PrimeFit.Application.Features.Users.Common;
+﻿using PrimeFit.Application.Features.Users.Common;
+using System.Text.Json.Serialization;
 
 namespace PrimeFit.Application.Features.Authentication.Common
 {

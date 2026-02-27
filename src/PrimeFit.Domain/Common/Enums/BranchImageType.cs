@@ -2,7 +2,7 @@
 {
     public enum BranchImageType
     {
-        Logo,
-        MarketPlace
+        Logo = 0,
+        MarketPlace = 1,
     }
 }

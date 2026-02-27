@@ -25,7 +25,7 @@ namespace PrimeFit.Infrastructure.Storage
             _cloudinary.Api.Secure = true;
         }
 
-        public async Task<ErrorOr<ImageUploadDTO>> UploadAsync(Stream fileStream, string fileName)
+        public async Task<ErrorOr<ImageUploadDTO>> UploadAsync(Stream fileStream, string fileName, CancellationToken ct)
         {
             var uploadParams = new ImageUploadParams
             {
@@ -35,7 +35,7 @@ namespace PrimeFit.Infrastructure.Storage
                 Overwrite = false
             };
 
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams, ct);
 
             if (uploadResult.Error is not null)
             {
@@ -55,7 +55,7 @@ namespace PrimeFit.Infrastructure.Storage
         }
 
 
-        public async Task<ErrorOr<ImageUploadDTO>> ReplaceAsync(Stream fileStream, string existingPublicId, string fileName)
+        public async Task<ErrorOr<ImageUploadDTO>> ReplaceAsync(Stream fileStream, string existingPublicId, string fileName, CancellationToken ct)
         {
 
             var uploadParams = new ImageUploadParams
@@ -68,7 +68,7 @@ namespace PrimeFit.Infrastructure.Storage
                 UniqueFilename = false
             };
 
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams, ct);
 
             if (uploadResult.Error is not null)
             {
