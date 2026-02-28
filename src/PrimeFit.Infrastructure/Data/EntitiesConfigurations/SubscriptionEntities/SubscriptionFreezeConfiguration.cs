@@ -30,6 +30,16 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
 
             builder.Ignore(x => x.TotalDays);
 
+
+            builder.HasIndex(f => f.SubscriptionId)
+            .HasDatabaseName("IX_SubscriptionFreezes_SubscriptionId");
+
+            builder.HasIndex(f => new { f.SubscriptionId, f.EndDate })
+                .HasDatabaseName("IX_SubscriptionFreezes_ActiveFreezes")
+                .HasFilter("[EndDate] IS NULL");
+
+
+
             builder.ToTable(t =>
             {
                 t.HasCheckConstraint(

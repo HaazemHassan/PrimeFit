@@ -56,7 +56,7 @@ namespace PrimeFit.Infrastructure.Data
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var userId = _currentUserService.UserId;
-            var utcNow = DateTime.UtcNow;
+            var utcNow = DateTimeOffset.UtcNow;
 
             foreach (var entry in ChangeTracker.Entries())
             {

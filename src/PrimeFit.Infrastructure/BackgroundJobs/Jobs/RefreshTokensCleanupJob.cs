@@ -23,7 +23,7 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
             try
             {
                 _logger.LogInformation("RefreshTokensCleanupJob started");
-                var cutoffDate = DateTime.UtcNow.AddDays(-7);
+                var cutoffDate = DateTimeOffset.UtcNow.AddDays(-7);
 
                 await _unitOfWork.RefreshTokens.DeleteExpiredTokensAsync(cutoffDate);
                 var deletedCount = await _unitOfWork.SaveChangesAsync();

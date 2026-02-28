@@ -18,6 +18,6 @@ namespace PrimeFit.Application.Features.Authentication.Common
     {
         public string Token { get; set; } = string.Empty;
         public int UserId { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateTimeOffset ExpirationDate { get; set; }
     }
 }

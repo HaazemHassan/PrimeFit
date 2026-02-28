@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntities
@@ -59,6 +60,18 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
                 .WithOne(f => f.Subscription)
                 .HasForeignKey(f => f.SubscriptionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+            builder.HasIndex(s => new { s.NextProcessingDate, s.Id })
+            .HasDatabaseName("IX_Subscriptions_Job_Processing")
+            .HasFilter($"[{nameof(Subscription.NextProcessingDate)}] IS NOT NULL " +
+            $"AND [{nameof(Subscription.Status)}] <> {(int)SubscriptionStatus.Expired} " +
+            $"AND [{nameof(Subscription.Status)}] <> {(int)SubscriptionStatus.Cancelled}");
+
+            builder.HasIndex(s => new { s.UserId, s.BranchId, s.Status })
+                .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
 
             builder.ToTable(t =>
             {

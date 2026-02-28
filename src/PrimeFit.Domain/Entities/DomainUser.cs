@@ -1,6 +1,4 @@
-﻿using ErrorOr;
-using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Entities.Base;
+﻿using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Domain.Entities
 {
@@ -42,39 +40,6 @@ namespace PrimeFit.Domain.Entities
 
 
         }
-
-
-        public ErrorOr<Subscription> CreateSubscription(Branch branch, Package package, DateTime now)
-        {
-            var addSubscriptionResult = Subscription.Create(this, branch, package);
-
-            if (addSubscriptionResult.IsError)
-            {
-                return addSubscriptionResult.Errors;
-
-            }
-
-            var subscription = addSubscriptionResult.Value;
-
-            var hasActiveSubscription = _subscriptions.Any(s =>
-                                      s.BranchId == branch.Id &&
-                                      s.GetStatus(now) == SubscriptionStatus.Active);
-
-            if (!hasActiveSubscription)
-            {
-                var activationResult = subscription.Activate(now);
-
-                if (activationResult.IsError)
-                {
-                    return activationResult.Errors;
-
-                }
-            }
-
-            _subscriptions.Add(subscription);
-            return subscription;
-        }
-
 
 
     }

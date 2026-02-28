@@ -40,6 +40,7 @@ namespace PrimeFit.Domain.Entities
         public DateTimeOffset? ActivationDate { get; private set; }
         public DateTimeOffset? EndDate { get; private set; }
         public DateTimeOffset? CancellationDate { get; private set; }
+        public DateTimeOffset? NextProcessingDate { get; private set; }
         public decimal PaidAmount { get; private set; }
         public int AllowedFreezeCount { get; private set; }
         public int AllowedFreezeDays { get; private set; }
@@ -82,19 +83,9 @@ namespace PrimeFit.Domain.Entities
         }
 
 
-        public void SyncStatus(DateTimeOffset now)
-        {
-            Status = GetStatus(now);
-        }
-
-        public SubscriptionStatus GetStatus(DateTimeOffset now)
-        {
-            if (now >= GetEffectiveEndDate(now))
-                return SubscriptionStatus.Expired;
 
 
-            return Status;
-        }
+
 
 
         public DateTimeOffset GetEffectiveEndDate(DateTimeOffset now)
@@ -140,12 +131,16 @@ namespace PrimeFit.Domain.Entities
             }
 
             ActivationDate = now;
-            EndDate = now.AddMonths(DurationInMonths);
+            EndDate = now.Date.AddMonths(DurationInMonths).AddDays(1).AddSeconds(-1);
+            NextProcessingDate = EndDate;
             Status = SubscriptionStatus.Active;
 
             return Result.Success;
 
         }
+
+
+
 
 
         public ErrorOr<Success> Cancel(DateTimeOffset now)
@@ -161,9 +156,29 @@ namespace PrimeFit.Domain.Entities
             }
 
             CancellationDate = now;
+            NextProcessingDate = null;
             Status = SubscriptionStatus.Cancelled;
             return Result.Success;
 
+        }
+
+
+
+        public void MarkExpired(DateTimeOffset now)
+        {
+            Status = SubscriptionStatus.Expired;
+            NextProcessingDate = null;
+        }
+
+        public void SetEndDate(DateTimeOffset newEndDate)
+        {
+            EndDate = newEndDate;
+            NextProcessingDate = newEndDate;
+        }
+
+        public void SetNextProcessingDate(DateTimeOffset? date)
+        {
+            NextProcessingDate = date;
         }
 
     }

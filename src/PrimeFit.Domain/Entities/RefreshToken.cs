@@ -5,7 +5,7 @@ namespace PrimeFit.Domain.Entities
 {
     public sealed class RefreshToken : BaseEntity<int>, IHasCreationTime
     {
-        public RefreshToken(string token, DateTime expires, string accessTokenJTI, int userId)
+        public RefreshToken(string token, DateTimeOffset expires, string accessTokenJTI, int userId)
         {
             Token = token;
             Expires = expires;
@@ -16,16 +16,16 @@ namespace PrimeFit.Domain.Entities
         public int UserId { get; set; }      //ApplicationUser not DomainUser
         public string AccessTokenJTI { get; set; }
         public string Token { get; set; } = string.Empty;
-        public DateTime Expires { get; set; }
-        public bool IsExpired => DateTime.UtcNow >= Expires;
-        public DateTime? RevokationDate { get; set; }
+        public DateTimeOffset Expires { get; set; }
+        public bool IsExpired => DateTimeOffset.UtcNow >= Expires;
+        public DateTimeOffset? RevokationDate { get; set; }
         public bool IsActive => RevokationDate is null && !IsExpired;
 
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
 
         public void Revoke()
         {
-            RevokationDate = DateTime.UtcNow;
+            RevokationDate = DateTimeOffset.UtcNow;
         }
     }
 }

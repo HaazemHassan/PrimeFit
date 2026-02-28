@@ -176,7 +176,7 @@ namespace PrimeFit.Infrastructure.Services
 
         #region Helper functions
 
-        private async Task<ErrorOr<AuthResult>> AuthenticateAsync(ApplicationUser appUser, DateTime? refreshTokenExpDate = null)
+        private async Task<ErrorOr<AuthResult>> AuthenticateAsync(ApplicationUser appUser, DateTimeOffset? refreshTokenExpDate = null)
         {
             if (appUser is null || appUser.DomainUserId is null || appUser.DomainUser is null)
                 return Error.Validation(description: "User cannot be null");
@@ -213,7 +213,7 @@ namespace PrimeFit.Infrastructure.Services
                   audience: _jwtSettings.Audience,
                   claims: userClaims,
                   signingCredentials: GetSigningCredentials(),
-                  expires: DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes)
+                  expires: DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes).UtcDateTime
               );
         }
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
@@ -258,13 +258,13 @@ namespace PrimeFit.Infrastructure.Services
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
             return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
-        private RefreshToken GenerateRefreshToken(int userId, string accessTokenJTI, DateTime? expirationDate = null)
+        private RefreshToken GenerateRefreshToken(int userId, string accessTokenJTI, DateTimeOffset? expirationDate = null)
         {
             var randomBytes = new byte[64];
             RandomNumberGenerator.Fill(randomBytes);
             string Token = Convert.ToBase64String(randomBytes);
 
-            expirationDate = expirationDate ?? DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+            expirationDate = expirationDate ?? DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
             return new RefreshToken(Token, expirationDate.Value, accessTokenJTI, userId);
 
         }

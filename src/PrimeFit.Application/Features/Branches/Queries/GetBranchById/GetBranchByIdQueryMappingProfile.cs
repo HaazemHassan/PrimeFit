@@ -15,7 +15,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
                 .ForMember(dest => dest.ActivePackages, opt => opt.MapFrom(src => src.Packages.Count(p => p.IsActive)))
                 .ForMember(dest => dest.ActiveSubscriptions, opt =>
                 opt.MapFrom(src => src.Subscriptions.
-                Count(s => s.Status == SubscriptionStatus.Active && s.EndDate > DateTime.UtcNow)));
+                Count(s => s.Status == SubscriptionStatus.Active && s.EndDate > DateTimeOffset.UtcNow)));
 
 
         }

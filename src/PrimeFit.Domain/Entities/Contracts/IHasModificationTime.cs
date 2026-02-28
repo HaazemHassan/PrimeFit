@@ -1,5 +1,5 @@
 ﻿namespace PrimeFit.Domain.Entities.Contracts {
     public interface IHasModificationTime {
-        DateTime? UpdatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
     }
 }

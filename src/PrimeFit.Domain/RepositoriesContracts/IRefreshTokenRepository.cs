@@ -4,6 +4,6 @@ namespace PrimeFit.Domain.Repositories
 {
     public interface IRefreshTokenRepository : IGenericRepository<RefreshToken>
     {
-        Task DeleteExpiredTokensAsync(DateTime cutoffDate);
+        Task DeleteExpiredTokensAsync(DateTimeOffset cutoffDate);
     }
 }

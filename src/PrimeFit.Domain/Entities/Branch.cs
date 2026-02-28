@@ -137,7 +137,7 @@ namespace PrimeFit.Domain.Entities
             return OwnerId == userId;
         }
 
-        public bool IsOpenNow(DateTime currentDateTime)
+        public bool IsOpenNow(DateTimeOffset currentDateTime)
         {
 
             if (!_workingHours.Any())
@@ -153,7 +153,7 @@ namespace PrimeFit.Domain.Entities
 
                 var open = workingHour.OpenTime;
                 var close = workingHour.CloseTime;
-                var now = TimeOnly.FromDateTime(currentDateTime);
+                var now = TimeOnly.FromTimeSpan(currentDateTime.TimeOfDay);
 
                 bool crossesMidnight = close <= open;
 

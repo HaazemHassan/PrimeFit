@@ -17,7 +17,7 @@ namespace PrimeFit.Infrastructure.Data.Repositories
             _refreshTokens = context.Set<RefreshToken>();
         }
 
-        public async Task DeleteExpiredTokensAsync(DateTime cutoffDate)
+        public async Task DeleteExpiredTokensAsync(DateTimeOffset cutoffDate)
         {
 
             await _refreshTokens

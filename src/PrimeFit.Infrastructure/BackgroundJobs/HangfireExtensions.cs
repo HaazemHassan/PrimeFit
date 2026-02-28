@@ -14,6 +14,13 @@ namespace PrimeFit.Infrastructure.BackgroundJobs
                 RefreshTokensCleanupJob.Schedule
             );
 
+
+            manager.AddOrUpdate<SubscriptionStatusLifecycleJob>(
+                SubscriptionStatusLifecycleJob.JobId,
+                job => job.ExecuteAsync(CancellationToken.None),
+                SubscriptionStatusLifecycleJob.Schedule
+            );
+
         }
     }
 }
