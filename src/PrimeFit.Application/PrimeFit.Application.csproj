@@ -24,9 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Subscriptions\Queries\" />
+    <Folder Include="Features\Members\Queries\" />
     <Folder Include="ServicesContracts\Application\" />
-    <Folder Include="Specifications\Subscriptions\" />
   </ItemGroup>
 
 </Project>

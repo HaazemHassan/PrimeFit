@@ -4,6 +4,19 @@ namespace PrimeFit.Domain.Entities
 {
     public class SubscriptionFreeze : AuditableEntity<int>
     {
+
+
+        public SubscriptionFreeze(int subscriptionId, DateTimeOffset startDate, int maxDays)
+        {
+            SubscriptionId = subscriptionId;
+            StartDate = startDate;
+            MaxDays = maxDays;
+        }
+
+        private SubscriptionFreeze()
+        {
+        }
+
         public int SubscriptionId { get; set; }
         public Subscription Subscription { get; set; } = null!;
         public DateTimeOffset StartDate { get; set; }

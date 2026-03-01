@@ -3,9 +3,9 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.BranchPackages
 {
-    public class BranchPackageWithBranchSpec : Specification<Package>
+    public class PackageWithBranchSpec : Specification<Package>
     {
-        public BranchPackageWithBranchSpec(int packageId)
+        public PackageWithBranchSpec(int packageId)
         {
 
             Query.Where(p => p.Id == packageId);

@@ -27,8 +27,8 @@ namespace PrimeFit.Infrastructure.Data.Identity.Entities
             if (domainUser is null)
                 throw new ArgumentNullException("Domain user can't be null");
 
-            if (domainUser.Id != 0 && DomainUserId != domainUser.Id)
-                throw new InvalidOperationException("Domain user ID mismatch");
+            if (DomainUserId is not null)
+                throw new ArgumentNullException("This app user is assosiated with domain user");
 
             DomainUser = domainUser;
         }

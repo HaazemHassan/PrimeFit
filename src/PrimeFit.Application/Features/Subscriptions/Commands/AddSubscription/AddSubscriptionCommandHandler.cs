@@ -43,7 +43,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
             }
 
 
-            var packageSpec = new BranchPackageWithBranchSpec(request.PackageId);
+            var packageSpec = new PackageWithBranchSpec(request.PackageId);
 
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(packageSpec, cancellationToken);
 

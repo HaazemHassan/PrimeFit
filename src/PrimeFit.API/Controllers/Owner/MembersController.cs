@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
-using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
+using PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription;
 
 namespace PrimeFit.API.Controllers.Owner
 {
-    public class SubscriptionController : OwnerBaseController
+    public class MembersController : OwnerBaseController
     {
 
+
         [HttpPost()]
-        public async Task<IActionResult> Add([FromBody] AddSubscriptionCommand command)
+        public async Task<IActionResult> CreateMemberWithSubscription([FromBody] CreateMemberWithSubscriptionCommand command)
         {
             var result = await Mediator.Send(command);
             if (result.IsError)
@@ -17,10 +18,8 @@ namespace PrimeFit.API.Controllers.Owner
             }
 
 
-            //i will update this lateer
+            //i will update this later
             return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
         }
-
-
     }
 }

@@ -12,6 +12,7 @@ namespace PrimeFit.Domain.Services
         private readonly TimeProvider _timeProvider;
         private readonly ISubscriptionRepository _subscriptionRepository;
 
+
         public SubscriptionService(TimeProvider timeProvider, ISubscriptionRepository userRepository)
         {
             _timeProvider = timeProvider;

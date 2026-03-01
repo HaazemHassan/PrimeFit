@@ -1,6 +1,6 @@
-using Serilog;
 using PrimeFit.API.Extentions;
 using PrimeFit.API.Middlewares;
+using Serilog;
 
 namespace PrimeFit.API
 {
@@ -20,12 +20,20 @@ namespace PrimeFit.API
 
             var app = builder.Build();
 
+            app.UseStaticFiles();
+
             if (app.Environment.IsDevelopment())
             {
                 await app.InitializeDatabaseAsync();
 
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.InjectStylesheet("/swagger-ui/dark.css");
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PrimeFit API v1");
+
+
+                });
                 app.UseDeveloperExceptionPage();
             }
 
@@ -33,7 +41,8 @@ namespace PrimeFit.API
             app.UseSerilogRequestLogging();
             app.UseForwardedHeaders();   // Use Forwarded Headers (must be early in pipeline)
             app.UseSecurityHeaders();
-            app.UseHttpsRedirection();
+
+
 
             app.UseCustomHangfireDashboard();
             app.RegisterRecurringJobs();

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using PrimeFit.Infrastructure.Data;
 
 #nullable disable
@@ -12,8 +13,8 @@ using PrimeFit.Infrastructure.Data;
 namespace PrimeFit.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260220224626_Add branch related entites")]
-    partial class Addbranchrelatedentites
+    [Migration("20260228230645_Fix bug in relation between domain user and subscription")]
+    partial class Fixbuginrelationbetweendomainuserandsubscription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,39 +151,47 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("DeletedBy")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("GovernorateId")
+                    b.Property<int?>("GovernorateId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -191,7 +200,42 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("GovernorateId");
 
+                    b.HasIndex("OwnerId");
+
                     b.ToTable("Branches");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("BranchImages");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -209,8 +253,8 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
@@ -218,8 +262,8 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -251,11 +295,11 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly?>("CloseTime")
+                    b.Property<TimeOnly>("CloseTime")
                         .HasColumnType("time");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
@@ -268,11 +312,11 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<TimeOnly?>("OpenTime")
+                    b.Property<TimeOnly>("OpenTime")
                         .HasColumnType("time");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -293,14 +337,14 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("DeletedBy")
                         .HasColumnType("int");
@@ -324,8 +368,8 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -496,6 +540,81 @@ namespace PrimeFit.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Package", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DurationInMonths")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FreezeDurationInDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("NumberOfFreezes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("Packages", t =>
+                        {
+                            t.HasCheckConstraint("CK_Package_DurationInMonths_Positive", "[DurationInMonths] > 0");
+
+                            t.HasCheckConstraint("CK_Package_FreezeDurationInDays_NonNegative", "[FreezeDurationInDays] >= 0");
+
+                            t.HasCheckConstraint("CK_Package_NumberOfFreezes_NonNegative", "[NumberOfFreezes] >= 0");
+
+                            t.HasCheckConstraint("CK_Package_Price_Positive", "[Price] >= 0");
+                        });
+                });
+
             modelBuilder.Entity("PrimeFit.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -509,14 +628,14 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("Expires")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("RevokationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset?>("RevokationDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -533,6 +652,148 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens", (string)null);
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("ActivationDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("AllowedFreezeCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("AllowedFreezeDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("CancellationDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DurationInMonths")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("EndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("NextProcessingDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("NextProcessingDate", "Id")
+                        .HasDatabaseName("IX_Subscriptions_Job_Processing")
+                        .HasFilter("[NextProcessingDate] IS NOT NULL AND [Status] <> 3 AND [Status] <> 4");
+
+                    b.HasIndex("UserId", "BranchId", "Status")
+                        .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
+
+                    b.ToTable("Subscriptions", t =>
+                        {
+                            t.HasCheckConstraint("CK_Subscription_AllowedFreezeCount_NonNegative", "[AllowedFreezeCount] >= 0");
+
+                            t.HasCheckConstraint("CK_Subscription_AllowedFreezeDays_NonNegative", "[AllowedFreezeDays] >= 0");
+
+                            t.HasCheckConstraint("CK_Subscription_DurationInMonths_Positive", "[DurationInMonths] > 0");
+
+                            t.HasCheckConstraint("CK_Subscription_PaidAmount_NonNegative", "[PaidAmount] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.SubscriptionFreeze", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("EndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("MaxDays")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId")
+                        .HasDatabaseName("IX_SubscriptionFreezes_SubscriptionId");
+
+                    b.HasIndex("SubscriptionId", "EndDate")
+                        .HasDatabaseName("IX_SubscriptionFreezes_ActiveFreezes")
+                        .HasFilter("[EndDate] IS NULL");
+
+                    b.ToTable("SubscriptionFreezes", t =>
+                        {
+                            t.HasCheckConstraint("CK_SubscriptionFreeze_MaxDays_Positive", "[MaxDays] > 0");
+                        });
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationRole", b =>
@@ -713,10 +974,28 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasOne("PrimeFit.Domain.Entities.Governorate", "Governorate")
                         .WithMany()
                         .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Governorate");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.BranchImage", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany("Images")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -728,7 +1007,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("PrimeFit.Domain.Entities.DomainUser", "User")
-                        .WithMany("BranchReviews")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -749,6 +1028,17 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Package", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany("Packages")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+                });
+
             modelBuilder.Entity("PrimeFit.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
@@ -756,6 +1046,44 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.Package", "Package")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", "User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.SubscriptionFreeze", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Subscription", "Subscription")
+                        .WithMany("Freezes")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationUser", b =>
@@ -781,14 +1109,30 @@ namespace PrimeFit.Infrastructure.Migrations
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
                 {
+                    b.Navigation("Images");
+
+                    b.Navigation("Packages");
+
                     b.Navigation("Reviews");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("WorkingHours");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
                 {
-                    b.Navigation("BranchReviews");
+                    b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Package", b =>
+                {
+                    b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
+                {
+                    b.Navigation("Freezes");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationRole", b =>

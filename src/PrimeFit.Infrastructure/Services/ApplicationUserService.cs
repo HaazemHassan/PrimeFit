@@ -1,12 +1,12 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
-using PrimeFit.Infrastructure.Data.Identity;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 
 namespace PrimeFit.Infrastructure.Services
@@ -27,37 +27,69 @@ namespace PrimeFit.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole role = UserRole.Member, CancellationToken ct = default)
+        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser domainUser, string password, UserRole role = UserRole.Member, CancellationToken ct = default)
         {
-            var userByPhone = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == user.PhoneNumber, ct);
+            var existingDomainUser = await _unitOfWork.Users.GetAsync(u => u.Email == domainUser.Email, ct);
 
-            if (userByPhone)
-                return Error.Conflict(code: ErrorCodes.User.PhoneAlreadyExists, description: "Phone number already exists");
+            if (existingDomainUser is not null)
+            {
+                var isAuthUserLinked = await _userManager.Users.AnyAsync(au =>
+                    au.DomainUserId == existingDomainUser.Id ||
+                    au.DomainUser != null && (
+                        au.DomainUser.Email == existingDomainUser.Email ||
+                        au.DomainUser.PhoneNumber == existingDomainUser.PhoneNumber
+                    ), ct);
 
-            var applicationUser = new ApplicationUser(user.Email, user.PhoneNumber);
-            applicationUser.AssignDomainUser(user);
+                if (isAuthUserLinked)
+                {
+                    var emailConflict = await _userManager.Users.AnyAsync(au =>
+                        au.DomainUser != null && au.DomainUser.Email == existingDomainUser.Email, ct);
+
+                    return emailConflict
+                        ? Error.Conflict(code: ErrorCodes.User.EmailAlreadyExists, description: "This Email already exists")
+                        : Error.Conflict(code: ErrorCodes.User.PhoneAlreadyExists, description: "Phone number already exists");
+                }
+
+                existingDomainUser.UpdateInfo(domainUser.FirstName, domainUser.LastName, domainUser.PhoneNumber);
+                domainUser = existingDomainUser;
+            }
+            else
+            {
+                var phoneExists = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == domainUser.PhoneNumber, ct);
+
+                if (phoneExists)
+                {
+                    return Error.Conflict(code: ErrorCodes.User.PhoneAlreadyExists, description: "Phone number already exists");
+
+                }
+            }
+
+            var applicationUser = new ApplicationUser(domainUser.Email, domainUser.PhoneNumber);
+            applicationUser.AssignDomainUser(domainUser);
 
             var createResult = await _userManager.CreateAsync(applicationUser, password);
-
             if (!createResult.Succeeded)
             {
-                if (createResult.HasError(IdentityErrorCodes.DuplicateEmail))
-
-                    return Error.Conflict(code: ErrorCodes.User.EmailAlreadyExists, description: "This Email already exists");
-
                 return Error.Failure(description: "Failed to create user");
 
             }
 
-
             var addToRoleResult = await _userManager.AddToRoleAsync(applicationUser, role.ToString()!);
             if (!addToRoleResult.Succeeded)
+            {
                 return Error.Failure(description: "Failed to create user");
 
+            }
 
-            return user;
-
+            return domainUser;
         }
+
+
+        public async Task<bool> isAssociatedWithDomainUser(int domainUserId, CancellationToken ct = default)
+        {
+            return await _userManager.Users.AnyAsync(au => au.DomainUserId == domainUserId, ct);
+        }
+
 
     }
 }

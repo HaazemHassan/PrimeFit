@@ -690,9 +690,6 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Property<int?>("DeletedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DomainUserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("DurationInMonths")
                         .HasColumnType("int");
 
@@ -727,8 +724,6 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
-
-                    b.HasIndex("DomainUserId");
 
                     b.HasIndex("PackageId");
 
@@ -1058,10 +1053,6 @@ namespace PrimeFit.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", null)
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("DomainUserId");
-
                     b.HasOne("PrimeFit.Domain.Entities.Package", "Package")
                         .WithMany("Subscriptions")
                         .HasForeignKey("PackageId")
@@ -1069,7 +1060,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("PrimeFit.Domain.Entities.DomainUser", "User")
-                        .WithMany()
+                        .WithMany("Subscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

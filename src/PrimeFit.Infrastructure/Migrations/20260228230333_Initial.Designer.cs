@@ -13,8 +13,8 @@ using PrimeFit.Infrastructure.Data;
 namespace PrimeFit.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260228173308_Replace DateTime with DateTimeOffset in all entities")]
-    partial class ReplaceDateTimewithDateTimeOffsetinallentities
+    [Migration("20260228230333_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
