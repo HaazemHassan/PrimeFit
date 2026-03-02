@@ -5,7 +5,7 @@ namespace PrimeFit.Application.Specifications.Branches
 {
     public class BranchesPaginatedForOwnerSpec : Specification<Branch>
     {
-        public BranchesPaginatedForOwnerSpec(int? ownerId, int pageNumber, int pageSize, string? search, string? sortBy)
+        public BranchesPaginatedForOwnerSpec(int? ownerId, int pageNumber, int pageSize, string? search)
         {
             if (ownerId.HasValue)
                 Query.Where(b => b.OwnerId == ownerId);
@@ -17,12 +17,8 @@ namespace PrimeFit.Application.Specifications.Branches
 
             Query.Include(b => b.Governorate);
 
-            if (sortBy == "name_desc")
-                Query.OrderByDescending(u => u.Name);
-            else if (sortBy == "name_asc")
-                Query.OrderBy(b => b.Name);
-            else
-                Query.OrderByDescending(b => b.CreatedAt);
+
+            Query.OrderByDescending(b => b.CreatedAt);
 
             Query.Paginate(pageNumber, pageSize);
 

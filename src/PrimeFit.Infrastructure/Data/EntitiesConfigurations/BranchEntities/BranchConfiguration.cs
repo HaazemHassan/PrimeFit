@@ -45,7 +45,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .HasForeignKey(b => b.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(s => s.Location)
+            builder.Property(s => s.Coordinates)
               .HasConversion(
                geo => new Point(geo.Longitude, geo.Latitude) { SRID = 4326 },
                point => GeoLocation.Create(point.Y, point.X).Value!

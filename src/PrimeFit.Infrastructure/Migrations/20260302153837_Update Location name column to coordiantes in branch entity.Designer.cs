@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using PrimeFit.Infrastructure.Data;
@@ -12,9 +13,11 @@ using PrimeFit.Infrastructure.Data;
 namespace PrimeFit.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302153837_Update Location name column to coordiantes in branch entity")]
+    partial class UpdateLocationnamecolumntocoordiantesinbranchentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,7 +202,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchImage", b =>
@@ -232,7 +235,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("BranchImages", (string)null);
+                    b.ToTable("BranchImages");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -275,7 +278,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("BranchReviews", null, t =>
+                    b.ToTable("BranchReviews", t =>
                         {
                             t.HasCheckConstraint("CK_BranchReview_Rating_Range", "[Rating] >= 1 AND [Rating] <= 5");
                         });
@@ -323,7 +326,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("BranchId", "Day")
                         .IsUnique();
 
-                    b.ToTable("BranchWorkingHours", (string)null);
+                    b.ToTable("BranchWorkingHours");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
@@ -379,7 +382,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
-                    b.ToTable("DomainUser", (string)null);
+                    b.ToTable("DomainUser");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Governorate", b =>
@@ -397,7 +400,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Governorates", (string)null);
+                    b.ToTable("Governorates");
 
                     b.HasData(
                         new
@@ -600,7 +603,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Packages", null, t =>
+                    b.ToTable("Packages", t =>
                         {
                             t.HasCheckConstraint("CK_Package_DurationInMonths_Positive", "[DurationInMonths] > 0");
 
@@ -734,7 +737,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId", "Status")
                         .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
 
-                    b.ToTable("Subscriptions", null, t =>
+                    b.ToTable("Subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_Subscription_AllowedFreezeCount_NonNegative", "[AllowedFreezeCount] >= 0");
 
@@ -787,7 +790,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasDatabaseName("IX_SubscriptionFreezes_ActiveFreezes")
                         .HasFilter("[EndDate] IS NULL");
 
-                    b.ToTable("SubscriptionFreezes", null, t =>
+                    b.ToTable("SubscriptionFreezes", t =>
                         {
                             t.HasCheckConstraint("CK_SubscriptionFreeze_MaxDays_Positive", "[MaxDays] > 0");
                         });

@@ -2,10 +2,10 @@
 using PrimeFit.API.Requests.Client.Users;
 using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
+using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
-using PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;

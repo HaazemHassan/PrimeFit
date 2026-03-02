@@ -9,6 +9,7 @@ using PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails;
 using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
+using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
@@ -16,7 +17,6 @@ using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
-using PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
@@ -287,7 +287,7 @@ namespace PrimeFit.API.Controllers.Owner
 
 
             //i will update this later
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
+            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { branchId = result.Value.Id }, result.Value);
         }
 
 
@@ -306,7 +306,7 @@ namespace PrimeFit.API.Controllers.Owner
 
 
             //i will update this lateer
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
+            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { branchId = result.Value.Id }, result.Value);
         }
 
 

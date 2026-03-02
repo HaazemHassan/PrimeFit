@@ -41,7 +41,7 @@ namespace PrimeFit.Domain.Entities
         public int? GovernorateId { get; private set; }
         public Governorate? Governorate { get; private set; }
         public string? Address { get; private set; }
-        public GeoLocation? Location { get; private set; }
+        public GeoLocation? Coordinates { get; private set; }
 
 
 
@@ -118,7 +118,7 @@ namespace PrimeFit.Domain.Entities
         {
             Governorate = governorate;
             Address = address;
-            Location = location;
+            Coordinates = location;
         }
 
         public void UpdateWorkingHours(List<BranchWorkingHour> branchWorkingHours)
@@ -311,7 +311,7 @@ namespace PrimeFit.Domain.Entities
                     description: "Branch address is required to activate the branch."
                 );
 
-            if (Location is null)
+            if (Coordinates is null)
                 return Error.Validation(
                     code: ErrorCodes.Branch.LocationRequired,
                     description: "Branch location must be set to activate the branch."

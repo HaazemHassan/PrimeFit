@@ -10,6 +10,7 @@ namespace PrimeFit.Application.Contracts.Infrastructure
         public Task<bool> isAssociatedWithDomainUser(int domainUserId, CancellationToken ct = default);
 
 
+
     }
 
 }

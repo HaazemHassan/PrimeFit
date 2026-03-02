@@ -5,6 +5,8 @@ namespace PrimeFit.Domain.Repositories;
 
 public interface IGenericRepository<T> : IRepositoryBase<T> where T : class
 {
+    IQueryable<T> AsQueryable();
+
 
     Task<T?> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);

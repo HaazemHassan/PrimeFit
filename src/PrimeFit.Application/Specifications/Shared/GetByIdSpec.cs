@@ -1,4 +1,5 @@
-﻿using Ardalis.Specification;
+﻿
+using Ardalis.Specification;
 using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Application.Specifications.Shared

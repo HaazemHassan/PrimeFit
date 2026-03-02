@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
+using PrimeFit.Application.Features.Branches.Queries.GetBranchById;
 using PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForUsers;
 using PrimeFit.Application.Features.Users.Queries.GetUsersPaginated;
 
@@ -10,10 +11,16 @@ namespace PrimeFit.API.Controllers
     {
 
 
-        [HttpGet("{Id:int}", Name = RouteNames.Branches.GetBranchById)]
-        public async Task<IActionResult> GetBranchById([FromRoute] int Id)
+        [HttpGet("{branchId:int}", Name = RouteNames.Branches.GetBranchById)]
+        public async Task<IActionResult> GetBranchById([FromRoute] int branchId)
         {
-            return NoContent();
+            var query = new GetBranchByIdQuery(branchId);
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
         }
 
 

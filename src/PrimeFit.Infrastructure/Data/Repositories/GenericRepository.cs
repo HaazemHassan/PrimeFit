@@ -23,6 +23,9 @@ namespace PrimeFit.Infrastructure.Data.Repositories
             this._mapper = mapper;
         }
 
+
+        public IQueryable<T> AsQueryable() => _dbContext.Set<T>().AsNoTracking();
+
         public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate, ct);

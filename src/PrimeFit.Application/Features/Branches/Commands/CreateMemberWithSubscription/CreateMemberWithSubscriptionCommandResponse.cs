@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription
+﻿namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription
 {
     public class CreateMemberWithSubscriptionCommandResponse
     {

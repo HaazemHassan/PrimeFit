@@ -4,7 +4,7 @@ using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription
+namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription
 {
 
     [Authorize(Roles = [UserRole.Owner])]

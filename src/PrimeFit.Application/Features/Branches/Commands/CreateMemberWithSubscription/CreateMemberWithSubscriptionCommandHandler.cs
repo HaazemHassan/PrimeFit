@@ -9,7 +9,7 @@ using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.ServicesContracts;
 
-namespace PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription
+namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription
 {
     public class CreateMemberWithSubscriptionCommandHandler : IRequestHandler<CreateMemberWithSubscriptionCommand, ErrorOr<CreateMemberWithSubscriptionCommandResponse>>
     {
