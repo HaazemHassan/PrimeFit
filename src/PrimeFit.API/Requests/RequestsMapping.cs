@@ -5,8 +5,11 @@ using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
+using PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
+using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
+using PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 
 namespace PrimeFit.API.Requests
@@ -26,6 +29,11 @@ namespace PrimeFit.API.Requests
             CreateMap<AddPackageRequest, AddPackageCommand>();
             CreateMap<UpdatePackageRequest, UpdatePackageCommand>();
             CreateMap<UpdateBussinessDetailsRequest, UpdateBussinessDetailsCommand>();
+            CreateMap<GetBranchSubscriptionsRequest, GetBranchSubscriptionsQuery>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember is not null));
+
+            CreateMap<CreateMemberWithSubscriptionRequest, CreateMemberWithSubscriptionCommand>();
+            CreateMap<AddSubscriptionRequest, AddSubscriptionCommand>();
 
 
             CreateMap<BasicPaginationRequest, GetBranchPackagesForOwnerQuery>().ForAllMembers(opt =>

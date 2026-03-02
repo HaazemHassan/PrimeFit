@@ -7,7 +7,7 @@
     {
         public static IRuleBuilderOptions<T, IFormFile> ApplyImageRules<T>(
             this IRuleBuilder<T, IFormFile> ruleBuilder,
-            long minFileSizeInBytes = 50 * 1024,               // 50 KB
+            long minFileSizeInBytes = 5 * 1024,               // 50 KB
             long maxFileSizeInBytes = 5 * 1024 * 1024)         // 5 MB default
         {
             string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];

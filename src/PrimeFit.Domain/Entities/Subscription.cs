@@ -117,8 +117,8 @@ namespace PrimeFit.Domain.Entities
         private void RecalculateEndDate()
         {
             var totalFreezeDays = _freezes
-                .Where(f => f.EndDate != null)
-                .Sum(f => (int)Math.Ceiling((f.EndDate!.Value - f.StartDate).TotalDays));
+                .Where(f => !f.IsActive)
+                .Sum(f => f.TotalDays);
 
             var baseEnd = ActivationDate!.Value.AddMonths(DurationInMonths);
             EndDate = baseEnd.AddDays(totalFreezeDays);
@@ -168,7 +168,7 @@ namespace PrimeFit.Domain.Entities
         {
             if (Status != SubscriptionStatus.Frozen)
             {
-                return Error.Validation(description: "Only frozen subscriptions can end freeze.");
+                return Error.Validation(description: "Only frozen subscriptions can be frozen.");
             }
 
             var activeFreeze = _freezes.LastOrDefault(f => f.EndDate == null);
@@ -209,33 +209,29 @@ namespace PrimeFit.Domain.Entities
 
         public int GetRemainingDays(DateTimeOffset now)
         {
-            if (!ActivationDate.HasValue || !EndDate.HasValue)
+            if (!ActivationDate.HasValue)
                 return DurationInMonths * 30;
 
-            if (CancellationDate.HasValue)
+            if (CancellationDate.HasValue || Status == SubscriptionStatus.Expired)
                 return 0;
 
-            var effectiveEnd = GetEffectiveEndDate(now);
+            var baseEndDate = ActivationDate.Value.AddDays(DurationInMonths * 30);
 
-            if (now >= effectiveEnd)
-                return 0;
-
-            return (int)Math.Ceiling((effectiveEnd - now).TotalDays);
-        }
-
-        public DateTimeOffset GetEffectiveEndDate(DateTimeOffset now)
-        {
-            if (EndDate is null)
-                throw new InvalidOperationException("End date must be set to calculate effective end date.");
-
-            var totalFreezeDays = _freezes.Sum(f =>
+            var totalFreezeDuration = _freezes.Sum(f =>
             {
                 var freezeEnd = f.EndDate ?? now;
-                return (freezeEnd - f.StartDate).Days;
+                return (freezeEnd - f.StartDate).TotalDays;
             });
 
-            return EndDate.Value.AddDays(totalFreezeDays);
+            var effectiveEndDate = baseEndDate.AddDays(totalFreezeDuration);
+
+            if (effectiveEndDate <= now)
+                return 0;
+
+            return (int)Math.Ceiling((effectiveEndDate - now).TotalDays);
         }
+
+
 
 
         public void SetNextProcessingDate(DateTimeOffset? date)

@@ -16,9 +16,12 @@ using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
+using PrimeFit.Application.Features.Members.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
 using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
+using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
+using PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions;
 
 namespace PrimeFit.API.Controllers.Owner
 {
@@ -266,6 +269,64 @@ namespace PrimeFit.API.Controllers.Owner
             }
             return Ok(result.Value);
         }
+
+
+
+
+        [HttpPost("{branchId:int}/members")]
+        public async Task<IActionResult> CreateMemberWithSubscription([FromRoute] int branchId, [FromBody] CreateMemberWithSubscriptionRequest request)
+        {
+
+            var command = _mapper.Map<CreateMemberWithSubscriptionCommand>(request);
+            command.BranchId = branchId;
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+
+            //i will update this later
+            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
+        }
+
+
+
+        [HttpPost("{branchId:int}/subscriptions")]
+        public async Task<IActionResult> AddSubscription([FromRoute] int branchId, [FromBody] AddSubscriptionRequest request)
+        {
+
+            var command = _mapper.Map<AddSubscriptionCommand>(request);
+            command.BranchId = branchId;
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+
+            //i will update this lateer
+            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
+        }
+
+
+        [HttpGet("{branchId:int}/subscriptions")]
+        public async Task<IActionResult> GetSubscriptions([FromRoute] int branchId, [FromQuery] GetBranchSubscriptionsRequest request)
+        {
+
+            var query = _mapper.Map<GetBranchSubscriptionsQuery>(request);
+            query.BranchId = branchId;
+
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
+        }
+
+
+
 
 
     }

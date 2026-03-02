@@ -53,6 +53,12 @@ public static class ErrorCodes
 
     }
 
+    public static class Subscription
+    {
+        public const string NotFound = "SUBSCRIPTION_NOT_FOUND";
+
+    }
+
     public static class WorkingHours
     {
         public const string InvalidWorkingHours = "INVALID_WORKING_HOURS";

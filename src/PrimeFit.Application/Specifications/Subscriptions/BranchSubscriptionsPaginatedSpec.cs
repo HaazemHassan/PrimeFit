@@ -12,7 +12,9 @@ namespace PrimeFit.Application.Specifications.Subscriptions
             int pageNumber, int pageSize)
         {
 
-            Query.Where(s => s.BranchId == branchId);
+            Query.Where(s => s.BranchId == branchId)
+                .Include(s => s.User)
+                .Include(s => s.Freezes);
 
 
             if (subscriptionStatus.HasValue)

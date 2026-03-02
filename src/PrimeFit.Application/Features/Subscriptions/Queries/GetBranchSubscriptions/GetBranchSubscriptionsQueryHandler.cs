@@ -2,7 +2,6 @@
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Features.Branches.Queries.GetMyBranches;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
@@ -14,10 +13,12 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
-        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        private readonly TimeProvider _timeProvider;
+        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, TimeProvider timeProvider)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _timeProvider = timeProvider;
         }
 
 
@@ -36,11 +37,19 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
             var dataSpec = new BranchSubscriptionsPaginatedSpec(request.BranchId, request.SubscriptionStatus, request.Search, request.PageNumber, request.PageSize);
             var countSpec = new BranchSubscriptionSearchSpec(request.BranchId, request.Search);
 
-            var items = await _unitOfWork.Subscriptions.ListAsync<GetBranchSubscriptionsQueryResponse>(dataSpec, cancellationToken);
+            var subscriptions = await _unitOfWork.Subscriptions.ListAsync(dataSpec, cancellationToken);
             var totalCount = await _unitOfWork.Subscriptions.CountAsync(countSpec, cancellationToken);
 
-            return new PaginatedResult<GetMyBranchesQueryResponse>(items, totalCount, request.PageNumber, request.PageSize);
+            var dtos = subscriptions.Select(s => new GetBranchSubscriptionsQueryResponse
+            {
+                SubscriptionId = s.Id,
+                FullName = s.User.FullName,
+                Status = s.Status,
+                TotalDurationInDays = s.DurationInMonths * 30,
+                RemainingDurationInDays = s.GetRemainingDays(_timeProvider.GetUtcNow())
+            }).ToList();
 
+            return new PaginatedResult<GetBranchSubscriptionsQueryResponse>(dtos, totalCount, request.PageNumber, request.PageSize);
         }
     }
 }
