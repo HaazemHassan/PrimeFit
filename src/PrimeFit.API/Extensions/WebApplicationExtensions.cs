@@ -27,7 +27,6 @@ namespace PrimeFit.API.Extentions
                 {
                     try
                     {
-                        await context.Database.EnsureCreatedAsync();
                         await context.Database.MigrateAsync();
                     }
                     catch (SqlException ex) when (ex.Number == 2714)
