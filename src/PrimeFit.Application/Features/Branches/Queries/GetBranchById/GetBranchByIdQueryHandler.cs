@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
@@ -12,12 +13,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
-        private readonly TimeProvider _timeProvider;
-        public GetBranchByIdQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, TimeProvider timeProvider)
+        private readonly IDateTimeProvider _dateTimeProvider;
+        public GetBranchByIdQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
-            _timeProvider = timeProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
 
@@ -45,7 +46,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
                     ErrorCodes.Branch.BranchNotFound, "Branch not found");
             }
 
-            branchResponse.IsOpenNow = branch.IsOpenNow(_timeProvider.GetUtcNow());
+            branchResponse.IsOpenNow = branch.IsOpenNow(_dateTimeProvider.GetNow("Africa/Cairo"));
 
             return branchResponse;
 

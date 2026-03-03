@@ -12,5 +12,11 @@
         {
             public const string GetBranchById = nameof(GetBranchById);
         }
+
+
+        public static class Subscriptions
+        {
+            public const string GetSubscriptionById = nameof(GetSubscriptionById);
+        }
     }
 }

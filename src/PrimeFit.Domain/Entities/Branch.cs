@@ -153,11 +153,8 @@ namespace PrimeFit.Domain.Entities
 
                 var open = workingHour.OpenTime;
                 var close = workingHour.CloseTime;
-                var egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-                var egyptNow = TimeZoneInfo.ConvertTime(currentDateTime, egyptTimeZone);
-
-                var now = TimeOnly.FromTimeSpan(egyptNow.TimeOfDay);
+                var now = TimeOnly.FromTimeSpan(currentDateTime.TimeOfDay);
 
                 bool crossesMidnight = close <= open;
 

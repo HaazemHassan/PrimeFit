@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Entities.Contracts;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
@@ -13,6 +14,7 @@ namespace PrimeFit.Infrastructure.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
 
         public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
@@ -28,9 +30,10 @@ namespace PrimeFit.Infrastructure.Data
 
 
 
-        public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider) : base(options)
         {
             _currentUserService = currentUserService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,7 +59,7 @@ namespace PrimeFit.Infrastructure.Data
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var userId = _currentUserService.UserId;
-            var utcNow = DateTimeOffset.UtcNow;
+            var utcNow = _dateTimeProvider.UtcNow;
 
             foreach (var entry in ChangeTracker.Entries())
             {

@@ -144,6 +144,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPolicyEnforcer, PolicyEnforcer>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
+        services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
 
         services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));

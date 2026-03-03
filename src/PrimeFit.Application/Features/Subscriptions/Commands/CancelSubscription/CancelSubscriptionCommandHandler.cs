@@ -2,6 +2,7 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
@@ -15,15 +16,15 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
-        private readonly TimeProvider _timeProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public CancelSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, TimeProvider timeProvider)
+        public CancelSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IDateTimeProvider dateTimeProvider)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
-            _timeProvider = timeProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ErrorOr<Success>> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)
@@ -40,7 +41,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
             }
 
 
-            var freezeResult = subscription.Cancel(_timeProvider.GetUtcNow());
+            var freezeResult = subscription.Cancel(_dateTimeProvider.UtcNow);
             if (freezeResult.IsError)
             {
                 return freezeResult.Errors;

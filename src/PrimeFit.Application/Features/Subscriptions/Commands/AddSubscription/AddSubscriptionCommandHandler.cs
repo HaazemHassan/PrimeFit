@@ -14,15 +14,13 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
-        private readonly TimeProvider _timeProvider;
 
-        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, TimeProvider timeProvider)
+        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
-            _timeProvider = timeProvider;
         }
 
         public async Task<ErrorOr<AddSubscriptionCommandResponse>> Handle(AddSubscriptionCommand request, CancellationToken cancellationToken)

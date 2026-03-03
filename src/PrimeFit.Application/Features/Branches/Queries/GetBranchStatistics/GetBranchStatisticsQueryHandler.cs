@@ -2,6 +2,7 @@
 using MediatR;
 using PrimeFit.Application.Common.Enums;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Repositories;
@@ -13,12 +14,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
-        private readonly TimeProvider _timeProvider;
-        public GetBranchStatisticsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, TimeProvider timeProvider)
+        private readonly IDateTimeProvider _dateTimeProvider;
+        public GetBranchStatisticsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
-            _timeProvider = timeProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
 
@@ -37,8 +38,9 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 
             }
 
-            var startDate = GetStartDate(request.TimePeriod);
-            var now = _timeProvider.GetUtcNow();
+
+            var now = _dateTimeProvider.GetNow("Africa/Cairo");
+            var startDate = GetStartDate(request.TimePeriod, now);
 
             var statisticsSpec = new BranchStatisticsSpec(request.BranchId, startDate, now);
 
@@ -56,13 +58,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 
 
 
-        private DateTimeOffset GetStartDate(TimePeriod period)
+        private DateTimeOffset GetStartDate(TimePeriod period, DateTimeOffset now)
         {
-            var now = DateTimeOffset.UtcNow;
             return period switch
             {
                 TimePeriod.Today => now.Date,
-                TimePeriod.ThisWeek => now.AddDays(-(int)now.DayOfWeek), // بداية الأسبوع
+                TimePeriod.ThisWeek => now.AddDays(-(int)now.DayOfWeek),
                 TimePeriod.ThisMonth => new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero),
                 _ => now.Date
             };

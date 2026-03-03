@@ -17,16 +17,14 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
-        private readonly TimeProvider _timeProvider;
         private readonly IPhoneNumberService _phoneNumberService;
 
-        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, TimeProvider timeProvider, IPhoneNumberService phoneNumberService)
+        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IPhoneNumberService phoneNumberService)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
-            _timeProvider = timeProvider;
             _phoneNumberService = phoneNumberService;
         }
 
