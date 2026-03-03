@@ -16,5 +16,6 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
         public int ActivePackagesCount { get; set; }
         public int ActiveSubscriptionsCount { get; set; }
 
+
     }
 }

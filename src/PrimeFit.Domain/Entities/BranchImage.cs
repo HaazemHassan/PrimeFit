@@ -1,11 +1,11 @@
 ﻿using ErrorOr;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Domain.Entities
 {
-    public class BranchImage
+    public class BranchImage : BaseEntity<int>
     {
-        public int Id { get; private set; }
 
         public string Url { get; private set; } = string.Empty;
         public string PublicId { get; private set; } = string.Empty;

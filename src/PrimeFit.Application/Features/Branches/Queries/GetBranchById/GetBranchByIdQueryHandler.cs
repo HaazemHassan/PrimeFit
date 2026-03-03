@@ -25,12 +25,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
         public async Task<ErrorOr<GetBranchByIdQueryResponse>> Handle(GetBranchByIdQuery request, CancellationToken cancellationToken)
         {
             int userId = _currentUserService.UserId!.Value;
-            var branchForOwnerSpec = new BranchForOwnerSpec(request.BranchId, userId);
+            var branchWithWorkingHoursSpec = new BranchWithWorkingHoursSpec(request.BranchId);
 
             //_unitOfWork.Branches.AsQueryable().pro
 
-            var branchExists = await _unitOfWork.Branches.AnyAsync(branchForOwnerSpec, cancellationToken);
-            if (!branchExists)
+            var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(branchWithWorkingHoursSpec, cancellationToken);
+            if (branch is null || branch.OwnerId != userId)
             {
 
                 return Error.NotFound(
@@ -38,17 +38,16 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 
             }
 
-            var branchSpec = new BranchDetailsSpec(request.BranchId, _timeProvider.GetUtcNow());
-
-            var branchRespose = await _unitOfWork.Branches.GetAsync<GetBranchByIdQueryResponse>(branchSpec, cancellationToken);
-            if (branchRespose is null)
+            var branchResponse = await _unitOfWork.Branches.GetByIdAsync<GetBranchByIdQueryResponse>(request.BranchId, cancellationToken);
+            if (branchResponse is null)
             {
                 return Error.NotFound(
                     ErrorCodes.Branch.BranchNotFound, "Branch not found");
             }
 
+            branchResponse.IsOpenNow = branch.IsOpenNow(_timeProvider.GetUtcNow());
 
-            return branchRespose;
+            return branchResponse;
 
         }
     }

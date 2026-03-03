@@ -14,5 +14,6 @@ public interface IGenericRepository<T> : IRepositoryBase<T> where T : class
     Task<decimal> AverageAsync(Expression<Func<T, decimal>> selector, ISpecification<T>? spec = default, CancellationToken? ct = default);
 
     Task<TDestination?> GetAsync<TDestination>(ISpecification<T> spec, CancellationToken ct);
+    Task<TDestination?> GetByIdAsync<TDestination>(int id, CancellationToken ct);
     Task<List<TDestination>> ListAsync<TDestination>(ISpecification<T> spec, CancellationToken ct);
 }

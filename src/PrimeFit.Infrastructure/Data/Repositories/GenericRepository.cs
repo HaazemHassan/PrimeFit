@@ -3,12 +3,13 @@ using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
 using PrimeFit.Domain.Repositories;
 using System.Linq.Expressions;
 
 namespace PrimeFit.Infrastructure.Data.Repositories
 {
-    internal class GenericRepository<T> : RepositoryBase<T>, IGenericRepository<T> where T : class
+    internal class GenericRepository<T> : RepositoryBase<T>, IGenericRepository<T> where T : BaseEntity<int>
     {
 
 
@@ -60,6 +61,15 @@ namespace PrimeFit.Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(ct);
         }
 
+        public async Task<TDestination?> GetByIdAsync<TDestination>(int id, CancellationToken ct)
+        {
+            return await _dbContext.Set<T>()
+             .AsNoTracking()
+             .Where(e => e.Id == id)
+             .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+             .FirstOrDefaultAsync(ct);
+        }
+
         public async Task<decimal> AverageAsync(Expression<Func<T, decimal>> selector, ISpecification<T>? spec = default, CancellationToken? ct = default)
         {
             IQueryable<T> query = _dbContext.Set<T>();
@@ -80,5 +90,7 @@ namespace PrimeFit.Infrastructure.Data.Repositories
 
 
         }
+
+
     }
 }
