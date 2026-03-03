@@ -209,26 +209,31 @@ namespace PrimeFit.Domain.Entities
 
         public int GetRemainingDays(DateTimeOffset now)
         {
+            var today = now.Date;
+
             if (!ActivationDate.HasValue)
                 return DurationInMonths * 30;
 
             if (CancellationDate.HasValue || Status == SubscriptionStatus.Expired)
                 return 0;
 
-            var baseEndDate = ActivationDate.Value.AddDays(DurationInMonths * 30);
+            var activationDate = ActivationDate.Value.Date;
+
+            var baseEndDate = activationDate.AddDays(DurationInMonths * 30);
 
             var totalFreezeDuration = _freezes.Sum(f =>
             {
-                var freezeEnd = f.EndDate ?? now;
-                return (freezeEnd - f.StartDate).TotalDays;
+                var freezeStart = f.StartDate.Date;
+                var freezeEnd = (f.EndDate ?? now).Date;
+                return (freezeEnd - freezeStart).TotalDays;
             });
 
             var effectiveEndDate = baseEndDate.AddDays(totalFreezeDuration);
 
-            if (effectiveEndDate <= now)
+            if (effectiveEndDate <= today)
                 return 0;
 
-            return (int)Math.Ceiling((effectiveEndDate - now).TotalDays);
+            return (int)(effectiveEndDate - today).TotalDays;
         }
 
 
