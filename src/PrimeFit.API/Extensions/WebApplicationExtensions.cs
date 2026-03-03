@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using HangfireBasicAuthenticationFilter;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.Data;
@@ -20,24 +19,17 @@ namespace PrimeFit.API.Extentions
             {
 
 
-                // needed to dockerize the application and have the DB created automatically
+                // needed to dockerize the application to make the DB created and updated automatically
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                if (app.Environment.IsDevelopment())
+                try
                 {
-                    try
-                    {
-                        await context.Database.MigrateAsync();
-                    }
-                    catch (SqlException ex) when (ex.Number == 2714)
-                    {
-                        Console.WriteLine("Tables already exist, skipping migration");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Database migration error: {ex.Message}");
-                        throw;
-                    }
+                    await context.Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Database migration error: {ex.Message}");
+                    throw;
                 }
 
 
