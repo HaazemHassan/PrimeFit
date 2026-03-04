@@ -28,7 +28,6 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
 
             builder.HasQueryFilter(x => !x.Subscription.IsDeleted);
 
-            builder.Ignore(x => x.TotalDays);
 
 
             builder.HasIndex(f => f.SubscriptionId)

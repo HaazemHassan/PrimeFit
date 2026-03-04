@@ -22,8 +22,6 @@ namespace PrimeFit.Domain.Entities
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset? EndDate { get; set; }
         public int MaxDays { get; set; }
-        public int TotalDays => EndDate.HasValue ? (int)Math.Ceiling((EndDate.Value - StartDate).TotalDays) : 0;
-
         public bool IsActive => !EndDate.HasValue;
 
     }

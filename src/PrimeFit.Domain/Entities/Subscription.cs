@@ -116,12 +116,14 @@ namespace PrimeFit.Domain.Entities
 
         private void RecalculateEndDate()
         {
-            var totalFreezeDays = _freezes
-                .Where(f => !f.IsActive)
-                .Sum(f => f.TotalDays);
-
             var baseEnd = ActivationDate!.Value.AddMonths(DurationInMonths);
-            EndDate = baseEnd.AddDays(totalFreezeDays);
+
+            var totalFreezeDuration = _freezes
+                .Where(f => !f.IsActive && f.EndDate.HasValue)
+                .Aggregate(TimeSpan.Zero,
+                    (total, freeze) => total + (freeze.EndDate!.Value - freeze.StartDate));
+
+            EndDate = baseEnd.Add(totalFreezeDuration);
         }
 
 
@@ -209,33 +211,29 @@ namespace PrimeFit.Domain.Entities
 
         public int GetRemainingDays(DateTimeOffset now)
         {
-            var today = now.Date;
-
             if (!ActivationDate.HasValue)
                 return DurationInMonths * 30;
 
             if (CancellationDate.HasValue || Status == SubscriptionStatus.Expired)
                 return 0;
 
-            var activationDate = ActivationDate.Value.Date;
-
-            var baseEndDate = activationDate.AddDays(DurationInMonths * 30);
+            var baseEndDate = ActivationDate.Value.AddMonths(DurationInMonths);
 
             var totalFreezeDuration = _freezes.Sum(f =>
             {
-                var freezeStart = f.StartDate.Date;
-                var freezeEnd = (f.EndDate ?? now).Date;
-                return (freezeEnd - freezeStart).TotalDays;
+                var freezeEnd = f.EndDate ?? now;
+                return (freezeEnd - f.StartDate).TotalSeconds;
             });
 
-            var effectiveEndDate = baseEndDate.AddDays(totalFreezeDuration);
+            var effectiveEndDate = baseEndDate.AddSeconds(totalFreezeDuration);
 
-            if (effectiveEndDate <= today)
+            if (effectiveEndDate <= now)
                 return 0;
 
-            return (int)(effectiveEndDate - today).TotalDays;
-        }
+            var remainingTime = effectiveEndDate - now;
 
+            return (int)Math.Floor(remainingTime.TotalDays);
+        }
 
 
 
