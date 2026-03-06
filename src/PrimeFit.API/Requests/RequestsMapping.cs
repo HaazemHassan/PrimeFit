@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using PrimeFit.API.Requests.Branches;
+using PrimeFit.API.Requests.Branches.Subscriptions;
 using PrimeFit.API.Requests.Client.Users;
-using PrimeFit.API.Requests.Owner.Branches;
 using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
 using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;

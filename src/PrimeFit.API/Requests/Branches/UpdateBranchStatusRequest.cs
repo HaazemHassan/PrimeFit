@@ -1,6 +1,6 @@
 ﻿using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.API.Requests.Owner.Branches
+namespace PrimeFit.API.Requests.Branches
 {
     public class UpdateBranchStatusRequest
     {

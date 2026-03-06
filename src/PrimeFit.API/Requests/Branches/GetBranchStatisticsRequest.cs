@@ -1,6 +1,6 @@
 ﻿using PrimeFit.Application.Common.Enums;
 
-namespace PrimeFit.API.Requests.Owner.Branches
+namespace PrimeFit.API.Requests.Branches
 {
     public class GetBranchStatisticsRequest
     {

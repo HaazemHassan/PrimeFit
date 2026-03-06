@@ -13,7 +13,9 @@ namespace PrimeFit.Application.Features.Branches.Shared
             CreateMap<Governorate, GovernorateDto>();
             CreateMap<GeoLocation, CoordinatesDto>();
             CreateMap<Branch, LocationDto>();
-        }
+            CreateMap<BranchWorkingHour, WorkingHoursDTO>();
+            CreateMap<Package, PackageDTO>();
 
+        }
     }
 }

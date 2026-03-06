@@ -43,7 +43,10 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches
                 .Where(b => b.Coordinates!.IsWithinDistance(userLocation, radiusInMeters));
 
             if (!string.IsNullOrEmpty(search))
+            {
                 Query.Where(b => b.Name.Contains(search));
+
+            }
 
             Query.OrderBy(b => b.Coordinates!.Distance(userLocation));
 

@@ -1,6 +1,6 @@
-namespace PrimeFit.API.Requests.Owner.Branches
+namespace PrimeFit.API.Requests.Branches
 {
-    public class UpdatePackageRequest
+    public class AddPackageRequest
     {
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }

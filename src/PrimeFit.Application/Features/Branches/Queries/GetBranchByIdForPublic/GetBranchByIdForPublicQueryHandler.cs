@@ -1,36 +1,38 @@
-﻿using ErrorOr;
+﻿using AutoMapper;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
+namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
 {
-    public class GetBranchByIdQueryHandler : IRequestHandler<GetBranchByIdQuery, ErrorOr<GetBranchByIdQueryResponse>>
+    public class GetBranchByIdForPublicQueryHandler : IRequestHandler<GetBranchByIdForPublicQuery, ErrorOr<GetBranchByIdForPublicQueryResponse>>
     {
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeProvider _dateTimeProvider;
-        public GetBranchByIdQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider)
+        private readonly IMapper _mapper;
+        public GetBranchByIdForPublicQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _dateTimeProvider = dateTimeProvider;
+            _mapper = mapper;
         }
 
 
 
-        public async Task<ErrorOr<GetBranchByIdQueryResponse>> Handle(GetBranchByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<GetBranchByIdForPublicQueryResponse>> Handle(GetBranchByIdForPublicQuery request, CancellationToken cancellationToken)
         {
-            int userId = _currentUserService.UserId!.Value;
-            var branchWithWorkingHoursSpec = new BranchWithWorkingHoursSpec(request.BranchId);
-
+            var branchWithWorkingHoursSpec = new BranchWithWorkingHoursSpec(request.BranchId, BranchStatus.Active);
 
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(branchWithWorkingHoursSpec, cancellationToken);
-            if (branch is null || branch.OwnerId != userId)
+            if (branch is null || branch.BranchStatus != BranchStatus.Active)
             {
 
                 return Error.NotFound(
@@ -38,7 +40,8 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 
             }
 
-            var branchResponse = await _unitOfWork.Branches.GetByIdAsync<GetBranchByIdQueryResponse>(request.BranchId, cancellationToken);
+            var branchResponseSpec = new GetBranchByIdForPublicQuerySpec(request.BranchId, request.Latitude, request.Longitude);
+            var branchResponse = await _unitOfWork.Branches.FirstOrDefaultAsync(branchResponseSpec, cancellationToken);
             if (branchResponse is null)
             {
                 return Error.NotFound(

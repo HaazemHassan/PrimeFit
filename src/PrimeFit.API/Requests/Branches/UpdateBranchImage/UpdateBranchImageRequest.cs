@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Requests.Owner.Branches.UpdateBranchImage
+﻿namespace PrimeFit.API.Requests.Branches.UpdateBranchImage
 {
     public class UpdateBranchImageRequest
     {

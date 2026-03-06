@@ -1,6 +1,6 @@
 ﻿using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.API.Requests.Owner.Branches.AddBranchImage
+namespace PrimeFit.API.Requests.Branches.AddBranchImage
 {
     public class AddBranchImageRequest
     {
