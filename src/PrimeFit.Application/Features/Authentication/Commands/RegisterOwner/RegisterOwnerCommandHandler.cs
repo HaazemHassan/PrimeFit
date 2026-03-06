@@ -9,7 +9,7 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 {
-    public class RegisterOwnerCommandHandler : IRequestHandler<RegisterOwnerCommand, ErrorOr<BaseUserResponse>>
+    public class RegisterOwnerCommandHandler : IRequestHandler<RegisterOwnerCommand, ErrorOr<UserBaseResponse>>
     {
         private readonly IMapper _mapper;
         private readonly IApplicationUserService _applicationUserService;
@@ -22,7 +22,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
             _phoneNumberService = phoneNumberService;
         }
 
-        public async Task<ErrorOr<BaseUserResponse>> Handle(RegisterOwnerCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterOwnerCommand request, CancellationToken cancellationToken)
         {
             var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
 
@@ -32,7 +32,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
             if (addUserResult.IsError)
                 return addUserResult.Errors;
 
-            var userResponse = _mapper.Map<BaseUserResponse>(addUserResult.Value);
+            var userResponse = _mapper.Map<UserBaseResponse>(addUserResult.Value);
             userResponse.Role = UserRole.Owner;
             return userResponse;
         }

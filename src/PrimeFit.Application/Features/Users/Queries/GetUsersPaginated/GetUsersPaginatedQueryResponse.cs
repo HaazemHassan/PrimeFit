@@ -2,7 +2,7 @@
 
 namespace PrimeFit.Application.Features.Users.Queries.GetUsersPaginated
 {
-    public class GetUsersPaginatedQueryResponse : BaseUserResponse
+    public class GetUsersPaginatedQueryResponse : UserBaseResponse
     {
 
         public string? Address { get; set; }

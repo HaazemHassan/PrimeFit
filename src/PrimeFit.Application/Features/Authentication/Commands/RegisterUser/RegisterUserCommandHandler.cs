@@ -10,7 +10,7 @@ using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ErrorOr<BaseUserResponse>>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ErrorOr<UserBaseResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             _phoneNumberService = phoneNumberService;
         }
 
-        public async Task<ErrorOr<BaseUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
 
@@ -37,7 +37,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             if (addUserResult.IsError)
                 return addUserResult.Errors;
 
-            var userResponse = _mapper.Map<BaseUserResponse>(addUserResult.Value);
+            var userResponse = _mapper.Map<UserBaseResponse>(addUserResult.Value);
             userResponse.Role = UserRole.Member;
             return userResponse;
         }

@@ -23,9 +23,10 @@ namespace PrimeFit.Application.Specifications.Subscriptions
 
             }
 
-            Query.Include(s => s.User)
-             .Include(s => s.Package)
-             .Include(s => s.Freezes);
+            Query.Include(s => s.Package)
+                 .Include(s => s.User)
+                 .Include(s => s.Freezes);
+
         }
     }
 }

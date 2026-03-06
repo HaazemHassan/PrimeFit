@@ -6,13 +6,14 @@ namespace PrimeFit.Application.Specifications
     public static class SpecificationBuilderExtensions
     {
         public static ISpecificationBuilder<T> Paginate<T>(
-            this ISpecificationBuilder<T> builder, int pageNumber, int pageSize)
+            this ISpecificationBuilder<T> builder, int? pageNumber, int? pageSize)
         {
 
-            if (pageNumber <= 0)
+            if (pageNumber is null || pageNumber <= 0)
                 pageNumber = 1;
 
-            if (pageSize < PaginationConstants.MinimumPageSize)
+
+            if (pageSize is null || pageSize < PaginationConstants.MinimumPageSize)
             {
                 pageSize = PaginationConstants.DefaultPageSize;
 
@@ -23,8 +24,8 @@ namespace PrimeFit.Application.Specifications
 
             }
 
-            return builder.Skip((pageNumber - 1) * pageSize)
-                          .Take(pageSize);
+            return builder.Skip((pageNumber.Value - 1) * pageSize.Value)
+                          .Take(pageSize.Value);
         }
     }
 }

@@ -25,7 +25,6 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetSubscriptionByI
         }
 
 
-
         public async Task<ErrorOr<GetSubscriptionByIdQueryResponse>> Handle(GetSubscriptionByIdQuery request, CancellationToken cancellationToken)
         {
             int ownerId = _currentUserService.UserId!.Value;

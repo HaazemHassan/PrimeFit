@@ -5,7 +5,7 @@ using PrimeFit.Application.Features.Users.Common;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 {
-    public class RegisterOwnerCommand : IRequest<ErrorOr<BaseUserResponse>>, ITransactionalRequest
+    public class RegisterOwnerCommand : IRequest<ErrorOr<UserBaseResponse>>, ITransactionalRequest
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

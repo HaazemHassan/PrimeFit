@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace PrimeFit.Application.Features.Users.Common
 {
-    public class BaseUserResponse
+    public class UserBaseResponse
     {
 
         [JsonPropertyOrder(-1)]

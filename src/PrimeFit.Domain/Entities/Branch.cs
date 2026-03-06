@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using NetTopologySuite.Geometries;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities.Base;
@@ -41,7 +42,7 @@ namespace PrimeFit.Domain.Entities
         public int? GovernorateId { get; private set; }
         public Governorate? Governorate { get; private set; }
         public string? Address { get; private set; }
-        public GeoLocation? Coordinates { get; private set; }
+        public Point? Coordinates { get; private set; }
 
 
 
@@ -116,9 +117,14 @@ namespace PrimeFit.Domain.Entities
 
         public void UpdateLocationDetails(Governorate governorate, string address, GeoLocation location)
         {
+            var coordinates = new Point(location.Longitude, location.Latitude)
+            {
+                SRID = 4326
+            };
+
             Governorate = governorate;
             Address = address;
-            Coordinates = location;
+            Coordinates = coordinates;
         }
 
         public void UpdateWorkingHours(List<BranchWorkingHour> branchWorkingHours)

@@ -8,7 +8,7 @@ public partial class UserResponseMappingProfile : Profile
 {
     public UserResponseMappingProfile()
     {
-        CreateMap<DomainUser, BaseUserResponse>()
+        CreateMap<DomainUser, UserBaseResponse>()
             .ForMember(dest => dest.FullName,
                opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
     }

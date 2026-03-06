@@ -197,7 +197,7 @@ namespace PrimeFit.Infrastructure.Services
                 ExpirationDate = refreshToken.Expires
             };
 
-            var userResponse = _mapper.Map<BaseUserResponse>(appUser.DomainUser);
+            var userResponse = _mapper.Map<UserBaseResponse>(appUser.DomainUser);
             bool isOwner = await _userManager.IsInRoleAsync(appUser, UserRole.Owner.ToString());
             userResponse.Role = isOwner ? UserRole.Owner : UserRole.Member;
             AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);

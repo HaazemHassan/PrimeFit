@@ -3,14 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace PrimeFit.Application.Features.Authentication.Common
 {
-    public class AuthResult(string accessToken, RefreshTokenDTO refreshToken, BaseUserResponse user)
+    public class AuthResult(string accessToken, RefreshTokenDTO refreshToken, UserBaseResponse user)
     {
         public string AccessToken { get; set; } = accessToken;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public RefreshTokenDTO? RefreshToken { get; set; } = refreshToken;
 
-        public BaseUserResponse User { get; set; } = user;
+        public UserBaseResponse User { get; set; } = user;
     }
 
 

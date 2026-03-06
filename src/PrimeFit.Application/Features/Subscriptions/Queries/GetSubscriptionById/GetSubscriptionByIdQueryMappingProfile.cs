@@ -13,7 +13,6 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetSubscriptionByI
             CreateMap<DomainUser, MemberDTO>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
 
-
             CreateMap<Subscription, GetSubscriptionByIdQueryResponse>()
                .ForMember(dest => dest.SubscriptionId, opt => opt.MapFrom(src => src.Id))
                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))

@@ -2,7 +2,7 @@
 
 namespace PrimeFit.Application.Features.Users.Commands.AddUser
 {
-    public class AddUserCommandResponse : BaseUserResponse
+    public class AddUserCommandResponse : UserBaseResponse
     {
     }
 }

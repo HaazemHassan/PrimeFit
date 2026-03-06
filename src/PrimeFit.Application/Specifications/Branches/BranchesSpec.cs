@@ -3,12 +3,14 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Branches
 {
-    public class BranchesPaginatedForOwnerSpec : Specification<Branch>
+    public class BranchesSpec : Specification<Branch>
     {
-        public BranchesPaginatedForOwnerSpec(int? ownerId, int pageNumber, int pageSize, string? search)
+        public BranchesSpec(int? ownerId, int? pageNumber, int? pageSize, string? search)
         {
             if (ownerId.HasValue)
+            {
                 Query.Where(b => b.OwnerId == ownerId);
+            }
 
             if (!string.IsNullOrEmpty(search))
             {
