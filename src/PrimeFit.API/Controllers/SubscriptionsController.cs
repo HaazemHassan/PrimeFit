@@ -18,5 +18,7 @@ namespace PrimeFit.API.Controllers
             }
             return Ok(result.Value);
         }
+
+
     }
 }

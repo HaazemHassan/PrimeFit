@@ -11,9 +11,6 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
     [Authorize(Roles = [UserRole.Owner])]
     public class GetBranchSubscriptionsQuery : PaginatedQuery, IRequest<ErrorOr<PaginatedResult<GetBranchSubscriptionsQueryResponse>>>, IAuthorizedRequest
     {
-
-
-
         public int BranchId { get; set; }
         public SubscriptionStatus? SubscriptionStatus { get; set; }
 

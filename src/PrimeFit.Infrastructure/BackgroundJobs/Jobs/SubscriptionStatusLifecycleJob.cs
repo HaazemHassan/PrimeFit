@@ -43,7 +43,7 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
             {
                 var batch = await FetchBatchAsync(now, ct);
 
-                if (!batch.Any())
+                if (batch.Count == 0)
                     break;
 
                 var expiredPairs = ProcessBatch(batch, now);

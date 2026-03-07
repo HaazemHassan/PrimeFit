@@ -20,7 +20,7 @@ namespace PrimeFit.Application.Specifications.Subscriptions
                     var lowerTerm = term.ToLower();
                     Query.Where(s =>
                         s.User.FirstName.ToLower().Contains(lowerTerm) ||
-                        s.User.LastName.ToLower().Contains(lowerTerm) ||
+                        s.User.LastName.Contains(lowerTerm, StringComparison.CurrentCultureIgnoreCase) ||
                         s.User.PhoneNumber.Contains(lowerTerm));
                 }
             }
