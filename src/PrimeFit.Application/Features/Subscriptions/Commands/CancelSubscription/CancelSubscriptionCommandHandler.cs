@@ -5,6 +5,7 @@ using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.ServicesContracts;
 
@@ -33,19 +34,38 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
 
             var spec = new SubscriptionWithBranchSpec(request.SubscriptionId);
 
-            var subscription = await _unitOfWork.Subscriptions.FirstOrDefaultAsync(spec, cancellationToken);
+            var subscriptionToCancel = await _unitOfWork.Subscriptions.FirstOrDefaultAsync(spec, cancellationToken);
 
-            if (subscription is null || subscription.Branch.OwnerId != curUserId)
+            if (subscriptionToCancel is null || subscriptionToCancel.Branch.OwnerId != curUserId)
             {
                 return Error.NotFound(ErrorCodes.Subscription.NotFound, "Subscription not found");
             }
 
+            var subscriptionStatusBeforeCancel = subscriptionToCancel.Status;
 
-            var freezeResult = subscription.Cancel(_dateTimeProvider.UtcNow);
-            if (freezeResult.IsError)
+            var cancellationResult = subscriptionToCancel.Cancel(_dateTimeProvider.UtcNow);
+            if (cancellationResult.IsError)
             {
-                return freezeResult.Errors;
+                return cancellationResult.Errors;
             }
+
+
+            if (subscriptionStatusBeforeCancel == SubscriptionStatus.Active)
+            {
+                var scheduledSubscription = await _unitOfWork.Subscriptions.GetAsync(
+                    s => s.UserId == subscriptionToCancel.UserId
+                    && s.BranchId == subscriptionToCancel.BranchId
+                    && s.Status == SubscriptionStatus.Scheduled,
+                    cancellationToken);
+
+                if (scheduledSubscription is not null)
+                {
+                    scheduledSubscription.Activate(_dateTimeProvider.UtcNow);
+
+                }
+
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Result.Success;
 
