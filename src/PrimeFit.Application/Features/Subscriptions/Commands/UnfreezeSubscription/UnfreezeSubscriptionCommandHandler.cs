@@ -35,7 +35,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.UnfreezeSubscript
 
             var subscription = await _unitOfWork.Subscriptions.FirstOrDefaultAsync(spec, cancellationToken);
 
-            if (subscription is null || subscription.Branch.OwnerId != curUserId)
+            if (subscription is null || (subscription.UserId != curUserId && subscription.Branch.OwnerId != curUserId))
             {
                 return Error.NotFound(ErrorCodes.Subscription.NotFound, "Subscription not found");
             }
