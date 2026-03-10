@@ -128,6 +128,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPackageRepository, PackageRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionFreezeRepository, SubscriptionFreezeRepository>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 
 
@@ -143,8 +144,11 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IPolicyEnforcer, PolicyEnforcer>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<IBranchAuthorizationService, BranchAuthorizationService>();
         services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddSingleton<ITotpService, TotpService>();
+
 
 
         services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));

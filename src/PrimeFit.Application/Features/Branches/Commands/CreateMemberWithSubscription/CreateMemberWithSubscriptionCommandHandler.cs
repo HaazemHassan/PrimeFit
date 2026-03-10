@@ -2,9 +2,11 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.ServicesContracts;
@@ -18,19 +20,33 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
         private readonly IPhoneNumberService _phoneNumberService;
+        private readonly ITotpService _totpService;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IPhoneNumberService phoneNumberService)
+        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IPhoneNumberService phoneNumberService, ITotpService totpService, IBranchAuthorizationService branchAuthorizationService)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
             _phoneNumberService = phoneNumberService;
+            _totpService = totpService;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<CreateMemberWithSubscriptionCommandResponse>> Handle(CreateMemberWithSubscriptionCommand request, CancellationToken cancellationToken)
         {
-            int curUserId = _currentUserService.UserId!.Value;
+
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId,
+                Permission.MembersWrite,
+                cancellationToken);
+
+
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
+
 
             var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email, cancellationToken);
 
@@ -48,18 +64,24 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
             }
 
             var packageSpec = new PackageWithBranchSpec(request.PackageId);
-
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(packageSpec, cancellationToken);
 
             var branch = package?.Branch;
 
-            if (package is null || branch is null || branch.Id != request.BranchId || branch.OwnerId != curUserId)
+            if (package is null || branch is null || branch.Id != request.BranchId)
             {
                 return Error.Validation(description: "Package not found");
             }
 
 
-            var newUser = new DomainUser(request.FirstName, request.LastName, request.Email, phoneNumberNormalized);
+            var totpSecret = _totpService.GenerateTotpSecret();
+            var newUser = new DomainUser(request.FirstName, request.LastName, request.Email, phoneNumberNormalized, totpSecret);
+
+
+
+            //Add
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             await _unitOfWork.Users.AddAsync(newUser, cancellationToken);
 
@@ -72,7 +94,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
             }
 
             await _unitOfWork.Subscriptions.AddAsync(createSubResult.Value, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync();
 
             var subscription = createSubResult.Value;
             return _mapper.Map<CreateMemberWithSubscriptionCommandResponse>(subscription);

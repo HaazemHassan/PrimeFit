@@ -1,10 +1,13 @@
 [
   {
     "Name": "Owner",
-    "Permissions": []
-  }, 
+    "Permissions": [
+      
+    ]
+  },
+ 
   {
-    "Name": "Member",
+    "Name": "SuperAdmin",
     "Permissions": []
   }
 ]

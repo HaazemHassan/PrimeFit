@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Attendance\Queries\" />
     <Folder Include="ServicesContracts\Application\" />
   </ItemGroup>
 

@@ -1,17 +1,32 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests.Client.Users;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 using PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability;
+using PrimeFit.Application.Features.Users.Queries.GetUserById;
 using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.API.Controllers
 {
     public class UsersController(ICurrentUserService _currentUserService, IMapper _mapper) : BaseController
     {
+
+
+        [HttpGet("{Id:int}", Name = RouteNames.Users.GetUserById)]
+        public async Task<IActionResult> GetById([FromRoute] int Id)
+        {
+            var query = new GetUserByIdQuery(Id);
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+                return Problem(result.Errors);
+            return Ok(result.Value);
+        }
+
+
 
         [HttpGet("check-email")]
         public async Task<IActionResult> CheckEmailAvailability([FromQuery] CheckEmailAvailabilityQuery query)

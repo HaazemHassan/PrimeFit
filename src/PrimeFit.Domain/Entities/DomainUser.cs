@@ -4,7 +4,7 @@ namespace PrimeFit.Domain.Entities
 {
     public sealed class DomainUser : FullAuditableEntity<int>
     {
-        public DomainUser(string firstName, string lastName, string email, string phoneNumber)
+        public DomainUser(string firstName, string lastName, string email, string phoneNumber, string? totpSecret = default)
         {
             _subscriptions = new();
 
@@ -12,11 +12,13 @@ namespace PrimeFit.Domain.Entities
             LastName = lastName;
             Email = email;
             PhoneNumber = phoneNumber;
+            TotpSecret = totpSecret;
         }
         public string FirstName { get; private set; } = string.Empty;
         public string LastName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
         public string PhoneNumber { get; private set; } = string.Empty;
+        public string? TotpSecret { get; private set; }
         public string FullName => $"{FirstName} {LastName}";
 
 

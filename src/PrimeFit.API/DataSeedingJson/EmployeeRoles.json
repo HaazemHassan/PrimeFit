@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "BranchAdmin",
+    "Permissions": [
+
+    ]
+  },
+ 
+  {
+    "Name": "Gator",
+    "Permissions": [
+      "CheckInWrite"
+    ]
+  }
+]
+

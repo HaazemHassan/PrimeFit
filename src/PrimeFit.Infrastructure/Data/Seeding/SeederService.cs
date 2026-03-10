@@ -58,13 +58,12 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                         continue;
                 }
 
-                if (roleData.Permissions?.Count > 0)
-                {
-                    await SyncRolePermissionsAsync(
-                        role.Id,
-                        roleData.Permissions,
-                        cancellationToken);
-                }
+
+                await SyncRolePermissionsAsync(
+                    role.Id,
+                    roleData.Permissions,
+                    cancellationToken);
+
             }
 
 
@@ -85,14 +84,16 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                 }
             }
 
-
-            var existingPermissions = await _context.Set<RolePermission>()
+            var existingRolePermissions = await _context.Set<RolePermission>()
                 .Where(rp => rp.RoleId == roleId)
+                .ToListAsync(cancellationToken);
+
+            var existingPermissionValues = existingRolePermissions
                 .Select(rp => rp.Permission)
-                .ToHashSetAsync(cancellationToken);
+                .ToHashSet();
 
             var permissionsToAdd = validPermissions
-                .Where(p => !existingPermissions.Contains(p))
+                .Where(p => !existingPermissionValues.Contains(p))
                 .Select(p => new RolePermission
                 {
                     RoleId = roleId,
@@ -100,17 +101,80 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                 })
                 .ToList();
 
-            var permissionsToRemove = await _context.Set<RolePermission>()
-                .Where(rp => rp.RoleId == roleId && !validPermissions.Contains(rp.Permission))
-                .ToListAsync(cancellationToken);
+            var permissionsToRemove = existingRolePermissions
+                .Where(rp => !validPermissions.Contains(rp.Permission))
+                .ToList();
 
             if (permissionsToAdd.Count > 0)
-                await _context.Set<RolePermission>().AddRangeAsync(
-                    permissionsToAdd,
-                    cancellationToken);
+                await _context.Set<RolePermission>().AddRangeAsync(permissionsToAdd, cancellationToken);
 
             if (permissionsToRemove.Count > 0)
                 _context.Set<RolePermission>().RemoveRange(permissionsToRemove);
+        }
+
+        public async Task SeedEmployeeRolesAsync(List<EmployeeRoleSeedDto> data, CancellationToken cancellationToken = default)
+        {
+            if (data is null || data.Count == 0)
+                return;
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            foreach (var roleData in data)
+            {
+                if (string.IsNullOrWhiteSpace(roleData.Name))
+                    continue;
+
+                var employeeRole = await _context.Set<EmployeeRole>()
+                    .FirstOrDefaultAsync(r => r.Name == roleData.Name, cancellationToken);
+
+                if (employeeRole is null)
+                {
+                    employeeRole = new EmployeeRole(roleData.Name);
+                    await _context.Set<EmployeeRole>().AddAsync(employeeRole, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+
+                await SyncEmployeeRolePermissionsAsync(employeeRole.Id, roleData.Permissions, cancellationToken);
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+
+        private async Task SyncEmployeeRolePermissionsAsync(int employeeRoleId, List<string> permissionStrings, CancellationToken cancellationToken)
+        {
+            var validPermissions = new HashSet<Permission>();
+
+            foreach (var permissionString in permissionStrings)
+            {
+                if (Enum.TryParse<Permission>(permissionString, ignoreCase: true, out var parsedPermission))
+                {
+                    validPermissions.Add(parsedPermission);
+                }
+            }
+
+            var existingPermissions = await _context.Set<EmployeeRolePermission>()
+                .Where(rp => rp.EmployeeRoleId == employeeRoleId)
+                .ToListAsync(cancellationToken);
+
+            var existingPermissionValues = existingPermissions
+                .Select(rp => rp.Permission)
+                .ToHashSet();
+
+            var permissionsToAdd = validPermissions
+                .Where(p => !existingPermissionValues.Contains(p))
+                .Select(p => new EmployeeRolePermission(employeeRoleId, p))
+                .ToList();
+
+            var permissionsToRemove = existingPermissions
+                .Where(rp => !validPermissions.Contains(rp.Permission))
+                .ToList();
+
+            if (permissionsToAdd.Count > 0)
+                await _context.Set<EmployeeRolePermission>().AddRangeAsync(permissionsToAdd, cancellationToken);
+
+            if (permissionsToRemove.Count > 0)
+                _context.Set<EmployeeRolePermission>().RemoveRange(permissionsToRemove);
         }
 
         public async Task SeedUsersAsync(List<UserSeedDto> usersSeedData, CancellationToken cancellationToken = default)

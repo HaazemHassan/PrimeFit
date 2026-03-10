@@ -6,8 +6,8 @@ namespace PrimeFit.Application.Common
     public static class CommonValidationRules
     {
 
-        public static IRuleBuilderOptions<T, string?> Required<T>(
-           this IRuleBuilder<T, string?> ruleBuilder
+        public static IRuleBuilderOptions<T, string> Required<T>(
+           this IRuleBuilder<T, string> ruleBuilder
         )
         {
             var rule = ruleBuilder;

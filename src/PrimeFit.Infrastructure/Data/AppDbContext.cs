@@ -27,6 +27,10 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<Package> Packages => Set<Package>();
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
         public DbSet<SubscriptionFreeze> SubscriptionFreezes => Set<SubscriptionFreeze>();
+        public DbSet<Employee> Employees => Set<Employee>();
+        public DbSet<EmployeeRole> EmployeeRoles => Set<EmployeeRole>();
+        public DbSet<EmployeeRolePermission> EmployeeRolePermissions => Set<EmployeeRolePermission>();
+        public DbSet<CheckIn> CheckIns => Set<CheckIn>();
 
 
 

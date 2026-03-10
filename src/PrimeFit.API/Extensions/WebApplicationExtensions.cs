@@ -42,15 +42,17 @@ namespace PrimeFit.API.Extentions
 
                     string rolesJson = await File.ReadAllTextAsync("DataSeedingJson/Roles.json");
                     string usersJson = await File.ReadAllTextAsync("DataSeedingJson/Users.json");
+                    string employeeRolesJson = await File.ReadAllTextAsync("DataSeedingJson/EmployeeRoles.json");
 
                     List<RoleSeedDto>? rolesSeedData = JsonSerializer.Deserialize<List<RoleSeedDto>>(rolesJson);
 
-
                     var options = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
                     List<UserSeedDto>? usersSeedData = JsonSerializer.Deserialize<List<UserSeedDto>>(usersJson, options);
+                    List<EmployeeRoleSeedDto>? employeeRolesSeedData = JsonSerializer.Deserialize<List<EmployeeRoleSeedDto>>(employeeRolesJson);
 
                     await seederService.SeedRolesAsync(rolesSeedData!);
                     await seederService.SeedUsersAsync(usersSeedData!);
+                    await seederService.SeedEmployeeRolesAsync(employeeRolesSeedData!);
                 }
                 catch (Exception ex)
                 {

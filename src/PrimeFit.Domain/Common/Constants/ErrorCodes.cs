@@ -59,6 +59,23 @@ public static class ErrorCodes
 
     }
 
+    public static class Employee
+    {
+        public const string RoleNotFound = "EMPLOYEE_ROLE_NOT_FOUND";
+        public const string AlreadyExistsInBranch = "EMPLOYEE_ALREADY_EXISTS_IN_BRANCH";
+    }
+
+    public static class CheckIn
+    {
+        public const string InvalidCode = "CHECKIN_INVALID_CODE";
+        public const string SubscriptionNotFound = "CHECKIN_SUBSCRIPTION_NOT_FOUND";
+
+        public const string FrozenSubscription = "CHECKIN_FROZEN_SUBSCRIPTION";
+        public const string ScheduledSubscription = "CHECKIN_SCHEDULED_SUBSCRIPTION";
+        public const string ExpiredSubscription = "CHECKIN_EXPIRED_SUBSCRIPTION";
+        public const string CanceledSubscription = "CHECKIN_CANCELED_SUBSCRIPTION";
+    }
+
     public static class WorkingHours
     {
         public const string InvalidWorkingHours = "INVALID_WORKING_HOURS";

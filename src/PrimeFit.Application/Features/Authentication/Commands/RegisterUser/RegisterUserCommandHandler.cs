@@ -17,21 +17,26 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
         private readonly IApplicationUserService _applicationUserService;
         private readonly IAuthenticationService _authenticationService;
         private readonly IPhoneNumberService _phoneNumberService;
+        private readonly ITotpService _totpService;
 
-        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IApplicationUserService applicationUserService, IAuthenticationService authenticationService, IPhoneNumberService phoneNumberService)
+
+        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IApplicationUserService applicationUserService, IAuthenticationService authenticationService, IPhoneNumberService phoneNumberService, ITotpService totpService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _applicationUserService = applicationUserService;
             _authenticationService = authenticationService;
             _phoneNumberService = phoneNumberService;
+            _totpService = totpService;
         }
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
 
-            var userToAdd = new DomainUser(request.FirstName, request.LastName, request.Email, normalizedPhoneNumber);
+            var totpSecret = _totpService.GenerateTotpSecret();
+
+            var userToAdd = new DomainUser(request.FirstName, request.LastName, request.Email, normalizedPhoneNumber, totpSecret);
             var addUserResult = await _applicationUserService.AddUser(userToAdd, request.Password, ct: cancellationToken);
 
             if (addUserResult.IsError)
