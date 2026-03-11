@@ -36,31 +36,11 @@ namespace PrimeFit.Application.Features.Attendance.Commands.CreateCheckIn
                   description: "Not member.");
             }
 
-            if (subscription.Status == SubscriptionStatus.Frozen)
-            {
-                return Error.Validation(
-                    code: ErrorCodes.CheckIn.FrozenSubscription,
-                    description: "Subscription is frozen.");
+            var canCheckInResult = subscription.EnsureCanCheckIn();
 
-            }
-            if (subscription.Status == SubscriptionStatus.Scheduled)
+            if (canCheckInResult.IsError)
             {
-                return Error.NotFound(
-                  code: ErrorCodes.CheckIn.ScheduledSubscription,
-                  description: "Subscription not activated.");
-
-            }
-            if (subscription.Status == SubscriptionStatus.Expired)
-            {
-                return Error.NotFound(
-                  code: ErrorCodes.CheckIn.ExpiredSubscription,
-                  description: "Subscription is Expired.");
-            }
-            if (subscription.Status == SubscriptionStatus.Cancelled)
-            {
-                return Error.NotFound(
-                  code: ErrorCodes.CheckIn.CanceledSubscription,
-                  description: "Subscription is canceled.");
+                return canCheckInResult.Errors;
             }
 
             var customer = subscription.User;

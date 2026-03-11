@@ -1,6 +1,7 @@
 using FluentValidation;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Features.Branches.Shared;
+using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage;
 
 namespace PrimeFit.Application.Features.Packages.Commands.UpdatePackage
 {

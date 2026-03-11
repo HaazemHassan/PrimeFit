@@ -9,6 +9,7 @@ namespace PrimeFit.Application.Security.Contracts
             TRequest request,
             List<UserRole> requiredRoles,
             List<Permission> requiredPermissions,
-            List<string> requiredPolicies);
+            List<string> requiredPolicies,
+            List<UserType> userTypes);
     }
 }

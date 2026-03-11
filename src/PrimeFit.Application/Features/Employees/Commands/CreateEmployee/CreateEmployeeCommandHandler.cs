@@ -24,23 +24,25 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
             CreateEmployeeCommand request,
             CancellationToken cancellationToken)
         {
-            var currentUserId = currentUserService.UserId!.Value;
+
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                request.BranchId,
+                Permission.EmployeesWrite,
+                cancellationToken);
+
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
+
 
             var branch = await unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
-
             if (branch is null)
             {
                 return Error.NotFound(
                     code: ErrorCodes.Branch.BranchNotFound,
                     description: "Branch not found");
 
-            }
-
-
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(branch.Id, Permission.EmployeesWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
             }
 
 
@@ -57,12 +59,12 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
 
 
             var normalizedPhone = phoneNumberService.Normalize(request.PhoneNumber);
-            var domainUser = new DomainUser(request.FirstName, request.LastName, request.Email, normalizedPhone);
+            var domainUser = new DomainUser(UserType.Employee, request.FirstName, request.LastName, request.Email, normalizedPhone);
 
             var addUserResult = await applicationUserService.AddUser(
                 domainUser,
                 request.Password,
-                UserRole.Employee,
+                null,
                 cancellationToken);
 
             if (addUserResult.IsError)

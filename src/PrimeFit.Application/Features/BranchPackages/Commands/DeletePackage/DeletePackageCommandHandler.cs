@@ -1,8 +1,10 @@
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Packages.Commands.DeletePackage
@@ -10,19 +12,23 @@ namespace PrimeFit.Application.Features.Packages.Commands.DeletePackage
     public class DeletePackageCommandHandler : IRequestHandler<DeletePackageCommand, ErrorOr<Deleted>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public DeletePackageCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public DeletePackageCommandHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Deleted>> Handle(DeletePackageCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.UserId!.Value;
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesDelete, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
-            var spec = new OwnerBranchPackageByIdSpec(request.PackageId, request.BranchId, currentUserId);
+            var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (package is null)

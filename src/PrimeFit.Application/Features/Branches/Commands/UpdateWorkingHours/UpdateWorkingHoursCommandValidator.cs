@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
 
 namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
 {

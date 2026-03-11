@@ -17,6 +17,7 @@ namespace PrimeFit.Infrastructure.Data.Seeding
         private readonly IUnitOfWork _unitOfWork;
         private readonly IApplicationUserService _applicationUserService;
         private readonly IPhoneNumberService _phoneNumberService;
+        private readonly ITotpService _totpService;
 
         public SeederService(
             UserManager<ApplicationUser> userManager,
@@ -24,7 +25,8 @@ namespace PrimeFit.Infrastructure.Data.Seeding
             IUnitOfWork unitOfWork,
             AppDbContext context,
             IApplicationUserService applicationUserService,
-            IPhoneNumberService phoneNumberService)
+            IPhoneNumberService phoneNumberService,
+            ITotpService totpService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -32,6 +34,7 @@ namespace PrimeFit.Infrastructure.Data.Seeding
             _context = context;
             _applicationUserService = applicationUserService;
             _phoneNumberService = phoneNumberService;
+            _totpService = totpService;
         }
 
         public async Task SeedRolesAsync(List<RoleSeedDto> rolesSeedData, CancellationToken cancellationToken = default)
@@ -196,18 +199,24 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                     var normalizedPhone =
                         _phoneNumberService.Normalize(userData.PhoneNumber);
 
+                    var totpSecret = _totpService.GenerateTotpSecret();
+
                     var domainUser = new DomainUser(
+                        userData.UserType,
                         userData.FirstName,
                         userData.LastName,
                         userData.Email,
-                        normalizedPhone
+                        normalizedPhone,
+                        totpSecret
                     );
 
-                    var result = await _applicationUserService.AddUser(domainUser, userData.Password, userData.Role);
+                    var result = await _applicationUserService.AddUser(domainUser, userData.Password, userData.Role, cancellationToken);
 
                     if (result.IsError)
-                        throw new Exception(
-                            $"Failed to create user {userData.Email}: {result.FirstError.Description}");
+                    {
+                        throw new Exception($"Failed to create user {userData.Email}: {result.FirstError.Description}");
+                    }
+
 
                     var createdUser = await _userManager.FindByEmailAsync(userData.Email);
 
@@ -215,6 +224,9 @@ namespace PrimeFit.Infrastructure.Data.Seeding
                     {
                         createdUser.EmailConfirmed = true;
                         await _userManager.UpdateAsync(createdUser);
+
+                        if (userData.Role is not null)
+                            await _userManager.AddToRoleAsync(createdUser, userData.Role.ToString()!);
                     }
                 }
 

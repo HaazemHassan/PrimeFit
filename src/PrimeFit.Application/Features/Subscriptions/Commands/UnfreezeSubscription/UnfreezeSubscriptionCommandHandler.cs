@@ -1,45 +1,55 @@
-﻿using AutoMapper;
-using ErrorOr;
+﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
-using PrimeFit.Domain.ServicesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Commands.UnfreezeSubscription
 {
     public class UnfreezeSubscriptionCommandHandler : IRequestHandler<UnfreezeSubscriptionCommand, ErrorOr<Success>>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ISubscriptionDomainService _subscriptionService;
-        private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public UnfreezeSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IDateTimeProvider dateTimeProvider)
+        public UnfreezeSubscriptionCommandHandler(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider, IBranchAuthorizationService branchAuthorizationService, ICurrentUserService currentUserService)
         {
-            _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
-            _subscriptionService = subscriptionService;
-            _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
+            _branchAuthorizationService = branchAuthorizationService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UnfreezeSubscriptionCommand request, CancellationToken cancellationToken)
         {
-            int curUserId = _currentUserService.UserId!.Value;
+            var curUserId = _currentUserService.UserId;
 
             var spec = new SubscriptionWithBranchAndFreezesSpec(request.SubscriptionId);
 
             var subscription = await _unitOfWork.Subscriptions.FirstOrDefaultAsync(spec, cancellationToken);
 
-            if (subscription is null || (subscription.UserId != curUserId && subscription.Branch.OwnerId != curUserId))
+            if (subscription is null)
             {
                 return Error.NotFound(ErrorCodes.Subscription.NotFound, "Subscription not found");
             }
 
+            if (subscription.UserId != curUserId)
+            {
+                var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                   subscription.BranchId,
+                   Permission.SubscriptionsWrite,
+                   cancellationToken);
+
+                if (authResult.IsError)
+                {
+                    return authResult.Errors;
+                }
+            }
 
             var freezeResult = subscription.UnFreeze(_dateTimeProvider.UtcNow);
             if (freezeResult.IsError)

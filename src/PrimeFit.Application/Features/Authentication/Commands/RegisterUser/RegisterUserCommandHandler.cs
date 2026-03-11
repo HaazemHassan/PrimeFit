@@ -36,14 +36,14 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 
             var totpSecret = _totpService.GenerateTotpSecret();
 
-            var userToAdd = new DomainUser(request.FirstName, request.LastName, request.Email, normalizedPhoneNumber, totpSecret);
+            var userToAdd = new DomainUser(UserType.Customer, request.FirstName, request.LastName, request.Email, normalizedPhoneNumber, totpSecret);
             var addUserResult = await _applicationUserService.AddUser(userToAdd, request.Password, ct: cancellationToken);
 
             if (addUserResult.IsError)
                 return addUserResult.Errors;
 
             var userResponse = _mapper.Map<UserBaseResponse>(addUserResult.Value);
-            userResponse.Role = UserRole.Member;
+            userResponse.UserType = UserType.Customer;
             return userResponse;
         }
     }

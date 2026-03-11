@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
+using PrimeFit.Application.Features.Branches.Commands.CreateBranch;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails
+namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchBussinessDetails
 {
-    public class AddBranchCommandValidator : AbstractValidator<AddBranchCommand>
+    public class CreateBranchCommandValidator : AbstractValidator<CreateBranchCommand>
     {
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly AppPasswordOptions _passwordSettings;
-        public AddBranchCommandValidator(AppPasswordOptions passwordSettings, IPhoneNumberService phoneNumberService)
+        public CreateBranchCommandValidator(AppPasswordOptions passwordSettings, IPhoneNumberService phoneNumberService)
         {
             _passwordSettings = passwordSettings;
             _phoneNumberService = phoneNumberService;

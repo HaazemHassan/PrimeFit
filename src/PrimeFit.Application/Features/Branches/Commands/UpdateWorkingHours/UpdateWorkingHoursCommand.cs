@@ -3,15 +3,16 @@ using MediatR;
 using PrimeFit.Application.Common.Behaviors.Transaction;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
-using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Application.Security.Policies;
 
-namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
+namespace PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours
+
 {
-    [Authorize(Roles = [UserRole.Owner])]
+    [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
     public class UpdateWorkingHoursCommand : IRequest<ErrorOr<Success>>, IAuthorizedRequest, ITransactionalRequest
     {
         public int BranchId { get; set; }
-        public List<WorkingHourDto> WorkingHours { get; set; } = new();
+        public List<WorkingHourDto> WorkingHours { get; set; } = [];
     }
 
     public class WorkingHourDto

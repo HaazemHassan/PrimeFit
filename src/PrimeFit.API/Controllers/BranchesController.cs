@@ -7,7 +7,7 @@ using PrimeFit.Application.Features.Branches.Queries.GetBranchById;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic;
 using PrimeFit.Application.Features.Branches.Queries.GetMyBranches;
 using PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches;
-using PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForUsers;
+using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForCustomers;
 using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.API.Controllers
@@ -24,7 +24,7 @@ namespace PrimeFit.API.Controllers
         [HttpGet("{branchId:int}", Name = RouteNames.Branches.GetBranchById)]
         public async Task<IActionResult> GetBranchById([FromRoute] int branchId, [FromQuery] GetBranchByIdRequest request)
         {
-            if (!_currentUserService.IsAuthenticated || _currentUserService.IsInRole(UserRole.Member))
+            if (!_currentUserService.IsAuthenticated || _currentUserService.UserType == UserType.Customer)
             {
                 var branchForPublicQuery = new GetBranchByIdForPublicQuery(branchId, request.Latitude, request.Longitude);
 
@@ -69,7 +69,7 @@ namespace PrimeFit.API.Controllers
         [HttpGet("{branchId:int}/packages")]
         public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId)
         {
-            var query = new GetBranchPackagesForUsersQuery(branchId);
+            var query = new GetBranchPackagesForCustomersQuery(branchId);
 
             var result = await Mediator.Send(query);
             if (result.IsError)

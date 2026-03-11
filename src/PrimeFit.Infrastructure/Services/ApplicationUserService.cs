@@ -27,7 +27,7 @@ namespace PrimeFit.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser domainUser, string password, UserRole role = UserRole.Member, CancellationToken ct = default)
+        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser domainUser, string password, UserRole? UserRole = default, CancellationToken ct = default)
         {
             var existingDomainUser = await _unitOfWork.Users.GetAsync(u => u.Email == domainUser.Email, ct);
 
@@ -74,12 +74,6 @@ namespace PrimeFit.Infrastructure.Services
 
             }
 
-            var addToRoleResult = await _userManager.AddToRoleAsync(applicationUser, role.ToString()!);
-            if (!addToRoleResult.Succeeded)
-            {
-                return Error.Failure(description: "Failed to create user");
-
-            }
 
             return domainUser;
         }

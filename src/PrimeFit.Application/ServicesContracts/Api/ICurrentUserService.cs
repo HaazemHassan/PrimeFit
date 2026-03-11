@@ -7,6 +7,7 @@ public interface ICurrentUserService
     int? UserId { get; }
     string? Email { get; }
     bool IsAuthenticated { get; }
+    UserType UserType { get; }
     IList<UserRole> GetRoles();
     bool IsInRole(UserRole roleName);
     bool HasAllRoles(List<UserRole> requiredRoles);

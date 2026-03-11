@@ -37,7 +37,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
         public async Task<ErrorOr<CreateMemberWithSubscriptionCommandResponse>> Handle(CreateMemberWithSubscriptionCommand request, CancellationToken cancellationToken)
         {
 
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId,
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                request.BranchId,
                 Permission.MembersWrite,
                 cancellationToken);
 
@@ -75,13 +76,13 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
 
 
             var totpSecret = _totpService.GenerateTotpSecret();
-            var newUser = new DomainUser(request.FirstName, request.LastName, request.Email, phoneNumberNormalized, totpSecret);
+            var newUser = new DomainUser(UserType.Customer, request.FirstName, request.LastName, request.Email, phoneNumberNormalized, totpSecret);
 
 
 
             //Add
 
-            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
             await _unitOfWork.Users.AddAsync(newUser, cancellationToken);
 

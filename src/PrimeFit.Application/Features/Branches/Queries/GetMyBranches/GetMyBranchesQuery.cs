@@ -7,7 +7,7 @@ using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
 {
-    [Authorize(Roles = [UserRole.Owner])]
+    [Authorize(UserTypes = [UserType.PartnerAdmin])]
     public class GetMyBranchesQuery
         : PaginatedQuery
         , IRequest<ErrorOr<PaginatedResult<GetMyBranchesQueryResponse>>>

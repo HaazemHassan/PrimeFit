@@ -1,9 +1,9 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
-using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.Subscriptions;
-using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions
@@ -12,26 +12,24 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
         private readonly TimeProvider _timeProvider;
-        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, TimeProvider timeProvider)
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
+
+        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, TimeProvider timeProvider, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
             _timeProvider = timeProvider;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
 
 
         public async Task<ErrorOr<PaginatedResult<GetBranchSubscriptionsQueryResponse>>> Handle(GetBranchSubscriptionsQuery request, CancellationToken cancellationToken)
         {
-            int ownerId = _currentUserService.UserId!.Value;
-
-            var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
-            if (branch is null || branch.OwnerId != ownerId)
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.SubscriptionsView, cancellationToken);
+            if (authResult.IsError)
             {
-                return Error.Failure(
-                    ErrorCodes.Branch.BranchNotFound, description: "Branch not found");
+                return authResult.Errors;
             }
 
             var dataSpec = new BranchSubscriptionsPaginatedSpec(request.BranchId, request.SubscriptionStatus, request.Search, request.PageNumber, request.PageSize);

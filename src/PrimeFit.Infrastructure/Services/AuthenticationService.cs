@@ -198,8 +198,12 @@ namespace PrimeFit.Infrastructure.Services
             };
 
             var userResponse = _mapper.Map<UserBaseResponse>(appUser.DomainUser);
-            bool isOwner = await _userManager.IsInRoleAsync(appUser, UserRole.Owner.ToString());
-            userResponse.Role = isOwner ? UserRole.Owner : UserRole.Member;
+            var userRole = (await _userManager.GetRolesAsync(appUser)).FirstOrDefault();
+            if (userRole is not null)
+            {
+                userResponse.UserRole = Enum.Parse<UserRole>(userRole);
+
+            }
             AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);
 
 
@@ -222,7 +226,9 @@ namespace PrimeFit.Infrastructure.Services
              {
                  new(ClaimTypes.NameIdentifier,user.DomainUserId!.Value.ToString()),
                  new(ClaimTypes.Email,user.DomainUser!.Email),
-                 new(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                 new(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                 new("UserType", user.DomainUser.UserType.ToString())
+
 
              };
 
@@ -264,7 +270,7 @@ namespace PrimeFit.Infrastructure.Services
             RandomNumberGenerator.Fill(randomBytes);
             string Token = Convert.ToBase64String(randomBytes);
 
-            expirationDate = expirationDate ?? DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+            expirationDate ??= DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
             return new RefreshToken(Token, expirationDate.Value, accessTokenJTI, userId);
 
         }

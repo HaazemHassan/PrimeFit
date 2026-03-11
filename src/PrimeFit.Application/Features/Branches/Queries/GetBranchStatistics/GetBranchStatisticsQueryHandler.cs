@@ -2,9 +2,10 @@
 using MediatR;
 using PrimeFit.Application.Common.Enums;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
@@ -15,27 +16,27 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeProvider _dateTimeProvider;
-        public GetBranchStatisticsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider)
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
+        public GetBranchStatisticsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IDateTimeProvider dateTimeProvider, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _dateTimeProvider = dateTimeProvider;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
 
 
         public async Task<ErrorOr<GetBranchStatisticsQueryResponse>> Handle(GetBranchStatisticsQuery request, CancellationToken cancellationToken)
         {
-            int userId = _currentUserService.UserId!.Value;
-            var branchForOwner = new BranchForOwnerSpec(request.BranchId, userId);
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                request.BranchId,
+                Permission.BranchDetailsRead,
+                cancellationToken);
 
-            var isOwner = await _unitOfWork.Branches.AnyAsync(branchForOwner, cancellationToken);
-            if (!isOwner)
+            if (authResult.IsError)
             {
-
-                return Error.NotFound(
-                    ErrorCodes.Branch.BranchNotFound, "Branch not found");
-
+                return authResult.Errors;
             }
 
 

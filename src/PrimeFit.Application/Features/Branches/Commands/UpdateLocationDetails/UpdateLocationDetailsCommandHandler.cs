@@ -1,7 +1,9 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.ValueObjects;
 
@@ -11,15 +13,22 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public UpdateLocationDetailsCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public UpdateLocationDetailsCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UpdateLocationDetailsCommand request, CancellationToken cancellationToken)
         {
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchDetailsWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
             var geoLocatioResult = GeoLocation.Create(request.Latitude, request.Longitude);
             if (geoLocatioResult.IsError)
@@ -34,11 +43,6 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
             {
                 return Error.NotFound(ErrorCodes.Branch.BranchNotFound
                     , "Branch not found");
-            }
-
-            if (!branch.IsOwner(_currentUserService.UserId!.Value))
-            {
-                return Error.Unauthorized();
             }
 
             var governorate = await _unitOfWork.Governorates.GetByIdAsync(request.GovernorateId, cancellationToken);

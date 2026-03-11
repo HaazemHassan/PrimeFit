@@ -1,9 +1,11 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
@@ -14,25 +16,36 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
         private readonly IImageBackgroundService _imageBackgroundQueue;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
         public DeleteBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue)
+            IImageBackgroundService imageBackgroundQueue,
+            IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
             _imageBackgroundQueue = imageBackgroundQueue;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(DeleteBranchImageCommand request, CancellationToken cancellationToken)
         {
-            var ownerId = _currentUserService.UserId!.Value;
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                request.BranchId,
+                Permission.BranchImagesDelete,
+                cancellationToken);
 
-            var spec = new BranchWithSpeceficImageForOwnerSpec(ownerId, request.BranchId, request.ImageId);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
+
+            var spec = new BranchWithSpecificImageSpec(request.BranchId, request.ImageId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (branch is null)

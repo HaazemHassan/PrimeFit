@@ -2,7 +2,23 @@
   {
     "Name": "BranchAdmin",
     "Permissions": [
-
+      "MembersView",
+      "MembersWrite",
+      "MembersDelete",
+      "SubscriptionsView",
+      "SubscriptionsWrite",
+      "SubscriptionsCancel",
+      "PackagesView",
+      "PackagesWrite",
+      "PackagesDelete",
+      "EmployeesView",
+      "EmployeesWrite",
+      "EmployeesDelete",
+      "BranchImagesWrite",
+      "BranchImagesDelete",
+      "CheckInWrite",
+      "BranchDetailsRead",
+      "BranchDetailsWrite"
     ]
   },
  

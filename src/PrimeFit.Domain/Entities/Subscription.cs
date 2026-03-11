@@ -1,4 +1,5 @@
 ﻿using ErrorOr;
+using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities.Base;
 
@@ -203,6 +204,27 @@ namespace PrimeFit.Domain.Entities
             Status = SubscriptionStatus.Cancelled;
 
             return Result.Success;
+        }
+
+
+        public ErrorOr<Success> EnsureCanCheckIn()
+        {
+            return Status switch
+            {
+                SubscriptionStatus.Frozen =>
+                    Error.Validation(ErrorCodes.CheckIn.FrozenSubscription, "Subscription is frozen."),
+
+                SubscriptionStatus.Scheduled =>
+                    Error.Validation(ErrorCodes.CheckIn.ScheduledSubscription, "Subscription not activated."),
+
+                SubscriptionStatus.Expired =>
+                    Error.Validation(ErrorCodes.CheckIn.ExpiredSubscription, "Subscription is expired."),
+
+                SubscriptionStatus.Cancelled =>
+                    Error.Validation(ErrorCodes.CheckIn.CanceledSubscription, "Subscription is canceled."),
+
+                _ => Result.Success
+            };
         }
 
         // =====================================================================

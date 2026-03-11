@@ -12,20 +12,30 @@ namespace PrimeFit.Infrastructure.Security
             TRequest request,
             List<UserRole> requiredRoles,
             List<Permission> requiredPermissions,
-            List<string> requiredPolicies
+            List<string> requiredPolicies,
+            List<UserType> requiredUserTypes
             )
         {
 
+
+            if (requiredUserTypes.Count > 0 && !requiredUserTypes.Any(t => t == _currentUserService.UserType))
+            {
+                return Error.Forbidden(code: ErrorCodes.Authorization.MissingRoles, description: "Invalid User Type");
+
+            }
+
+
+            if (!_currentUserService.HasAllRoles(requiredRoles))
+            {
+                return Error.Forbidden(code: ErrorCodes.Authorization.MissingRoles, description: "User is missing required roles for taking this action");
+            }
 
             if (!_currentUserService.HasAllPermissions(requiredPermissions))
             {
                 return Error.Forbidden(code: ErrorCodes.Authorization.MissingPermissions, description: "User is missing required permissions for taking this action");
             }
 
-            if (!_currentUserService.HasAllRoles(requiredRoles))
-            {
-                return Error.Forbidden(code: ErrorCodes.Authorization.MissingRoles, description: "User is missing required roles for taking this action");
-            }
+
 
 
 

@@ -7,7 +7,7 @@ using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions
 {
-    [Authorize(Roles = [UserRole.Member])]
+    [Authorize]
     public class GetMySubscriptionsQuery : PaginatedQuery, IRequest<ErrorOr<PaginatedResult<GetMySubscriptionsQueryResponse>>>, IAuthorizedRequest
     {
         public SubscriptionStatus? Status { get; set; }

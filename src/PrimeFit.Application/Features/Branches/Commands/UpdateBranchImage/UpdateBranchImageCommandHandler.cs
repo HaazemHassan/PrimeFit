@@ -1,8 +1,10 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage
@@ -12,27 +14,33 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
         public UpdateBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue)
+            IImageBackgroundService imageBackgroundQueue,
+            IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
 
         public async Task<ErrorOr<UpdateBranchImageCommandResponse>> Handle(UpdateBranchImageCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.UserId!.Value;
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchImagesWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
             var image = await _unitOfWork.BranchImages.GetAsync(
-                i => i.Branch.OwnerId == currentUserId &&
-                     i.BranchId == request.BranchId &&
+                i => i.BranchId == request.BranchId &&
                      i.Id == request.ImageId,
                 cancellationToken);
 

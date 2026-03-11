@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using PrimeFit.Application.Common;
 
-namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
+namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
 {
     public class AddBranchImageCommandValidator : AbstractValidator<AddBranchImageCommand>
     {

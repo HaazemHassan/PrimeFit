@@ -7,6 +7,9 @@ namespace PrimeFit.Application.Security
     {
         public Permission[] Permissions { get; set; } = [];
         public UserRole[] Roles { get; set; } = [];
+        public UserType[] UserTypes { get; set; } = [];
+
         public string? Policy { get; set; }
+
     }
 }

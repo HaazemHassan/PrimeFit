@@ -1,20 +1,20 @@
-[ 
+[
   {
-    "FirstName": "Owner",
+    "FirstName": "PartnerAdmin",
     "LastName": "Bussiness",
-    "Email": "owner@project.com",
+    "Email": "PartnerAdmin@project.com",
     "PhoneNumber": "01234567891",
     "Address": "Alexandria, Egypt",
     "Password": "123",
-    "Role": "Owner"
+    "UserType": "PartnerAdmin"
   },
   {
-    "FirstName": "Member",
+    "FirstName": "Customer",
     "LastName": "User",
     "Email": "member@project.com",
     "PhoneNumber": "01234567892",
     "Address": "Giza, Egypt",
     "Password": "123",
-    "Role": "Member"
+    "UserType": "Customer"
   }
 ]

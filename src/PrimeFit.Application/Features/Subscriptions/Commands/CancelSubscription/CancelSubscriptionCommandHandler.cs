@@ -1,44 +1,42 @@
-﻿using AutoMapper;
-using ErrorOr;
+﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
-using PrimeFit.Domain.ServicesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscription
 {
     public class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscriptionCommand, ErrorOr<Success>>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ISubscriptionDomainService _subscriptionService;
-        private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public CancelSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IDateTimeProvider dateTimeProvider)
+        public CancelSubscriptionCommandHandler(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider, IBranchAuthorizationService branchAuthorizationService)
         {
-            _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
-            _subscriptionService = subscriptionService;
-            _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)
         {
-            int curUserId = _currentUserService.UserId!.Value;
-
             var spec = new SubscriptionWithBranchSpec(request.SubscriptionId);
 
             var subscriptionToCancel = await _unitOfWork.Subscriptions.FirstOrDefaultAsync(spec, cancellationToken);
 
-            if (subscriptionToCancel is null || subscriptionToCancel.Branch.OwnerId != curUserId)
+            if (subscriptionToCancel is null)
             {
                 return Error.NotFound(ErrorCodes.Subscription.NotFound, "Subscription not found");
+            }
+
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(subscriptionToCancel.BranchId, Permission.SubscriptionsCancel, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
             }
 
             var subscriptionStatusBeforeCancel = subscriptionToCancel.Status;

@@ -2,7 +2,10 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.Specifications.Branches;
@@ -14,27 +17,30 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public UpdateWorkingHoursCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService)
+        public UpdateWorkingHoursCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _currentUserService = currentUserService;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UpdateWorkingHoursCommand request, CancellationToken cancellationToken)
         {
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchDetailsWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
+
             var getBranchWithWorkingHoursSpec = new GetBranchWithWorkingHoursSpec(request.BranchId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(getBranchWithWorkingHoursSpec, cancellationToken);
 
             if (branch is null)
             {
                 return Error.NotFound(ErrorCodes.Branch.BranchNotFound, "Branch not found");
-            }
-
-            if (!branch.IsOwner(_currentUserService.UserId!.Value))
-            {
-                return Error.Unauthorized();
             }
 
 

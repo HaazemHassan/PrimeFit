@@ -5,5 +5,7 @@ namespace PrimeFit.Application.Security.Policies
     {
         public const string SelfOrAdmin = nameof(SelfOrAdmin);
         public const string SelfOnly = nameof(SelfOnly);
+        public const string BranchStaffOnly = nameof(BranchStaffOnly);
+
     }
 }

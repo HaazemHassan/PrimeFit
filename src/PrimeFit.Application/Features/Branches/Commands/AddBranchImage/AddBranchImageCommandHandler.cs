@@ -1,12 +1,14 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
+namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
 {
     public class AddBranchImageCommandHandler : IRequestHandler<AddBranchImageCommand, ErrorOr<AddBranchImageCommandResponse>>
     {
@@ -14,26 +16,34 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
         private readonly IImageBackgroundService _imageBackgroundQueue;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
         public AddBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue)
+            IImageBackgroundService imageBackgroundQueue,
+            IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
             _imageBackgroundQueue = imageBackgroundQueue;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<AddBranchImageCommandResponse>> Handle(AddBranchImageCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.UserId!.Value;
 
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchImagesWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
-            var branchWithImagesSpec = new BranchWithImagesForOwnerSpec(currentUserId, request.BranchId);
+            var branchWithImagesSpec = new BranchWithImagesSpec(request.BranchId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(branchWithImagesSpec, cancellationToken);
 
             if (branch is null)

@@ -1,14 +1,14 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Features.Branches.Commands.AddBranch;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails
+namespace PrimeFit.Application.Features.Branches.Commands.CreateBranch
 {
-    [Authorize(Roles = [UserRole.Owner])]
-    public class AddBranchCommand : IRequest<ErrorOr<AddBranchCommandResponse>>, IAuthorizedRequest
+
+    [Authorize(UserTypes = [UserType.PartnerAdmin])]
+    public class CreateBranchCommand : IRequest<ErrorOr<CreateBranchCommandResponse>>, IAuthorizedRequest
     {
 
         public string Name { get; set; } = string.Empty;

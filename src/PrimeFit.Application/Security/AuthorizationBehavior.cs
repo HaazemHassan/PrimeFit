@@ -1,56 +1,76 @@
 ﻿using ErrorOr;
 using MediatR;
-using System.Reflection;
 using PrimeFit.Application.Common.Exceptions;
-using PrimeFit.Application.Security;
+using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Domain.Common.Enums;
+using System.Reflection;
 
-public sealed class AuthorizationBehavior<TRequest, TResponse>(
-IAuthorizationService _authorizationService)
-     : IPipelineBehavior<TRequest, TResponse>
-            where TRequest : IAuthorizedRequest
+namespace PrimeFit.Application.Security
 {
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+    public sealed class AuthorizationBehavior<TRequest, TResponse>(
+        IAuthorizationService authorizationService,
+        ICurrentUserService _currentUserService)
+        : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IAuthorizedRequest
     {
-        var attributes = typeof(TRequest).GetCustomAttributes<AuthorizeAttribute>().ToList();
-
-        if (attributes.Count == 0)
+        public async Task<TResponse> Handle(
+            TRequest request,
+            RequestHandlerDelegate<TResponse> next,
+            CancellationToken cancellationToken)
         {
-            return await next();
 
-        }
-
-        var requiredPermissions = attributes.SelectMany(a => a.Permissions ?? Array.Empty<Permission>()).ToList();
-        var requiredRoles = attributes.SelectMany(a => a.Roles ?? Array.Empty<UserRole>()).ToList();
-
-        var requiredPolicies = attributes
-            .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
-            .Select(a => a.Policy!)
-            .ToList();
-
-        var authorizationResult = _authorizationService.AuthorizeCurrentUser(
-           request,
-           requiredRoles,
-           requiredPermissions,
-           requiredPolicies);
-
-        if (authorizationResult.IsError)
-        {
-            var errorType = authorizationResult.FirstError.Type;
-            var message = authorizationResult.FirstError.Description;
-            throw errorType switch
+            if (_currentUserService.UserType == UserType.SuperAdmin)
             {
-                ErrorType.Unauthorized => new UnauthorizedException(message),
-                ErrorType.Forbidden => new ForbiddenException(message),
-                _ => new ForbiddenException(message)
+                return await next(cancellationToken);
+            }
+
+
+            var attributes = typeof(TRequest).GetCustomAttributes<AuthorizeAttribute>().ToList();
+
+            if (attributes.Count == 0)
+            {
+                return await next(cancellationToken);
+            }
+
+
+
+            ErrorOr<Success>? lastError = null;
+
+            foreach (var attribute in attributes)
+            {
+                var userTypes = attribute.UserTypes ?? [];
+                var roles = attribute.Roles ?? [];
+                var permissions = attribute.Permissions ?? [];
+
+                var policies = string.IsNullOrWhiteSpace(attribute.Policy)
+                    ? Array.Empty<string>()
+                    : [attribute.Policy];
+
+                var result = authorizationService.AuthorizeCurrentUser(
+                    request,
+                    [.. roles],
+                    [.. permissions],
+                    [.. policies],
+                    [.. userTypes]);
+
+                if (!result.IsError)
+                {
+                    return await next(cancellationToken);
+                }
+
+                lastError = result;
+            }
+
+            var error = lastError!.Value.FirstError;
+
+            throw error.Type switch
+            {
+                ErrorType.Unauthorized => new UnauthorizedException(error.Description),
+                ErrorType.Forbidden => new ForbiddenException(error.Description),
+                _ => new ForbiddenException(error.Description)
             };
         }
-
-        return await next();
     }
 }

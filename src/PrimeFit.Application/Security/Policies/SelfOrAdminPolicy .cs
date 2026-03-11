@@ -33,7 +33,7 @@ namespace PrimeFit.Application.Security.Policies
                 return Error.Unauthorized(code: ErrorCodes.Authorization.NotAuthenticated, description: "User not authenticated");
             }
 
-            var isAdmin = _currentUserService.IsInRole(UserRole.Owner);
+            var isAdmin = _currentUserService.UserType == UserType.SuperAdmin;
 
 
             if (isAdmin || ownedRequest.OwnerUserId == _currentUserService.UserId)

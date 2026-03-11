@@ -7,21 +7,21 @@ using PrimeFit.API.Requests.Branches;
 using PrimeFit.API.Requests.Branches.AddBranchImage;
 using PrimeFit.API.Requests.Branches.Subscriptions;
 using PrimeFit.API.Requests.Branches.UpdateBranchImage;
-using PrimeFit.Application.Features.Branches.Commands.AddBranchBussinessDetails;
-using PrimeFit.Application.Features.Branches.Commands.AddBranchImage;
-using PrimeFit.Application.Features.Branches.Commands.AddWorkingHours;
+using PrimeFit.Application.Features.Branches.Commands.CreateBranch;
+using PrimeFit.Application.Features.Branches.Commands.CreateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription;
 using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
-using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
+using PrimeFit.Application.Features.Branches.Commands.UpdateBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
+using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics;
+using PrimeFit.Application.Features.BranchPackages.Commands.AddPackage;
+using PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage;
+using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
-using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForOwner;
-using PrimeFit.Application.Features.Packages.Commands.AddPackage;
-using PrimeFit.Application.Features.Packages.Commands.DeletePackage;
-using PrimeFit.Application.Features.Packages.Commands.UpdatePackage;
+using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages;
 using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
 using PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions;
 
@@ -41,7 +41,7 @@ namespace PrimeFit.API.Controllers.Owner
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddBranch([FromBody] AddBranchCommand command)
+        public async Task<IActionResult> AddBranch([FromBody] CreateBranchCommand command)
         {
             var result = await Mediator.Send(command);
             if (result.IsError)
@@ -103,7 +103,11 @@ namespace PrimeFit.API.Controllers.Owner
         [HttpPatch("{branchId:int}/status")]
         public async Task<IActionResult> UpdateBranchStatus([FromRoute] int branchId, [FromBody] UpdateBranchStatusRequest request)
         {
-            var command = new UpdateBranchStatusCommand { BranchId = branchId, BranchStatus = request.BranchStatus };
+            var command = new UpdateBranchStatusCommand
+            {
+                BranchId = branchId,
+                BranchStatus = request.BranchStatus
+            };
 
             var result = await Mediator.Send(command);
             if (result.IsError)
@@ -261,7 +265,7 @@ namespace PrimeFit.API.Controllers.Owner
         public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId, [FromQuery] BasicPaginationRequest request)
         {
 
-            var query = _mapper.Map<GetBranchPackagesForOwnerQuery>(request);
+            var query = _mapper.Map<GetBranchPackagesQuery>(request);
             query.BranchId = branchId;
 
             var result = await Mediator.Send(query);
@@ -330,8 +334,10 @@ namespace PrimeFit.API.Controllers.Owner
         [HttpGet("{branchId:int}/statistics")]
         public async Task<IActionResult> GetBranchStatistics([FromRoute] int branchId, [FromBody] GetBranchStatisticsRequest request)
         {
-            var query = new GetBranchStatisticsQuery(branchId);
-            query.TimePeriod = request.TimePeriod;
+            var query = new GetBranchStatisticsQuery(branchId)
+            {
+                TimePeriod = request.TimePeriod
+            };
 
             var result = await Mediator.Send(query);
             if (result.IsError)

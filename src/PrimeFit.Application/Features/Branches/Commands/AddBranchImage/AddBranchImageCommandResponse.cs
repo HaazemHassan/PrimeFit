@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Application.Features.Branches.Commands.AddBranchImage
+﻿namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
 {
     public class AddBranchImageCommandResponse
     {

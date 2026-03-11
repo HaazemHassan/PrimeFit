@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Domain.Common.Enums;
+using System.Security.Claims;
 
 namespace PrimeFit.API.Services
 {
@@ -27,6 +27,25 @@ namespace PrimeFit.API.Services
 
         public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
+        public UserType UserType
+        {
+            get
+            {
+                if (!IsAuthenticated)
+                    throw new UnauthorizedAccessException();
+
+                var userTypeClaim = _httpContextAccessor.HttpContext?.User?
+                                    .FindFirst("UserType")?.Value;
+
+                if (string.IsNullOrEmpty(userTypeClaim))
+                    throw new UnauthorizedAccessException("UserType claim missing");
+
+                if (Enum.TryParse<UserType>(userTypeClaim, true, out var userType))
+                    return userType;
+
+                throw new UnauthorizedAccessException("Invalid UserType claim");
+            }
+        }
         public IList<UserRole> GetRoles()
         {
             if (!IsAuthenticated)

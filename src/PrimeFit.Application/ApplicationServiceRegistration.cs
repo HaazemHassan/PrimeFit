@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 using PrimeFit.Application.Common.Behaviors;
 using PrimeFit.Application.Common.Behaviors.Transaction;
 using PrimeFit.Application.Common.Behaviors.Trimming;
+using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Policies;
+using System.Reflection;
 
 namespace PrimeFit.Application
 {
@@ -41,6 +42,7 @@ namespace PrimeFit.Application
         {
             services.AddScoped<IAuthorizationPolicy, SelfOrAdminPolicy>();
             services.AddScoped<IAuthorizationPolicy, SelfOnlyPolicy>();
+            services.AddScoped<IAuthorizationPolicy, BranchStaffOnlyPolicy>();
 
         }
 

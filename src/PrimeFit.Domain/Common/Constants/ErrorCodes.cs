@@ -23,6 +23,7 @@ public static class ErrorCodes
     {
         public const string MissingPermissions = "MISSING_PERMISSIONS";
         public const string MissingRoles = "MISSING_ROLES";
+        public const string InvalidUserType = "INVALID_USER_TYPE";
         public const string NotAllowed = "NOT_ALLOWED";
         public const string InvalidRequest = "INVALID_REQUEST";
         public const string UnknownPolicy = "UNKNOWN_POLICY";

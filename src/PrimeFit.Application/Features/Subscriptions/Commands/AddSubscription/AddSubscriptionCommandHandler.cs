@@ -2,7 +2,9 @@
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.BranchPackages;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.ServicesContracts;
 
@@ -14,17 +16,25 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper)
+        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IBranchAuthorizationService branchAuthorizationService)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<AddSubscriptionCommandResponse>> Handle(AddSubscriptionCommand request, CancellationToken cancellationToken)
         {
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.SubscriptionsWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
+
             int curUserId = _currentUserService.UserId!.Value;
 
             var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email, cancellationToken);
@@ -47,7 +57,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
 
             var branch = package?.Branch;
 
-            if (package is null || branch is null || branch.Id != request.BranchId || branch.OwnerId != curUserId)
+            if (package is null || branch is null || branch.Id != request.BranchId)
             {
                 return Error.Validation(description: "Package not found");
             }

@@ -22,6 +22,13 @@
         EmployeesWrite = 401,
         EmployeesDelete = 403,
 
-        CheckInWrite = 500
+
+        BranchImagesWrite = 500,
+        BranchImagesDelete = 501,
+
+        CheckInWrite = 600,
+
+        BranchDetailsRead = 700,
+        BranchDetailsWrite = 701
     }
 }

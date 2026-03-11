@@ -1,9 +1,9 @@
-using AutoMapper;
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus
@@ -11,24 +11,25 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageSta
     public class UpdatePackageStatusCommandHandler : IRequestHandler<UpdatePackageStatusCommand, ErrorOr<Success>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public UpdatePackageStatusCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
+        public UpdatePackageStatusCommandHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
         {
             _unitOfWork = unitOfWork;
-            _currentUserService = currentUserService;
-            _mapper = mapper;
+            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UpdatePackageStatusCommand request, CancellationToken cancellationToken)
         {
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesWrite, cancellationToken);
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
-            var currentUserId = _currentUserService.UserId!.Value;
+            var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
 
-            var packageForOwnerSpec = new OwnerBranchPackageByIdSpec(request.PackageId, request.BranchId, currentUserId);
-
-            var package = await _unitOfWork.Packages.FirstOrDefaultAsync(packageForOwnerSpec, cancellationToken);
+            var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (package is null)
             {

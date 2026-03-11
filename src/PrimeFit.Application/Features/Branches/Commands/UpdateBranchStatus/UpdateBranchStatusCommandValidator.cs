@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using PrimeFit.Application.Features.Branches.Commands.ToggleBranchStatus;
 
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateBranchStatus
 {

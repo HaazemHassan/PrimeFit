@@ -26,14 +26,25 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
         {
             var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
 
-            var userToAdd = new DomainUser(request.FirstName, request.LastName, request.Email, normalizedPhoneNumber);
-            var addUserResult = await _applicationUserService.AddUser(userToAdd, request.Password, UserRole.Owner, ct: cancellationToken);
+            var userToAdd = new DomainUser(
+                UserType.PartnerAdmin,
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                normalizedPhoneNumber);
+
+
+            var addUserResult = await _applicationUserService.AddUser(
+                userToAdd,
+                request.Password,
+                null,
+                ct: cancellationToken);
 
             if (addUserResult.IsError)
                 return addUserResult.Errors;
 
             var userResponse = _mapper.Map<UserBaseResponse>(addUserResult.Value);
-            userResponse.Role = UserRole.Owner;
+            userResponse.UserType = UserType.PartnerAdmin;
             return userResponse;
         }
     }

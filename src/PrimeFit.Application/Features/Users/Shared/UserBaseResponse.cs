@@ -15,7 +15,8 @@ namespace PrimeFit.Application.Features.Users.Common
 
         public string FullName { get; set; } = string.Empty;
 
-        public UserRole Role { get; set; } = UserRole.Member;
+        public UserType UserType { get; set; }
+        public UserRole? UserRole { get; set; }
 
     }
 }

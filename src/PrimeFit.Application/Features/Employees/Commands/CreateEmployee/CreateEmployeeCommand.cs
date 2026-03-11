@@ -2,10 +2,11 @@
 using MediatR;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
+using PrimeFit.Application.Security.Policies;
 
 namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
 {
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
     public class CreateEmployeeCommand : IRequest<ErrorOr<CreateEmployeeCommandResponse>>, IAuthorizedRequest
     {
         public int BranchId { get; set; }

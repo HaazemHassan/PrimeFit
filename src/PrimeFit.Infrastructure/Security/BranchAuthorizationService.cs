@@ -16,8 +16,20 @@ namespace PrimeFit.Infrastructure.Security
             Permission requiredPermission,
             CancellationToken cancellationToken = default)
         {
-            if (currentUserService.HasPermission(requiredPermission))
+
+
+            if (currentUserService.UserType == UserType.SuperAdmin)
+            {
                 return Result.Success;
+            }
+
+
+            //If the user has a global permission, grant access immediately without further checks
+            //( Currently no system roles )
+            if (currentUserService.HasPermission(requiredPermission))
+            {
+                return Result.Success;
+            }
 
             var currentUserId = currentUserService.UserId;
 
@@ -29,17 +41,22 @@ namespace PrimeFit.Infrastructure.Security
                     IsOwner = b.OwnerId == currentUserId,
                     HasEmployeePermission = dbContext.Employees
                         .Any(e => e.BranchId == branchId
-                                  && e.UserId == currentUserId
+                                  && e.UserId == currentUserId && e.User.UserType == UserType.Employee
                                   && !e.IsDeleted
                                   && e.Role.Permissions.Any(p => p.Permission == requiredPermission))
-                })
-                .FirstOrDefaultAsync(cancellationToken);
+
+                }).FirstOrDefaultAsync(cancellationToken);
+
 
             if (authorized is null)
+            {
                 return Error.NotFound(ErrorCodes.Branch.BranchNotFound, "Branch not found.");
+            }
 
             if (authorized.IsOwner || authorized.HasEmployeePermission)
+            {
                 return Result.Success;
+            }
 
             return Error.Forbidden(ErrorCodes.Authorization.NotAllowed, "You do not have the required access.");
         }

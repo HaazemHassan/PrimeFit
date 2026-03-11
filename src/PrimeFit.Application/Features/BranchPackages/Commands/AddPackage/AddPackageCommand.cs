@@ -1,13 +1,14 @@
 ﻿using ErrorOr;
 using MediatR;
+using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
-using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Application.Security.Policies;
 
-namespace PrimeFit.Application.Features.Packages.Commands.AddPackage
+namespace PrimeFit.Application.Features.BranchPackages.Commands.AddPackage
 {
 
-    [Authorize(Roles = [UserRole.Owner])]
+    [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
     public class AddPackageCommand : IRequest<ErrorOr<AddPackageCommandResponse>>, IAuthorizedRequest
     {
         public int BranchId { get; set; }
