@@ -27,10 +27,6 @@ namespace PrimeFit.Infrastructure.Data.Repositories
 
         public IQueryable<T> AsQueryable() => _dbContext.Set<T>().AsNoTracking();
 
-        public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
-        {
-            return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate, ct);
-        }
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
         {
             return await _dbContext.Set<T>().AnyAsync(predicate, ct);
@@ -50,6 +46,20 @@ namespace PrimeFit.Infrastructure.Data.Repositories
             return await query
                 .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
                 .ToListAsync(ct);
+        }
+
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+        {
+            return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate, ct);
+        }
+
+        public async Task<TDestination?> GetAsync<TDestination>(Expression<Func<T, bool>> predicate, CancellationToken ct)
+        {
+            return await _dbContext
+                .Set<T>()
+                .Where(predicate)
+                .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(ct);
         }
 
         public async Task<TDestination?> GetAsync<TDestination>(ISpecification<T> spec, CancellationToken ct)

@@ -60,6 +60,13 @@ public static class ErrorCodes
 
     }
 
+    public static class BranchReview
+    {
+        public const string NotFound = "BRANCH_REVIEW_NOT_FOUND";
+        public const string AlreadyReviewed = "BRANCH_REVIEW_ALREADY_EXISTS";
+        public const string NotSubscribed = "BRANCH_REVIEW_NOT_SUBSCRIBED";
+    }
+
     public static class Employee
     {
         public const string RoleNotFound = "EMPLOYEE_ROLE_NOT_FOUND";
