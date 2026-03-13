@@ -8,9 +8,7 @@ using PrimeFit.Application.Common.Exceptions;
 namespace PrimeFit.API.Common.Exceptions
 {
     public sealed class GlobalExceptionHandler(
-        ILogger<GlobalExceptionHandler> logger,
-        IHostEnvironment environment)
-        : IExceptionHandler
+        ILogger<GlobalExceptionHandler> logger, IHostEnvironment environment) : IExceptionHandler
     {
         private readonly ILogger<GlobalExceptionHandler> _logger = logger;
         private readonly IHostEnvironment _environment = environment;
@@ -37,7 +35,8 @@ namespace PrimeFit.API.Common.Exceptions
                     cancellationToken);
 
                 case UnauthorizedException e:
-                _logger.LogWarning(e, "Unauthorized - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                _logger.LogWarning(e,
+                    "Unauthorized - Path: {Path}, User: {User}, TraceId: {TraceId}",
                     requestPath, userId, traceId);
 
                 return await WriteProblemDetails(
@@ -50,10 +49,12 @@ namespace PrimeFit.API.Common.Exceptions
                         Description = e.Message
                     },
                     traceId,
+                    e,
                     cancellationToken);
 
                 case ForbiddenException e:
-                _logger.LogWarning(e, "Forbidden - Path: {Path}, User: {User}, TraceId: {TraceId}",
+                _logger.LogWarning(e,
+                    "Forbidden - Path: {Path}, User: {User}, TraceId: {TraceId}",
                     requestPath, userId, traceId);
 
                 return await WriteProblemDetails(
@@ -66,6 +67,7 @@ namespace PrimeFit.API.Common.Exceptions
                         Description = "You do not have permission to perform this action."
                     },
                     traceId,
+                    e,
                     cancellationToken);
 
                 case KeyNotFoundException e:
@@ -83,6 +85,7 @@ namespace PrimeFit.API.Common.Exceptions
                         Description = e.Message
                     },
                     traceId,
+                    e,
                     cancellationToken);
 
                 case SqlException:
@@ -99,10 +102,11 @@ namespace PrimeFit.API.Common.Exceptions
                     {
                         Code = "Database.Error",
                         Description = isDevelopment
-                            ? exception.Message
+                            ? exception.InnerException?.Message ?? exception.Message
                             : "A database error occurred."
                     },
                     traceId,
+                    exception,
                     cancellationToken);
 
                 default:
@@ -122,6 +126,7 @@ namespace PrimeFit.API.Common.Exceptions
                             : "An unexpected error occurred."
                     },
                     traceId,
+                    exception,
                     cancellationToken);
             }
         }
@@ -154,6 +159,11 @@ namespace PrimeFit.API.Common.Exceptions
 
             problemDetails.Extensions["traceId"] = traceId;
 
+            if (_environment.IsDevelopment())
+            {
+                problemDetails.Extensions["stackTrace"] = exception.ToString();
+            }
+
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             httpContext.Response.ContentType = "application/problem+json";
 
@@ -162,17 +172,17 @@ namespace PrimeFit.API.Common.Exceptions
             return true;
         }
 
-        private static async Task<bool> WriteProblemDetails(
+        private async Task<bool> WriteProblemDetails(
             HttpContext httpContext,
             int statusCode,
             string title,
             object error,
             string traceId,
+            Exception? exception,
             CancellationToken cancellationToken)
         {
             var problemDetails = new ProblemDetails
             {
-
                 Status = statusCode,
                 Title = title,
                 Instance = httpContext.Request.Path
@@ -180,6 +190,11 @@ namespace PrimeFit.API.Common.Exceptions
 
             problemDetails.Extensions["errors"] = new[] { error };
             problemDetails.Extensions["traceId"] = traceId;
+
+            if (_environment.IsDevelopment() && exception is not null)
+            {
+                problemDetails.Extensions["stackTrace"] = exception.ToString();
+            }
 
             httpContext.Response.StatusCode = statusCode;
 
