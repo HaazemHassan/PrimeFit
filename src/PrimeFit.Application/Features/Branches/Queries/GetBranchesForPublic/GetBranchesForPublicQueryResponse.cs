@@ -1,8 +1,9 @@
 ﻿using PrimeFit.Domain.Common.Enums;
 
-namespace PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches
+namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
+
 {
-    public class GetNearbyBranchesQueryResponse
+    public class GetBranchesForPublicQueryResponse
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
@@ -12,9 +13,10 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches
         public string Address { get; set; } = null!;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public double DistanceInMeters { get; set; }
+        public double? DistanceInMeters { get; set; }
         public int TotalRatings { get; set; }
         public double AverageRating { get; set; }
     }
 }
+
 

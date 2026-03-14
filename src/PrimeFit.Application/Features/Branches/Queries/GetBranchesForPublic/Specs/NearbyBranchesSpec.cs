@@ -5,9 +5,9 @@ using PrimeFit.Application.Specifications;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches
+namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic.Specs
 {
-    public class NearbyBranchesSpec : Specification<Branch, GetNearbyBranchesQueryResponse>
+    public class NearbyBranchesSpec : Specification<Branch, GetBranchesForPublicQueryResponse>
     {
         public NearbyBranchesSpec(double latitude, double longitude, double radiusInMeters, int? pageNumber, int? pageSize, string? search)
         {
@@ -42,23 +42,25 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches
                 // actual distance filter
                 .Where(b => b.Coordinates!.IsWithinDistance(userLocation, radiusInMeters));
 
+
             if (!string.IsNullOrEmpty(search))
             {
                 Query.Where(b => b.Name.Contains(search));
-
             }
 
             Query.OrderBy(b => b.Coordinates!.Distance(userLocation));
 
-            Query.Select(b => new GetNearbyBranchesQueryResponse
+            Query.Select(b => new GetBranchesForPublicQueryResponse
             {
                 Id = b.Id,
                 Name = b.Name,
+                BranchType = b.BranchType,
                 LogoUrl = b.Images
                     .Where(i => i.Type == BranchImageType.Logo)
                     .Select(i => i.Url)
                     .FirstOrDefault()!,
                 Governate = b.Governorate != null ? b.Governorate.Name : null!,
+                Address = b.Address!,
                 Latitude = b.Coordinates!.Y,
                 Longitude = b.Coordinates!.X,
                 DistanceInMeters = Math.Round(b.Coordinates!.Distance(userLocation)),

@@ -5,8 +5,8 @@ using PrimeFit.API.Requests.Branches;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchById;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic;
+using PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic;
 using PrimeFit.Application.Features.Branches.Queries.GetMyBranches;
-using PrimeFit.Application.Features.Branches.Queries.GetNearbyBranches;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForCustomers;
 using PrimeFit.Domain.Common.Enums;
 
@@ -79,8 +79,8 @@ namespace PrimeFit.API.Controllers
             return Ok(result.Value);
         }
 
-        [HttpGet("nearby")]
-        public async Task<IActionResult> GetBranchPackages([FromQuery] GetNearbyBranchesQuery query)
+        [HttpGet("public")]
+        public async Task<IActionResult> GetBranches([FromQuery] GetBranchesForPublicQuery query)
         {
             var result = await Mediator.Send(query);
             if (result.IsError)
