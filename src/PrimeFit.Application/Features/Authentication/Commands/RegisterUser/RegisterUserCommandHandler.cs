@@ -4,6 +4,7 @@ using MediatR;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
+using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.Repositories;
@@ -32,19 +33,52 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
+            var normalizedPhone = _phoneNumberService.Normalize(request.PhoneNumber!);
 
-            var totpSecret = _totpService.GenerateTotpSecret();
+            var existingDomainUser = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email, cancellationToken);
 
-            var userToAdd = new DomainUser(UserType.Customer, request.FirstName, request.LastName, request.Email, normalizedPhoneNumber, totpSecret);
-            var addUserResult = await _applicationUserService.AddUser(userToAdd, request.Password, ct: cancellationToken);
+            DomainUser domainUser;
+
+            if (existingDomainUser is not null)
+            {
+                existingDomainUser.UpdateInfo(request.FirstName, request.LastName, normalizedPhone);
+                domainUser = existingDomainUser;
+            }
+            else
+            {
+                var phoneExists = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == normalizedPhone, cancellationToken);
+
+                if (phoneExists)
+                {
+                    return Error.Conflict(
+                        code: ErrorCodes.User.PhoneAlreadyExists,
+                        description: "Phone number already exists");
+                }
+
+                var totpSecret = _totpService.GenerateTotpSecret();
+
+                domainUser = new DomainUser(
+                    UserType.Customer,
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    normalizedPhone,
+                    totpSecret);
+
+            }
+
+            var addUserResult = await _applicationUserService.AddUser(domainUser, request.Password, ct: cancellationToken);
 
             if (addUserResult.IsError)
+            {
                 return addUserResult.Errors;
 
-            var userResponse = _mapper.Map<UserBaseResponse>(addUserResult.Value);
-            userResponse.UserType = UserType.Customer;
-            return userResponse;
+            }
+
+            var response = _mapper.Map<UserBaseResponse>(domainUser);
+            response.UserType = UserType.Customer;
+
+            return response;
         }
     }
 }

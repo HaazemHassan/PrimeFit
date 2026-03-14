@@ -27,53 +27,31 @@ namespace PrimeFit.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<ErrorOr<DomainUser>> AddUser(DomainUser domainUser, string password, UserRole? UserRole = default, CancellationToken ct = default)
+        public async Task<ErrorOr<DomainUser>> AddUser(
+             DomainUser domainUser,
+             string password,
+             UserRole? userRole = default,
+             CancellationToken ct = default)
         {
-            var existingDomainUser = await _unitOfWork.Users.GetAsync(u => u.Email == domainUser.Email, ct);
+            var isAuthUserLinked = await _userManager.Users.AnyAsync(au => au.DomainUserId == domainUser.Id || au.Email == domainUser.Email, ct);
 
-            if (existingDomainUser is not null)
+            if (isAuthUserLinked)
             {
-                var isAuthUserLinked = await _userManager.Users.AnyAsync(au =>
-                    au.DomainUserId == existingDomainUser.Id ||
-                    au.DomainUser != null && (
-                        au.DomainUser.Email == existingDomainUser.Email ||
-                        au.DomainUser.PhoneNumber == existingDomainUser.PhoneNumber
-                    ), ct);
-
-                if (isAuthUserLinked)
-                {
-                    var emailConflict = await _userManager.Users.AnyAsync(au =>
-                        au.DomainUser != null && au.DomainUser.Email == existingDomainUser.Email, ct);
-
-                    return emailConflict
-                        ? Error.Conflict(code: ErrorCodes.User.EmailAlreadyExists, description: "This Email already exists")
-                        : Error.Conflict(code: ErrorCodes.User.PhoneAlreadyExists, description: "Phone number already exists");
-                }
-
-                existingDomainUser.UpdateInfo(domainUser.FirstName, domainUser.LastName, domainUser.PhoneNumber);
-                domainUser = existingDomainUser;
-            }
-            else
-            {
-                var phoneExists = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == domainUser.PhoneNumber, ct);
-
-                if (phoneExists)
-                {
-                    return Error.Conflict(code: ErrorCodes.User.PhoneAlreadyExists, description: "Phone number already exists");
-
-                }
+                return Error.Conflict(
+                    code: ErrorCodes.User.EmailAlreadyExists,
+                    description: "Email already exists");
             }
 
             var applicationUser = new ApplicationUser(domainUser.Email, domainUser.PhoneNumber);
-            applicationUser.AssignDomainUser(domainUser);
 
-            var createResult = await _userManager.CreateAsync(applicationUser, password);
-            if (!createResult.Succeeded)
+            applicationUser.LinkToDomainUser(domainUser);
+
+            var result = await _userManager.CreateAsync(applicationUser, password);
+
+            if (!result.Succeeded)
             {
                 return Error.Failure(description: "Failed to create user");
-
             }
-
 
             return domainUser;
         }

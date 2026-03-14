@@ -22,13 +22,13 @@ namespace PrimeFit.Infrastructure.Data.Identity.Entities
         public virtual ICollection<RefreshToken> RefreshTokens { get; private set; } = new HashSet<RefreshToken>();
 
 
-        public void AssignDomainUser(DomainUser domainUser)
+        public void LinkToDomainUser(DomainUser domainUser)
         {
             if (domainUser is null)
                 throw new ArgumentNullException("Domain user can't be null");
 
             if (DomainUserId is not null)
-                throw new ArgumentNullException("This app user is assosiated with domain user");
+                throw new ArgumentNullException("This app user is associated with domain user");
 
             DomainUser = domainUser;
         }
