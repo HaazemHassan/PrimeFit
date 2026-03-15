@@ -30,6 +30,7 @@ internal class UnitOfWork : IUnitOfWork
     public ISubscriptionRepository Subscriptions => _serviceProvider.GetRequiredService<ISubscriptionRepository>();
     public ISubscriptionFreezeRepository SubscriptionFreezes => _serviceProvider.GetRequiredService<ISubscriptionFreezeRepository>();
     public IEmployeeRepository Employees => _serviceProvider.GetRequiredService<IEmployeeRepository>();
+    public IVerificationCodeRepository VerificationCodes => _serviceProvider.GetRequiredService<IVerificationCodeRepository>();
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

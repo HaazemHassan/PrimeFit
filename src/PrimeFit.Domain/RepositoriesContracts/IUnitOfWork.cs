@@ -16,6 +16,7 @@ public interface IUnitOfWork
     ISubscriptionRepository Subscriptions { get; }
     ISubscriptionFreezeRepository SubscriptionFreezes { get; }
     IEmployeeRepository Employees { get; }
+    IVerificationCodeRepository VerificationCodes { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

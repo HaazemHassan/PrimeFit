@@ -31,6 +31,7 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<EmployeeRole> EmployeeRoles => Set<EmployeeRole>();
         public DbSet<EmployeeRolePermission> EmployeeRolePermissions => Set<EmployeeRolePermission>();
         public DbSet<CheckIn> CheckIns => Set<CheckIn>();
+        public DbSet<VerificationCode> VerificationCodes => Set<VerificationCode>();
 
 
 
@@ -67,42 +68,45 @@ namespace PrimeFit.Infrastructure.Data
 
             foreach (var entry in ChangeTracker.Entries())
             {
-
                 if (entry.State == EntityState.Added)
                 {
-                    if (entry.Entity is IHasCreationTime cTime) cTime.CreatedAt = utcNow;
-                    if (entry.Entity is IHasCreator cUser) cUser.CreatedBy = userId;
+                    if (entry.Entity is IHasCreationTime)
+                        entry.Property(nameof(IHasCreationTime.CreatedAt)).CurrentValue = utcNow;
+
+                    if (entry.Entity is IHasCreator)
+                        entry.Property(nameof(IHasCreator.CreatedBy)).CurrentValue = userId;
                 }
 
                 else if (entry.State == EntityState.Modified)
                 {
-                    if (entry.Entity is IHasModificationTime mTime) mTime.UpdatedAt = utcNow;
-                    if (entry.Entity is IHasModifier mUser) mUser.UpdatedBy = userId;
+                    if (entry.Entity is IHasModificationTime)
+                        entry.Property(nameof(IHasModificationTime.UpdatedAt)).CurrentValue = utcNow;
 
-                    //prevent modification of creation properties
-                    if (entry.Entity is IHasCreationTime) entry.Property(nameof(IHasCreationTime.CreatedAt)).IsModified = false;
-                    if (entry.Entity is IHasCreator) entry.Property(nameof(IHasCreator.CreatedBy)).IsModified = false;
+                    if (entry.Entity is IHasModifier)
+                        entry.Property(nameof(IHasModifier.UpdatedBy)).CurrentValue = userId;
 
+                    // prevent modification of creation properties
+                    if (entry.Entity is IHasCreationTime)
+                        entry.Property(nameof(IHasCreationTime.CreatedAt)).IsModified = false;
+
+                    if (entry.Entity is IHasCreator)
+                        entry.Property(nameof(IHasCreator.CreatedBy)).IsModified = false;
                 }
 
-                else if (entry.Entity is ISoftDeletableEntity softDelete && entry.State == EntityState.Deleted)
+                else if (entry.Entity is ISoftDeletableEntity && entry.State == EntityState.Deleted)
                 {
-                    if (softDelete.IsDeleted)
-                    {
-                        entry.State = EntityState.Unchanged;
-                    }
-                    else
-                    {
-                        entry.State = EntityState.Modified;
-                        softDelete.IsDeleted = true;
-                        softDelete.DeletedAt = utcNow;
-                        softDelete.DeletedBy = userId;
-                    }
+                    entry.State = EntityState.Modified;
+
+                    entry.Property(nameof(ISoftDeletableEntity.IsDeleted)).CurrentValue = true;
+                    entry.Property(nameof(ISoftDeletableEntity.DeletedAt)).CurrentValue = utcNow;
+                    entry.Property(nameof(ISoftDeletableEntity.DeletedBy)).CurrentValue = userId;
                 }
             }
 
             return base.SaveChangesAsync(cancellationToken);
         }
+
+
 
         #region Helper Functions
 

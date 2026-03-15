@@ -27,7 +27,7 @@ namespace PrimeFit.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<ErrorOr<DomainUser>> AddUser(
+        public async Task<ErrorOr<int>> AddUser(
              DomainUser domainUser,
              string password,
              UserRole? userRole = default,
@@ -53,7 +53,7 @@ namespace PrimeFit.Infrastructure.Services
                 return Error.Failure(description: "Failed to create user");
             }
 
-            return domainUser;
+            return applicationUser.Id;
         }
 
 

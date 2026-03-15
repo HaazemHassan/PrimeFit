@@ -157,6 +157,12 @@ namespace PrimeFit.Domain.Entities
 
             }
 
+            if (AllowedFreezeDays <= 0)
+            {
+                return Error.Validation(description: "Freeze limit exceeded.");
+
+            }
+
             var freeze = new SubscriptionFreeze(Id, now, AllowedFreezeDays);
             _freezes.Add(freeze);
 

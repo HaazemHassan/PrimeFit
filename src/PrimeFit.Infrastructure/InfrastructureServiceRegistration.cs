@@ -129,6 +129,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionFreezeRepository, SubscriptionFreezeRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
 
 
 
@@ -148,7 +149,7 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<ITotpService, TotpService>();
-
+        services.AddSingleton<IOtpService, OtpService>();
 
 
         services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));

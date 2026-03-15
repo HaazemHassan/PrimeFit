@@ -70,10 +70,10 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
             if (addUserResult.IsError)
                 return addUserResult.Errors;
 
-            var createdUser = addUserResult.Value;
+            var createdUserId = addUserResult.Value;
 
             var alreadyEmployee = await unitOfWork.Employees.AnyAsync(
-                e => e.UserId == createdUser.Id && e.BranchId == request.BranchId,
+                e => e.UserId == createdUserId && e.BranchId == request.BranchId,
                 cancellationToken);
 
             if (alreadyEmployee)
@@ -81,15 +81,15 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
                     code: ErrorCodes.Employee.AlreadyExistsInBranch,
                     description: "This user is already an employee in this branch.");
 
-            var employee = new Employee(createdUser.Id, request.BranchId, request.EmployeeRoleId);
+            var employee = new Employee(createdUserId, request.BranchId, request.EmployeeRoleId);
             await unitOfWork.Employees.AddAsync(employee, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new CreateEmployeeCommandResponse(
                 employee.Id,
-                createdUser.Id,
-                $"{createdUser.FirstName} {createdUser.LastName}",
-                createdUser.Email,
+                createdUserId,
+                $"{domainUser.FirstName} {domainUser.LastName}",
+                domainUser.Email,
                 employeeRole.Name);
         }
     }

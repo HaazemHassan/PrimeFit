@@ -19,9 +19,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
         private readonly IAuthenticationService _authenticationService;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly ITotpService _totpService;
+        private readonly IOtpService _otpService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
 
-        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IApplicationUserService applicationUserService, IAuthenticationService authenticationService, IPhoneNumberService phoneNumberService, ITotpService totpService)
+        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IApplicationUserService applicationUserService, IAuthenticationService authenticationService, IPhoneNumberService phoneNumberService, ITotpService totpService, IOtpService otpService, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -29,6 +31,8 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             _authenticationService = authenticationService;
             _phoneNumberService = phoneNumberService;
             _totpService = totpService;
+            _otpService = otpService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -74,6 +78,10 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
                 return addUserResult.Errors;
 
             }
+
+            int appUserId = addUserResult.Value;
+
+            await _authenticationService.CreateEmailConfirmationCode(appUserId, cancellationToken);
 
             var response = _mapper.Map<UserBaseResponse>(domainUser);
             response.UserType = UserType.Customer;

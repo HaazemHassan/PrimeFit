@@ -8,6 +8,7 @@ using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
@@ -23,57 +24,42 @@ using System.Text;
 
 namespace PrimeFit.Infrastructure.Services
 {
-    internal class AuthenticationService : IAuthenticationService
+    internal class AuthenticationService(
+          JwtOptions jwtSettings,
+          UserManager<ApplicationUser> userManager,
+          IUnitOfWork unitOfWork,
+          IMapper mapper,
+          RoleManager<ApplicationRole> roleManager,
+          ICurrentUserService currentUserService,
+          AppDbContext dbContext,
+          ILogger<AuthenticationService> logger,
+          IDateTimeProvider dateTimeProvider,
+          IOtpService otpService) : IAuthenticationService
     {
 
-        private readonly JwtOptions _jwtSettings;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IApplicationUserService _applicationUserService;
-        private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly AppDbContext _dbContext;
-        private readonly ILogger<AuthenticationService> _logger;
-        //private readonly IEmailService _emailService;
 
-
-
-        public AuthenticationService(JwtOptions jwtSettings, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IApplicationUserService applicationUserService, IMapper mapper /*IEmailService emailService*/, RoleManager<ApplicationRole> roleManager, ICurrentUserService currentUserService, AppDbContext dbContext, ILogger<AuthenticationService> logger)
-        {
-            _jwtSettings = jwtSettings;
-            _userManager = userManager;
-            _unitOfWork = unitOfWork;
-            _applicationUserService = applicationUserService;
-            _mapper = mapper;
-            _roleManager = roleManager;
-            _currentUserService = currentUserService;
-            _dbContext = dbContext;
-            _logger = logger;
-            //_emailService = emailService;
-        }
 
         public async Task<ErrorOr<AuthResult>> SignInWithPassword(string email, string password, CancellationToken ct = default)
         {
-            var userFromDb = await _userManager.Users.Include(au => au.DomainUser)
+            var userFromDb = await userManager.Users.Include(au => au.DomainUser)
                                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken: ct);
             if (userFromDb is null)
             {
-                _logger.LogWarning("Failed login attempt for email: {Email} - User not found", email);
+                logger.LogWarning("Failed login attempt for email: {Email} - User not found", email);
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidCredentials, description: "Invalid Email or password");
             }
 
-            bool isAuthenticated = await _userManager.CheckPasswordAsync(userFromDb, password);
+            bool isAuthenticated = await userManager.CheckPasswordAsync(userFromDb, password);
             if (!isAuthenticated)
             {
-                _logger.LogWarning("Failed login attempt for email: {Email} - Invalid password", email);
+                logger.LogWarning("Failed login attempt for email: {Email} - Invalid password", email);
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidCredentials, description: "Invalid Email or password");
             }
 
             var result = await AuthenticateAsync(userFromDb);
             if (!result.IsError)
             {
-                _logger.LogInformation("Successful login for user: {Email}", email);
+                logger.LogInformation("Successful login for user: {Email}", email);
             }
             return result;
         }
@@ -83,38 +69,38 @@ namespace PrimeFit.Infrastructure.Services
             var isValidAccessToken = ValidateAccessToken(accessToken, validateLifetime: false);
             if (!isValidAccessToken)
             {
-                _logger.LogWarning("ReAuthenticate failed - Invalid access token");
+                logger.LogWarning("ReAuthenticate failed - Invalid access token");
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidAccessToken, description: "Invalid access token");
             }
 
             var jwt = ReadJWT(accessToken);
             if (jwt is null)
             {
-                _logger.LogWarning("ReAuthenticate failed - Cannot read JWT");
+                logger.LogWarning("ReAuthenticate failed - Cannot read JWT");
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidAccessToken, description: "Invalid access token");
             }
 
             var domainUserId = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             if (domainUserId is null)
             {
-                _logger.LogWarning("ReAuthenticate failed - User id is null in JWT");
+                logger.LogWarning("ReAuthenticate failed - User id is null in JWT");
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidAccessToken, description: "User id is null");
             }
 
-            var appUser = await _userManager.Users.Include(au => au.DomainUser).FirstOrDefaultAsync(au => au.DomainUserId.ToString() == domainUserId, cancellationToken: ct);
+            var appUser = await userManager.Users.Include(au => au.DomainUser).FirstOrDefaultAsync(au => au.DomainUserId.ToString() == domainUserId, cancellationToken: ct);
             if (appUser is null)
             {
-                _logger.LogWarning("ReAuthenticate failed - User not found for ID: {UserId}", domainUserId);
+                logger.LogWarning("ReAuthenticate failed - User not found for ID: {UserId}", domainUserId);
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found");
             }
 
             var currentRefreshTokenSpec = new ActiveRefreshTokenByJtiAndTokenSpec(jwt.Id, refreshToken, appUser.Id);
-            var currentRefreshToken = await _unitOfWork.RefreshTokens.FirstOrDefaultAsync(currentRefreshTokenSpec, ct);
+            var currentRefreshToken = await unitOfWork.RefreshTokens.FirstOrDefaultAsync(currentRefreshTokenSpec, ct);
 
 
             if (currentRefreshToken is null || !currentRefreshToken.IsActive)
             {
-                _logger.LogWarning("ReAuthenticate failed - Invalid or inactive refresh token for user: {Email}", appUser.Email);
+                logger.LogWarning("ReAuthenticate failed - Invalid or inactive refresh token for user: {Email}", appUser.Email);
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidRefreshToken, description: "Refresh token is not valid");
             }
 
@@ -123,8 +109,8 @@ namespace PrimeFit.Infrastructure.Services
                 return jwtResultOperation.Errors;
 
             currentRefreshToken.Revoke();
-            await _unitOfWork.RefreshTokens.UpdateAsync(currentRefreshToken, ct);
-            _logger.LogInformation("Successful token refresh for user: {Email}", appUser.Email);
+            await unitOfWork.RefreshTokens.UpdateAsync(currentRefreshToken, ct);
+            logger.LogInformation("Successful token refresh for user: {Email}", appUser.Email);
             return jwtResultOperation;
         }
 
@@ -132,26 +118,28 @@ namespace PrimeFit.Infrastructure.Services
         public async Task<ErrorOr<Success>> LogoutAsync(string refreshToken, CancellationToken ct = default)
         {
 
-            var domainUserId = _currentUserService.UserId!.Value;
+            var domainUserId = currentUserService.UserId!.Value;
 
-            var appUser = await _userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
+            var appUser = await userManager.Users.FirstOrDefaultAsync
+                 (au => au.DomainUserId == domainUserId, cancellationToken: ct);
+
             if (appUser is null)
             {
-                _logger.LogWarning("Logout failed - User not found for ID: {UserId}", domainUserId);
+                logger.LogWarning("Logout failed - User not found for ID: {UserId}", domainUserId);
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found!");
             }
 
-            var refreshTokenFromDb = await _unitOfWork.RefreshTokens.GetAsync(r => r.Token == refreshToken && r.UserId == appUser.Id, ct);
+            var refreshTokenFromDb = await unitOfWork.RefreshTokens.GetAsync(r => r.Token == refreshToken && r.UserId == appUser.Id, ct);
 
             if (refreshTokenFromDb is null || !refreshTokenFromDb.IsActive)
             {
-                _logger.LogWarning("Logout failed - Invalid refresh token for user: {Email}", appUser.Email);
+                logger.LogWarning("Logout failed - Invalid refresh token for user: {Email}", appUser.Email);
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidRefreshToken, description: "You maybe signed out!");
             }
 
             refreshTokenFromDb.Revoke();
-            await _unitOfWork.RefreshTokens.UpdateAsync(refreshTokenFromDb, ct);
-            _logger.LogInformation("Successful logout for user: {Email}", appUser.Email);
+            await unitOfWork.RefreshTokens.UpdateAsync(refreshTokenFromDb, ct);
+            logger.LogInformation("Successful logout for user: {Email}", appUser.Email);
             return Result.Success;
 
         }
@@ -159,17 +147,95 @@ namespace PrimeFit.Infrastructure.Services
 
         public async Task<ErrorOr<Success>> ChangePassword(int domainUserId, string currentPassword, string newPassword)
         {
-            var appUser = await _userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId);
+            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId);
             if (appUser is null)
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
 
-            var result = await _userManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
+            var result = await userManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
 
             if (!result.Succeeded)
                 return Error.Unauthorized(code: ErrorCodes.Authentication.PasswordChangeFailed, description: result.Errors.FirstOrDefault()?.Description ?? "Password change failed");
 
             return Result.Success;
 
+        }
+
+
+        public async Task<ErrorOr<Success>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default)
+        {
+            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
+
+            if (appUser is null)
+            {
+                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
+            }
+
+            if (appUser.EmailConfirmed)
+            {
+                return Error.Validation(code: ErrorCodes.Authentication.EmailAlreadyConfirmed, description: "Email is already confirmed.");
+            }
+
+            var existingCode = await unitOfWork.VerificationCodes.GetAsync(v =>
+                v.ApplicationUserId == appUser.Id &&
+                v.Type == VerificationCodeType.EmailConfirmation &&
+                v.Status == VerificationCodeStatus.Active, ct);
+
+            existingCode?.MarkAsRevoked();
+
+            var confirmEmailCode = otpService.Generate(length: 6);
+            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: 15);
+            var verificationCode = new VerificationCode(appUser.Id, confirmEmailCode, VerificationCodeType.EmailConfirmation, codeExpiresAt);
+
+            await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
+            return Result.Success;
+        }
+
+
+
+        public async Task<ErrorOr<Success>> ConfirmEmail(int domainUserId, string code, CancellationToken ct = default)
+        {
+            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
+
+            if (appUser is null)
+            {
+                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
+            }
+
+            if (appUser.EmailConfirmed)
+            {
+                return Error.Validation(code: ErrorCodes.Authentication.EmailAlreadyConfirmed, description: "Email is already confirmed.");
+            }
+
+            var verificationCode = await unitOfWork.VerificationCodes.GetAsync(v =>
+                v.ApplicationUserId == appUser.Id &&
+                v.Type == VerificationCodeType.EmailConfirmation &&
+                v.Status == VerificationCodeStatus.Active,
+                ct);
+
+            if (verificationCode is null)
+            {
+                return Error.NotFound(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code");
+            }
+
+
+            if (verificationCode.Code != code)
+            {
+                var incrementAttemptsResult = verificationCode.IncrementAttempts();
+
+                return Error.Validation(
+                    code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid verification code.");
+            }
+
+
+            if (!verificationCode.CanBeUsed())
+            {
+                return Error.Validation(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code.");
+            }
+
+
+            verificationCode.MarkAsUsed();
+            appUser.EmailConfirmed = true;
+            return Result.Success;
         }
 
 
@@ -186,7 +252,7 @@ namespace PrimeFit.Infrastructure.Services
 
             var jwtSecurityToken = GenerateAccessToken(userClaims);
             var refreshToken = GenerateRefreshToken(appUser.Id, jwtSecurityToken.Id, refreshTokenExpDate);
-            await _unitOfWork.RefreshTokens.AddAsync(refreshToken);
+            await unitOfWork.RefreshTokens.AddAsync(refreshToken);
 
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
@@ -197,8 +263,8 @@ namespace PrimeFit.Infrastructure.Services
                 ExpirationDate = refreshToken.Expires
             };
 
-            var userResponse = _mapper.Map<UserBaseResponse>(appUser.DomainUser);
-            var userRole = (await _userManager.GetRolesAsync(appUser)).FirstOrDefault();
+            var userResponse = mapper.Map<UserBaseResponse>(appUser.DomainUser);
+            var userRole = (await userManager.GetRolesAsync(appUser)).FirstOrDefault();
             if (userRole is not null)
             {
                 userResponse.UserRole = Enum.Parse<UserRole>(userRole);
@@ -213,11 +279,11 @@ namespace PrimeFit.Infrastructure.Services
         private JwtSecurityToken GenerateAccessToken(List<Claim> userClaims)
         {
             return new JwtSecurityToken(
-                  issuer: _jwtSettings.Issuer,
-                  audience: _jwtSettings.Audience,
+                  issuer: jwtSettings.Issuer,
+                  audience: jwtSettings.Audience,
                   claims: userClaims,
                   signingCredentials: GetSigningCredentials(),
-                  expires: DateTimeOffset.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes).UtcDateTime
+                  expires: DateTimeOffset.UtcNow.AddMinutes(jwtSettings.AccessTokenExpirationMinutes).UtcDateTime
               );
         }
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
@@ -232,21 +298,21 @@ namespace PrimeFit.Infrastructure.Services
 
              };
 
-            var customClaims = await _userManager.GetClaimsAsync(user);
+            var customClaims = await userManager.GetClaimsAsync(user);
             claims.AddRange(customClaims);
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
             foreach (var roleName in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, roleName));
 
-                var role = await _roleManager.FindByNameAsync(roleName);
+                var role = await roleManager.FindByNameAsync(roleName);
                 if (role == null) continue;
 
-                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                var roleClaims = await roleManager.GetClaimsAsync(role);
                 claims.AddRange(roleClaims);
 
-                var permissions = await _dbContext.RolePermissions
+                var permissions = await dbContext.RolePermissions
                     .Where(rp => rp.RoleId == role.Id)
                     .Select(rp => rp.Permission)
                     .ToListAsync();
@@ -261,7 +327,7 @@ namespace PrimeFit.Infrastructure.Services
         }
         private SigningCredentials GetSigningCredentials()
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret));
             return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
         private RefreshToken GenerateRefreshToken(int userId, string accessTokenJTI, DateTimeOffset? expirationDate = null)
@@ -270,7 +336,7 @@ namespace PrimeFit.Infrastructure.Services
             RandomNumberGenerator.Fill(randomBytes);
             string Token = Convert.ToBase64String(randomBytes);
 
-            expirationDate ??= DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+            expirationDate ??= DateTimeOffset.UtcNow.AddDays(jwtSettings.RefreshTokenExpirationDays);
             return new RefreshToken(Token, expirationDate.Value, accessTokenJTI, userId);
 
         }
@@ -281,11 +347,11 @@ namespace PrimeFit.Infrastructure.Services
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
                 ValidateIssuer = false,
                 ValidateAudience = true,
-                ValidIssuer = _jwtSettings.Issuer,
-                ValidAudience = _jwtSettings.Audience,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidAudience = jwtSettings.Audience,
                 ValidateLifetime = validateLifetime,
                 ClockSkew = TimeSpan.FromMinutes(2)  //default = 5 min (security gap)
             };
@@ -310,6 +376,10 @@ namespace PrimeFit.Infrastructure.Services
             var response = handler.ReadJwtToken(accessToken);
             return response;
         }
+
+
+
+
 
         #endregion
 

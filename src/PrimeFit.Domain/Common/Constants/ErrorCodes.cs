@@ -7,7 +7,7 @@ public static class ErrorCodes
         public const string EmailAlreadyExists = "EMAIL_ALREADY_EXISTS";
         public const string PhoneAlreadyExists = "PHONE_ALREADY_EXISTS";
         public const string UserNotFound = "USER_NOT_FOUND";
-        public const string EmailNotVerified = "EMAIL_NOT_VERIFIED";
+
     }
 
     public static class Authentication
@@ -17,6 +17,10 @@ public static class ErrorCodes
         public const string InvalidRefreshToken = "INVALID_REFRESH_TOKEN";
         public const string AlreadySignedOut = "ALREADY_SIGNED_OUT";
         public const string PasswordChangeFailed = "PASSWORD_CHANGE_FAILED";
+        public const string EmailNotVerified = "EMAIL_NOT_VERIFIED";
+        public const string EmailAlreadyConfirmed = "EMAIL_ALREADY_CONFIRMED";
+        public const string InvalidEmailConfirmationCode = "INVALID_EMAIL_CONFIRMATION_CODE";
+        public const string EmailCodeAttemptsExceeded = "EMAIL_CODE_ATTEMPTS_EXCEEDED";
     }
 
     public static class Authorization

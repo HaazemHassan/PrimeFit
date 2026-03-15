@@ -6,7 +6,7 @@ namespace PrimeFit.Application.Contracts.Infrastructure
 {
     public interface IApplicationUserService
     {
-        public Task<ErrorOr<DomainUser>> AddUser(DomainUser user, string password, UserRole? userRole = default, CancellationToken ct = default);
+        public Task<ErrorOr<int>> AddUser(DomainUser user, string password, UserRole? userRole = default, CancellationToken ct = default);
         public Task<bool> isAssociatedWithDomainUser(int domainUserId, CancellationToken ct = default);
 
 

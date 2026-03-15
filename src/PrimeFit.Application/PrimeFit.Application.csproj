@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ServicesContracts\Application\**" />
     <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="ServicesContracts\Application\**" />
     <EmbeddedResource Remove="Services\**" />
+    <None Remove="ServicesContracts\Application\**" />
     <None Remove="Services\**" />
   </ItemGroup>
 
@@ -25,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Attendance\Queries\" />
-    <Folder Include="ServicesContracts\Application\" />
   </ItemGroup>
 
 </Project>
