@@ -8,6 +8,7 @@ using PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptionById;
 using PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 using PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability;
+using PrimeFit.Application.Features.Users.Queries.GetMe;
 using PrimeFit.Application.Features.Users.Queries.GetUserById;
 using PrimeFit.Domain.Common.Enums;
 
@@ -35,6 +36,21 @@ namespace PrimeFit.API.Controllers
             var result = await Mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);
+            return Ok(result.Value);
+        }
+
+
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMe()
+        {
+            var result = await Mediator.Send(new GetMeQuery());
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
             return Ok(result.Value);
         }
 

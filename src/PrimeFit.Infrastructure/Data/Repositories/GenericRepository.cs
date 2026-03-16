@@ -101,6 +101,15 @@ namespace PrimeFit.Infrastructure.Data.Repositories
 
         }
 
+        public Task<List<TDestination>> ListAsync<TDestination>(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+        {
+            return _dbContext
+                .Set<T>()
+                .AsNoTracking()
+                .Where(predicate)
+                .ProjectTo<TDestination>(_mapper.ConfigurationProvider)
+                .ToListAsync(ct);
 
+        }
     }
 }
