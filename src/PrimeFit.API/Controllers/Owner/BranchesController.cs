@@ -16,6 +16,7 @@ using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
+using PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics;
 using PrimeFit.Application.Features.BranchPackages.Commands.AddPackage;
 using PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage;
@@ -115,6 +116,23 @@ namespace PrimeFit.API.Controllers.Owner
                 return Problem(result.Errors);
             }
             return NoContent();
+        }
+
+
+
+        [HttpGet("{branchId:int}/setup-details")]
+        public async Task<IActionResult> GetBranchSetupDetails([FromRoute] int branchId, [FromQuery] GetBranchSetupDetailsRequest request)
+        {
+            var query = _mapper.Map<GetBranchSetupDetailsQuery>(request);
+            query.BranchId = branchId;
+
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+            return Ok(result.Value);
         }
 
 

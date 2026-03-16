@@ -8,6 +8,7 @@ using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscripti
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
+using PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails;
 using PrimeFit.Application.Features.BranchPackages.Commands.AddPackage;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages;
@@ -34,6 +35,7 @@ namespace PrimeFit.API.Requests
             CreateMap<AddPackageRequest, AddPackageCommand>();
             CreateMap<UpdatePackageRequest, UpdatePackageCommand>();
             CreateMap<UpdateBussinessDetailsRequest, UpdateBussinessDetailsCommand>();
+            CreateMap<GetBranchSetupDetailsRequest, GetBranchSetupDetailsQuery>();
             CreateMap<GetBranchSubscriptionsRequest, GetBranchSubscriptionsQuery>().ForAllMembers(opt =>
                     opt.Condition((src, dest, srcMember) => srcMember is not null));
 
