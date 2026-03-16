@@ -18,5 +18,8 @@ namespace PrimeFit.Application.Features.Users.Common
         public UserType UserType { get; set; }
         public UserRole? UserRole { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+        public string? SecretKey { get; set; }
+
     }
 }

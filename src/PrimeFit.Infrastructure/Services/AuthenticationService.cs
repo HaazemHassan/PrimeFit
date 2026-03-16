@@ -270,6 +270,8 @@ namespace PrimeFit.Infrastructure.Services
                 userResponse.UserRole = Enum.Parse<UserRole>(userRole);
 
             }
+            userResponse.SecretKey = appUser.DomainUser.TotpSecret;
+
             AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);
 
 
