@@ -8,7 +8,7 @@ using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.ServicesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription

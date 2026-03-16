@@ -4,7 +4,7 @@ using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Specifications.BranchReviews;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews
 {

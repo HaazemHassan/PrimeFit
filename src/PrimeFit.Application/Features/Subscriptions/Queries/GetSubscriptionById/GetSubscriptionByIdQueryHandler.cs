@@ -6,7 +6,7 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetSubscriptionById
 {
@@ -45,7 +45,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetSubscriptionByI
 
             var response = _mapper.Map<GetSubscriptionByIdQueryResponse>(subscription);
 
-            var localNow = _dateTimeProvider.GetNow("Africa/Cairo");
+            var localNow = _dateTimeProvider.GetTimeZoneNow("Africa/Cairo");
             response.RemainingDays = subscription.GetRemainingDays(localNow);
 
             return response;

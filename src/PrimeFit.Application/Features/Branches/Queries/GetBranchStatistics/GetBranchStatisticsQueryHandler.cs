@@ -6,7 +6,7 @@ using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 {
@@ -40,7 +40,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
             }
 
 
-            var now = _dateTimeProvider.GetNow("Africa/Cairo");
+            var now = _dateTimeProvider.GetTimeZoneNow("Africa/Cairo");
             var startDate = GetStartDate(request.TimePeriod, now);
 
             var statisticsSpec = new BranchStatisticsSpec(request.BranchId, startDate, now);

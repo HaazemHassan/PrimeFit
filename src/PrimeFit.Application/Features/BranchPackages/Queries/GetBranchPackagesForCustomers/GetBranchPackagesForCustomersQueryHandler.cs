@@ -4,7 +4,7 @@ using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForCustomers;
 using PrimeFit.Application.Specifications.BranchPackages;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForCustomers
 {

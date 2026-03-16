@@ -29,6 +29,7 @@ internal class UnitOfWork : IUnitOfWork
     public IPackageRepository Packages => _serviceProvider.GetRequiredService<IPackageRepository>();
     public ISubscriptionRepository Subscriptions => _serviceProvider.GetRequiredService<ISubscriptionRepository>();
     public ISubscriptionFreezeRepository SubscriptionFreezes => _serviceProvider.GetRequiredService<ISubscriptionFreezeRepository>();
+    public ICheckInRepository CheckIns => _serviceProvider.GetRequiredService<ICheckInRepository>();
     public IEmployeeRepository Employees => _serviceProvider.GetRequiredService<IEmployeeRepository>();
     public IVerificationCodeRepository VerificationCodes => _serviceProvider.GetRequiredService<IVerificationCodeRepository>();
 

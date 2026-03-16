@@ -4,7 +4,7 @@ using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions
 {

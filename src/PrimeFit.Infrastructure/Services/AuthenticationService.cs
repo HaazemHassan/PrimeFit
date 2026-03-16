@@ -12,7 +12,7 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.Specifications.RefreshTokens;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;

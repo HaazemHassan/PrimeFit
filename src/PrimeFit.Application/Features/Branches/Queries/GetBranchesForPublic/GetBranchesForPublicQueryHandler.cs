@@ -5,7 +5,7 @@ using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic.Specs;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
 {

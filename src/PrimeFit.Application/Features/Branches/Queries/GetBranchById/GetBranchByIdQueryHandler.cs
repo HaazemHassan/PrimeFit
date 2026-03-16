@@ -6,7 +6,7 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 {
@@ -54,7 +54,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
                     ErrorCodes.Branch.BranchNotFound, "Branch not found");
             }
 
-            branchResponse.IsOpenNow = branch.IsOpenNow(_dateTimeProvider.GetNow("Africa/Cairo"));
+            branchResponse.IsOpenNow = branch.IsOpenNow(_dateTimeProvider.GetTimeZoneNow("Africa/Cairo"));
 
             return branchResponse;
 

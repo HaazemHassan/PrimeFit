@@ -13,7 +13,7 @@ namespace PrimeFit.Infrastructure.Services
 
         public DateTimeOffset UtcNow => _timeProvider.GetUtcNow();
 
-        public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTime, string timeZoneId)
+        public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTime, string timeZoneId = "Africa/Cairo")
         {
             if (string.IsNullOrWhiteSpace(timeZoneId))
                 throw new ArgumentException("Time zone id is required.", nameof(timeZoneId));
@@ -23,7 +23,7 @@ namespace PrimeFit.Infrastructure.Services
             return TimeZoneInfo.ConvertTime(dateTime, timeZone);
         }
 
-        public DateTimeOffset GetNow(string timeZoneId)
+        public DateTimeOffset GetTimeZoneNow(string timeZoneId = "Africa/Cairo")
         {
             if (string.IsNullOrWhiteSpace(timeZoneId))
                 throw new ArgumentException("Time zone id is required.", nameof(timeZoneId));

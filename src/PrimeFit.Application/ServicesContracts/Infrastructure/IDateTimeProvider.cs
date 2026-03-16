@@ -3,7 +3,7 @@
     public interface IDateTimeProvider
     {
         DateTimeOffset UtcNow { get; }
-        DateTimeOffset GetNow(string timeZoneId);
-        DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTime, string timeZoneId);
+        DateTimeOffset GetTimeZoneNow(string timeZoneId = "Africa/Cairo");
+        DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTime, string timeZoneId = "Africa/Cairo");
     }
 }

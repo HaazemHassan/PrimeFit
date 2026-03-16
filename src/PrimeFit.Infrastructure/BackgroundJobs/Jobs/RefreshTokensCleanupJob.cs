@@ -1,6 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.Logging;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
 {

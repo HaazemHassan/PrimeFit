@@ -7,7 +7,7 @@ using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.Specifications.Branches;
 
 namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours

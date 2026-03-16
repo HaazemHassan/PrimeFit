@@ -1,6 +1,6 @@
-﻿using PrimeFit.Domain.RepositoriesContracts;
+﻿using PrimeFit.Domain.Repositories;
 
-namespace PrimeFit.Domain.Repositories;
+namespace PrimeFit.Domain.RepositoriesContracts;
 
 public interface IUnitOfWork
 {
@@ -15,6 +15,7 @@ public interface IUnitOfWork
     IPackageRepository Packages { get; }
     ISubscriptionRepository Subscriptions { get; }
     ISubscriptionFreezeRepository SubscriptionFreezes { get; }
+    ICheckInRepository CheckIns { get; }
     IEmployeeRepository Employees { get; }
     IVerificationCodeRepository VerificationCodes { get; }
 

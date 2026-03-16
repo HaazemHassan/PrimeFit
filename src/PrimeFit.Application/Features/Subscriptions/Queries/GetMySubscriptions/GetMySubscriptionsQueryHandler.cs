@@ -4,7 +4,7 @@ using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions
 {
@@ -30,7 +30,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions
             var subscriptions = await _unitOfWork.Subscriptions.ListAsync(dataSpec, cancellationToken);
             var totalCount = await _unitOfWork.Subscriptions.CountAsync(dataSpec, cancellationToken);
 
-            var now = _dateTimeProvider.GetNow("Africa/Cairo");
+            var now = _dateTimeProvider.GetTimeZoneNow("Africa/Cairo");
 
             var data = subscriptions.Select(s =>
             {

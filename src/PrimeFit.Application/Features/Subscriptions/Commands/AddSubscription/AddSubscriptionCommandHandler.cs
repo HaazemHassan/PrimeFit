@@ -5,7 +5,7 @@ using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.Specifications.BranchPackages;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.ServicesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription

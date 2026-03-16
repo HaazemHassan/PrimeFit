@@ -4,7 +4,7 @@ using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 
 namespace PrimeFit.Infrastructure.Data.Seeding

@@ -4,7 +4,7 @@ using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.ValueObjects;
 
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails

@@ -3,7 +3,7 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Domain.Common.Constants;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.BranchReviews.Commands.UpdateMyBranchReview
 {

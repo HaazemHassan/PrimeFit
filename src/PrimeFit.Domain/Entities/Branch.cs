@@ -14,11 +14,11 @@ namespace PrimeFit.Domain.Entities
 
         private Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
         {
-            _workingHours = new();
-            _reviews = new();
-            _images = new();
-            _packages = new();
-            _subscriptions = new();
+            _workingHours = [];
+            _reviews = [];
+            _images = [];
+            _packages = [];
+            _subscriptions = [];
             BranchStatus = BranchStatus.Inactive;
 
 
@@ -146,7 +146,7 @@ namespace PrimeFit.Domain.Entities
         public bool IsOpenNow(DateTimeOffset currentDateTime)
         {
 
-            if (!_workingHours.Any())
+            if (_workingHours.Count == 0)
                 return false;
 
             var today = currentDateTime.DayOfWeek;

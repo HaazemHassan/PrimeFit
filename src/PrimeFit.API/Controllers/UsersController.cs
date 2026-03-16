@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests.Client.Users;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptionById;
 using PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions;
 using PrimeFit.Application.Features.Users.Commands.UpdateProfile;
 using PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability;
@@ -68,5 +69,19 @@ namespace PrimeFit.API.Controllers
             return Ok(result.Value);
         }
 
+        [HttpGet("me/subscriptions/{id:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetMySubscriptionById([FromRoute] int id)
+        {
+            var query = new GetMySubscriptionByIdQuery { SubscriptionId = id };
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
+        }
+
     }
 }
+

@@ -10,7 +10,10 @@ namespace PrimeFit.Domain.Entities
         private readonly List<SubscriptionFreeze> _freezes = new();
         public IReadOnlyCollection<SubscriptionFreeze> Freezes => _freezes.AsReadOnly();
 
-        private Subscription() { }
+        private Subscription()
+        {
+            CheckIns = new HashSet<CheckIn>();
+        }
 
         private Subscription(DomainUser user, Branch branch, Package package)
         {
@@ -26,6 +29,10 @@ namespace PrimeFit.Domain.Entities
             AllowedFreezeCount = package.NumberOfFreezes;
             AllowedFreezeDays = package.FreezeDurationInDays;
             DurationInMonths = package.DurationInMonths;
+
+
+            CheckIns = new HashSet<CheckIn>();
+
         }
 
         // =====================================================================
@@ -51,6 +58,7 @@ namespace PrimeFit.Domain.Entities
         public DomainUser User { get; private set; } = null!;
         public Branch Branch { get; private set; } = null!;
         public Package Package { get; private set; } = null!;
+        public ICollection<CheckIn> CheckIns { get; private set; }
 
 
 

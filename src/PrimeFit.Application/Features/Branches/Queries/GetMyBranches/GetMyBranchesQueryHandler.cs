@@ -3,7 +3,7 @@ using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Specifications.Branches;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
 {

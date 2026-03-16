@@ -6,7 +6,7 @@ using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 
 namespace PrimeFit.Infrastructure.Services

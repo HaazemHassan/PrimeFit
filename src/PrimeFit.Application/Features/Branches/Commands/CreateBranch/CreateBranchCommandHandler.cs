@@ -4,7 +4,7 @@ using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Entities;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Commands.CreateBranch
 {

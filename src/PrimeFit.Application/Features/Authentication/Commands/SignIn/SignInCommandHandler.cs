@@ -2,7 +2,7 @@ using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Common;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.SignIn;
 

@@ -128,6 +128,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPackageRepository, PackageRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionFreezeRepository, SubscriptionFreezeRepository>();
+        services.AddScoped<ICheckInRepository, CheckInRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
 

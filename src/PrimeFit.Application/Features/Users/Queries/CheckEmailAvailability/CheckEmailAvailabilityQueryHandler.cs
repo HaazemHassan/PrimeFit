@@ -1,6 +1,6 @@
 using ErrorOr;
 using MediatR;
-using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Users.Queries.CheckEmailAvailability
 {
