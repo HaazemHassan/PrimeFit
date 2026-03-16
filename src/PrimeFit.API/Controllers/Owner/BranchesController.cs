@@ -121,10 +121,12 @@ namespace PrimeFit.API.Controllers.Owner
 
 
         [HttpGet("{branchId:int}/setup-details")]
-        public async Task<IActionResult> GetBranchSetupDetails([FromRoute] int branchId, [FromQuery] GetBranchSetupDetailsRequest request)
+        public async Task<IActionResult> GetBranchSetupDetails([FromRoute] int branchId)
         {
-            var query = _mapper.Map<GetBranchSetupDetailsQuery>(request);
-            query.BranchId = branchId;
+            var query = new GetBranchSetupDetailsQuery
+            {
+                BranchId = branchId
+            };
 
             var result = await Mediator.Send(query);
             if (result.IsError)

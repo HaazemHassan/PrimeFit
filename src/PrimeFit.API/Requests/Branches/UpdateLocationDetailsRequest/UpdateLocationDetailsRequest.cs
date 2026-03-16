@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Requests.Branches
+namespace PrimeFit.API.Requests.Branches
 {
     public class UpdateLocationDetailsRequest
     {

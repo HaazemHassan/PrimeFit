@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Requests
+namespace PrimeFit.API.Requests
 {
     public class BasicPaginationRequest
     {

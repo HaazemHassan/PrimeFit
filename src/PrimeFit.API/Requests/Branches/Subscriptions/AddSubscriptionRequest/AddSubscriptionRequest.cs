@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Requests.Branches.Subscriptions
+namespace PrimeFit.API.Requests.Branches.Subscriptions
 {
     public class AddSubscriptionRequest
     {

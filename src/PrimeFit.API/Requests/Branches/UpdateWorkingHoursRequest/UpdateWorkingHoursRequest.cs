@@ -1,4 +1,4 @@
-﻿using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
+using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
 
 namespace PrimeFit.API.Requests.Branches
 {

@@ -1,4 +1,4 @@
-﻿using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.API.Requests.Branches
 {

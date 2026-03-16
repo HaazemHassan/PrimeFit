@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Requests.Client.Users
+namespace PrimeFit.API.Requests.Client.Users
 {
     public class UpdateMyPorfileRequest
     {
