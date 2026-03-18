@@ -3,6 +3,7 @@ using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
@@ -34,7 +35,8 @@ namespace PrimeFit.Infrastructure.Services
           AppDbContext dbContext,
           ILogger<AuthenticationService> logger,
           IDateTimeProvider dateTimeProvider,
-          IOtpService otpService) : IAuthenticationService
+          IOtpService otpService,
+         IOptions<EmailVerificationCodeOptions> EmailVerificationCodeOptions) : IAuthenticationService
     {
 
 
@@ -161,7 +163,7 @@ namespace PrimeFit.Infrastructure.Services
         }
 
 
-        public async Task<ErrorOr<Success>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default)
+        public async Task<ErrorOr<string>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default)
         {
             var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
 
@@ -182,12 +184,17 @@ namespace PrimeFit.Infrastructure.Services
 
             existingCode?.MarkAsRevoked();
 
-            var confirmEmailCode = otpService.Generate(length: 6);
-            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: 15);
+            var emailCodeLength = EmailVerificationCodeOptions.Value.CodeLength;
+            var confirmEmailCode = otpService.Generate(length: emailCodeLength);
+            var expireInMinutes = EmailVerificationCodeOptions.Value.EmailExpireInMinutes;
+
+
+            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: expireInMinutes);
             var verificationCode = new VerificationCode(appUser.Id, confirmEmailCode, VerificationCodeType.EmailConfirmation, codeExpiresAt);
 
             await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
-            return Result.Success;
+
+            return confirmEmailCode;
         }
 
 
@@ -378,10 +385,6 @@ namespace PrimeFit.Infrastructure.Services
             var response = handler.ReadJwtToken(accessToken);
             return response;
         }
-
-
-
-
 
         #endregion
 

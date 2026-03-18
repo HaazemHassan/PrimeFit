@@ -11,10 +11,12 @@ using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
+using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 using PrimeFit.Infrastructure.Data.Repositories;
 using PrimeFit.Infrastructure.Data.Seeding;
+using PrimeFit.Infrastructure.Emails;
 using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
 using PrimeFit.Infrastructure.Storage;
@@ -155,6 +157,13 @@ public static class InfrastructureServiceRegistration
 
         services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));
         services.AddScoped<IImageService, CloudinaryImageService>();
+
+
+        services.Configure<EmailVerificationCodeOptions>(configuration.GetSection(EmailVerificationCodeOptions.SectionName));
+        services.Configure<MailSettings>(configuration.GetSection(MailSettings.SectionName));
+
+        services.AddSingleton<IEmailBodyBuilderService, EmailBodyBuilderService>();
+        services.AddScoped<IEmailService, EmailService>();
 
 
         return services;

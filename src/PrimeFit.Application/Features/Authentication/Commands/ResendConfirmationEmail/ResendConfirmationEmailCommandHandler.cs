@@ -30,9 +30,14 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
 
             var result = await _authenticationService.CreateEmailConfirmationCode(user.Id, cancellationToken);
 
+            if (result.IsError)
+            {
+                return result.Errors;
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return result;
+            return Result.Success;
         }
     }
 }

@@ -10,6 +10,6 @@ namespace PrimeFit.Application.Contracts.Infrastructure
         public Task<ErrorOr<Success>> LogoutAsync(string refreshToken, CancellationToken ct = default);
         public Task<ErrorOr<Success>> ChangePassword(int domainUserId, string currentPassword, string newPassword);
         public Task<ErrorOr<Success>> ConfirmEmail(int appUserId, string code, CancellationToken ct = default);
-        public Task<ErrorOr<Success>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default);
+        public Task<ErrorOr<string>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default);
     }
 }
