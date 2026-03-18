@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Options;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Features.Users.Common;
@@ -10,9 +11,9 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
     {
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly AppPasswordOptions _passwordSettings;
-        public RegisterUserCommandValidator(AppPasswordOptions passwordSettings, IPhoneNumberService phoneNumberService)
+        public RegisterUserCommandValidator(IOptions<AppPasswordOptions> passwordSettings, IPhoneNumberService phoneNumberService)
         {
-            _passwordSettings = passwordSettings;
+            _passwordSettings = passwordSettings.Value;
             _phoneNumberService = phoneNumberService;
 
             ApplyValidationRules();

@@ -54,20 +54,19 @@ public static class InfrastructureServiceRegistration
 
     private static IServiceCollection AddIdentityConfigurations(IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<AppPasswordOptions>(configuration.GetSection(AppPasswordOptions.SectionName));
 
-        var passwordSettings = new AppPasswordOptions();
-        configuration.GetSection(AppPasswordOptions.SectionName).Bind(passwordSettings);
-        services.AddSingleton(passwordSettings);
+        var passwordOptions = configuration.GetSection(AppPasswordOptions.SectionName).Get<AppPasswordOptions>();
 
         services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
         {
             // Password settings 
-            option.Password.RequireDigit = passwordSettings.RequireDigit;
-            option.Password.RequireLowercase = passwordSettings.RequireLowercase;
-            option.Password.RequireNonAlphanumeric = passwordSettings.RequireNonAlphanumeric;
-            option.Password.RequireUppercase = passwordSettings.RequireUppercase;
-            option.Password.RequiredLength = passwordSettings.MinLength;
-            option.Password.RequiredUniqueChars = passwordSettings.RequiredUniqueChars;
+            option.Password.RequireDigit = passwordOptions.RequireDigit;
+            option.Password.RequireLowercase = passwordOptions.RequireLowercase;
+            option.Password.RequireNonAlphanumeric = passwordOptions.RequireNonAlphanumeric;
+            option.Password.RequireUppercase = passwordOptions.RequireUppercase;
+            option.Password.RequiredLength = passwordOptions.MinLength;
+            option.Password.RequiredUniqueChars = passwordOptions.RequiredUniqueChars;
 
             // Lockout settings.
             option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -88,10 +87,9 @@ public static class InfrastructureServiceRegistration
 
     private static IServiceCollection AddHangfireConfiguration(IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<HangfireOptions>(configuration.GetSection(HangfireOptions.SectionName));
 
-        var hangfireSettings = new HangfireSettings();
-        configuration.GetSection(HangfireSettings.SectionName).Bind(hangfireSettings);
-        services.AddSingleton(hangfireSettings);
+        var hangfireOptions = configuration.GetSection(HangfireOptions.SectionName).Get<HangfireOptions>();
 
         services.AddHangfire(config => config
          .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -160,7 +158,7 @@ public static class InfrastructureServiceRegistration
 
 
         services.Configure<EmailVerificationCodeOptions>(configuration.GetSection(EmailVerificationCodeOptions.SectionName));
-        services.Configure<MailSettings>(configuration.GetSection(MailSettings.SectionName));
+        services.Configure<MailOptions>(configuration.GetSection(MailOptions.SectionName));
 
         services.AddSingleton<IEmailBodyBuilderService, EmailBodyBuilderService>();
         services.AddScoped<IEmailService, EmailService>();

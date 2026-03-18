@@ -26,7 +26,7 @@ using System.Text;
 namespace PrimeFit.Infrastructure.Services
 {
     internal class AuthenticationService(
-          JwtOptions jwtSettings,
+         IOptions<JwtOptions> jwtOptions,
           UserManager<ApplicationUser> userManager,
           IUnitOfWork unitOfWork,
           IMapper mapper,
@@ -36,9 +36,11 @@ namespace PrimeFit.Infrastructure.Services
           ILogger<AuthenticationService> logger,
           IDateTimeProvider dateTimeProvider,
           IOtpService otpService,
-         IOptions<EmailVerificationCodeOptions> EmailVerificationCodeOptions) : IAuthenticationService
+          IOptions<EmailVerificationCodeOptions> emailVerificationCodeOptions) : IAuthenticationService
     {
 
+        private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+        private readonly EmailVerificationCodeOptions _emailOptions = emailVerificationCodeOptions.Value;
 
 
         public async Task<ErrorOr<AuthResult>> SignInWithPassword(string email, string password, CancellationToken ct = default)
@@ -184,9 +186,9 @@ namespace PrimeFit.Infrastructure.Services
 
             existingCode?.MarkAsRevoked();
 
-            var emailCodeLength = EmailVerificationCodeOptions.Value.CodeLength;
+            var emailCodeLength = _emailOptions.CodeLength;
             var confirmEmailCode = otpService.Generate(length: emailCodeLength);
-            var expireInMinutes = EmailVerificationCodeOptions.Value.EmailExpireInMinutes;
+            var expireInMinutes = _emailOptions.EmailExpireInMinutes;
 
 
             var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: expireInMinutes);
@@ -288,11 +290,11 @@ namespace PrimeFit.Infrastructure.Services
         private JwtSecurityToken GenerateAccessToken(List<Claim> userClaims)
         {
             return new JwtSecurityToken(
-                  issuer: jwtSettings.Issuer,
-                  audience: jwtSettings.Audience,
+                  issuer: _jwtOptions.Issuer,
+                  audience: _jwtOptions.Audience,
                   claims: userClaims,
                   signingCredentials: GetSigningCredentials(),
-                  expires: DateTimeOffset.UtcNow.AddMinutes(jwtSettings.AccessTokenExpirationMinutes).UtcDateTime
+                  expires: DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpirationMinutes).UtcDateTime
               );
         }
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
@@ -336,7 +338,7 @@ namespace PrimeFit.Infrastructure.Services
         }
         private SigningCredentials GetSigningCredentials()
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret));
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.Secret));
             return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
         private RefreshToken GenerateRefreshToken(int userId, string accessTokenJTI, DateTimeOffset? expirationDate = null)
@@ -345,7 +347,7 @@ namespace PrimeFit.Infrastructure.Services
             RandomNumberGenerator.Fill(randomBytes);
             string Token = Convert.ToBase64String(randomBytes);
 
-            expirationDate ??= DateTimeOffset.UtcNow.AddDays(jwtSettings.RefreshTokenExpirationDays);
+            expirationDate ??= DateTimeOffset.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationDays);
             return new RefreshToken(Token, expirationDate.Value, accessTokenJTI, userId);
 
         }
@@ -356,11 +358,11 @@ namespace PrimeFit.Infrastructure.Services
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
                 ValidateIssuer = false,
                 ValidateAudience = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidAudience = jwtSettings.Audience,
+                ValidIssuer = _jwtOptions.Issuer,
+                ValidAudience = _jwtOptions.Audience,
                 ValidateLifetime = validateLifetime,
                 ClockSkew = TimeSpan.FromMinutes(2)  //default = 5 min (security gap)
             };

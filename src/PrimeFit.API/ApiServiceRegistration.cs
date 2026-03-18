@@ -111,12 +111,11 @@ namespace PrimeFit.API
 
         private static IServiceCollection AddAuthenticationConfigurations(IServiceCollection services, IConfiguration configuration)
         {
-            //JWT Authentication
-            var jwtSettings = new JwtOptions();
-            configuration.GetSection(JwtOptions.SectionName).Bind(jwtSettings);
-            services.AddSingleton(jwtSettings);
+            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
 
+
+            var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
 
             services.AddAuthentication(x =>
             {
@@ -149,10 +148,11 @@ namespace PrimeFit.API
         public static IServiceCollection AddRateLimitingConfigurations(
          this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<RateLimitingOptions>(configuration.GetSection(RateLimitingOptions.SectionName));
 
-            var rateLimitingSettings = new RateLimitingSettings();
-            configuration.GetSection(RateLimitingSettings.SectionName).Bind(rateLimitingSettings);
-            services.AddSingleton(rateLimitingSettings);
+
+
+            var rateLimitingSettings = configuration.GetSection(RateLimitingOptions.SectionName).Get<RateLimitingOptions>();
 
             services.AddRateLimiter(options =>
             {

@@ -10,14 +10,12 @@ using PrimeFit.Application.Features.Authentication.Commands.RegisterUser;
 using PrimeFit.Application.Features.Authentication.Commands.ResendConfirmEmail;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
-using PrimeFit.Infrastructure.Common.Options;
 
 namespace PrimeFit.API.Controllers
 {
 
-    public class AuthenticationController(JwtOptions jwtSettings, IClientContextService clientContextService) : BaseController
+    public class AuthenticationController(IClientContextService clientContextService) : BaseController
     {
-        private readonly JwtOptions _jwtSettings = jwtSettings;
         private readonly IClientContextService _clientContextService = clientContextService;
 
 

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Options;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Features.Users.Common;
@@ -8,8 +9,12 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
 {
     public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommand>
     {
-        public CreateEmployeeCommandValidator(AppPasswordOptions passwordSettings, IPhoneNumberService phoneNumberService)
+        private readonly AppPasswordOptions _passwordOptions;
+
+        public CreateEmployeeCommandValidator(IOptions<AppPasswordOptions> passwordOptions, IPhoneNumberService phoneNumberService)
         {
+            _passwordOptions = passwordOptions.Value;
+
             RuleFor(x => x.BranchId).Required();
             RuleFor(x => x.EmployeeRoleId).Required();
 
@@ -30,7 +35,7 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
                 .ApplyPhoneNumberRules(phoneNumberService);
 
             RuleFor(x => x.Password).Required()
-                .ApplyPasswordRules(passwordSettings);
+                .ApplyPasswordRules(_passwordOptions);
 
             RuleFor(x => x.ConfirmPassword).ApplyConfirmPasswordRules(x => x.Password);
 

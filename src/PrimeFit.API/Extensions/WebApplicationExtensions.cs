@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using HangfireBasicAuthenticationFilter;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Seeding;
@@ -66,7 +67,7 @@ namespace PrimeFit.API.Extentions
 
         public static void UseCustomHangfireDashboard(this WebApplication app)
         {
-            var hangfireSettings = app.Services.GetRequiredService<HangfireSettings>();
+            var hangfireSettings = app.Services.GetRequiredService<IOptions<HangfireOptions>>().Value;
             app.UseHangfireDashboard(hangfireSettings.DashboardPath, new DashboardOptions
             {
                 Authorization =

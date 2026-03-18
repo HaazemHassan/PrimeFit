@@ -1,6 +1,6 @@
 namespace PrimeFit.Infrastructure.Common.Options
 {
-    public class MailSettings
+    public class MailOptions
     {
         public const string SectionName = "MailSettings";
 

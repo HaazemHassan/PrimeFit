@@ -9,9 +9,9 @@ namespace PrimeFit.Infrastructure.Emails
 {
     internal class EmailService : IEmailService
     {
-        private readonly MailSettings _mailSettings;
+        private readonly MailOptions _mailSettings;
 
-        public EmailService(IOptions<MailSettings> mailSettings)
+        public EmailService(IOptions<MailOptions> mailSettings)
         {
             _mailSettings = mailSettings.Value;
         }
