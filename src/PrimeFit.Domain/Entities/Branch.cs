@@ -10,7 +10,7 @@ namespace PrimeFit.Domain.Entities
     public class Branch : FullAuditableEntity<int>
     {
 
-        public const int MaxImageCount = 3;
+        public const int MaxIMarketPlaceImagesCount = 3;
 
         private Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
         {
@@ -219,11 +219,11 @@ namespace PrimeFit.Domain.Entities
             }
 
 
-            if (ActiveMarketPlaceImages.Count > MaxImageCount)
+            if (ActiveMarketPlaceImages.Count > MaxIMarketPlaceImagesCount)
             {
                 return Error.Validation(
                     code: ErrorCodes.Branch.ImagesCountLimitExceeded,
-                    description: $"Cannot add more than {MaxImageCount + 1} images to a branch."
+                    description: $"Cannot add more than {MaxIMarketPlaceImagesCount + 1} images to a branch."
                  );
             }
 

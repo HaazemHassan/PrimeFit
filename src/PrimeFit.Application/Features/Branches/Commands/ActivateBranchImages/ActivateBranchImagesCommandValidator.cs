@@ -15,8 +15,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages
         {
             RuleFor(x => x.BranchId).Required();
             RuleFor(x => x.Images).NotEmpty().
-                Must(images => images.Count <= Branch.MaxImageCount)
-                 .WithMessage($"Maximum allowed images is {Branch.MaxImageCount}."); ;
+                Must(images => images.Count <= Branch.MaxIMarketPlaceImagesCount + 1)
+                 .WithMessage($"Maximum allowed images is {Branch.MaxIMarketPlaceImagesCount + 1}."); ;
         }
 
     }
