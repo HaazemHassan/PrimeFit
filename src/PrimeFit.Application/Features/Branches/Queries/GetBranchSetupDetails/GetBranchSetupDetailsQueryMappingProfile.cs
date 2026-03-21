@@ -1,4 +1,5 @@
 using AutoMapper;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
@@ -16,7 +17,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
                 .ForMember(dest => dest.BussinessDetails, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.WorkingHours, opt => opt.MapFrom(src => src.WorkingHours))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Where(i => i.Status == BranchImageStatus.Active)));
 
 
 

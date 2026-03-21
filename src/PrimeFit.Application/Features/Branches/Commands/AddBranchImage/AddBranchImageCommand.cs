@@ -14,7 +14,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
         public int BranchId { get; set; }
         public Stream ImageStream { get; set; } = default!;
         public BranchImageType ImageType { get; set; }
-
+        public int DisplayOrder { get; set; }
 
     }
 }

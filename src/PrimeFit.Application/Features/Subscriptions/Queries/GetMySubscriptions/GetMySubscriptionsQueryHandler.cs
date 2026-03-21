@@ -40,7 +40,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetMySubscriptions
                 {
                     SubscriptionId = s.Id,
                     BranchName = s.Branch.Name,
-                    BranchLogoUrl = s.Branch.Logo?.Url,
+                    BranchLogoUrl = s.Branch.ActiveLogo?.Url,
                     PackageName = s.Package.Name,
                     Status = s.Status,
                     TotalDurationInDays = s.DurationInMonths * 30,

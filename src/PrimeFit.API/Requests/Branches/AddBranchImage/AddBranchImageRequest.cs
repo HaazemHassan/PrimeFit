@@ -6,5 +6,6 @@ namespace PrimeFit.API.Requests.Branches.AddBranchImage
     {
         public IFormFile ImageFile { get; set; } = null!;
         public BranchImageType ImageType { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }

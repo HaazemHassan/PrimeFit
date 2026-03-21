@@ -97,5 +97,63 @@ namespace PrimeFit.Infrastructure.Storage
 
             return Result.Success;
         }
+
+        public async Task<ErrorOr<BulkDeleteResult>> DeleteRangeAsync(
+            IEnumerable<string> publicIds,
+            CancellationToken ct)
+        {
+            var ids = publicIds?
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .ToList() ?? [];
+
+            if (ids.Count == 0)
+            {
+                return new BulkDeleteResult(0, []);
+
+            }
+
+            const int batchSize = 100;
+
+            var failed = new List<string>();
+            var deletedCount = 0;
+
+            foreach (var batch in ids.Chunk(batchSize))
+            {
+                ct.ThrowIfCancellationRequested();
+
+                var deleteParams = new DelResParams
+                {
+                    PublicIds = batch.ToList(),
+                    ResourceType = ResourceType.Image
+                };
+
+                var result = await _cloudinary.DeleteResourcesAsync(deleteParams, ct);
+
+                if (result.Error is not null)
+                {
+                    return Error.Failure(
+                        code: ErrorCodes.Cloudinary.ImageDeleteFailed,
+                        description: result.Error.Message);
+                }
+
+                if (result.Deleted is null)
+                {
+                    failed.AddRange(batch);
+                    continue;
+                }
+
+                foreach (var kv in result.Deleted)
+                {
+                    if (kv.Value == "deleted")
+                        deletedCount++;
+                    else
+                        failed.Add(kv.Key);
+                }
+            }
+
+            return new BulkDeleteResult(deletedCount, failed);
+        }
+
     }
 }

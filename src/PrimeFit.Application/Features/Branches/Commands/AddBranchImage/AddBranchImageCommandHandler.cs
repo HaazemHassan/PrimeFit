@@ -3,9 +3,9 @@ using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
@@ -43,8 +43,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
                 return authResult.Errors;
             }
 
-            var branchWithImagesSpec = new BranchWithImagesSpec(request.BranchId);
-            var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(branchWithImagesSpec, cancellationToken);
+            var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 
             if (branch is null)
             {
@@ -54,10 +53,6 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
             }
 
 
-            //double check here also before uploding the image -- also there is a check in the domain
-            var canAddImageResult = branch.CanAddImage(request.ImageType);
-            if (canAddImageResult.IsError)
-                return canAddImageResult.Errors;
 
             var generatedFileName = $"branch-{request.BranchId}-{request.ImageType}-{Guid.NewGuid()}";
 
@@ -71,9 +66,15 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
 
             var uploadedImageData = imageUploadResult.Value;
 
-            var addImageToBranchResult = branch.AddImage(uploadedImageData.SecureUrl,
-                                                        uploadedImageData.PublicId,
-                                                        request.ImageType);
+            var image = new BranchImage(
+                uploadedImageData.SecureUrl,
+                uploadedImageData.PublicId,
+                request.ImageType,
+                request.BranchId,
+                request.DisplayOrder);
+
+
+            var addImageToBranchResult = branch.AddImage(image);
 
             if (addImageToBranchResult.IsError)
             {
@@ -92,8 +93,14 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
                 throw;
             }
 
-            var image = addImageToBranchResult.Value;
-            return new AddBranchImageCommandResponse(image.Id, uploadedImageData.SecureUrl);
+            return new AddBranchImageCommandResponse
+            {
+                BranchId = request.BranchId,
+                ImageId = image.Id,
+                ImageUrl = uploadedImageData.SecureUrl,
+                Status = image.Status,
+                DisplayOrder = image.DisplayOrder
+            };
         }
 
     }

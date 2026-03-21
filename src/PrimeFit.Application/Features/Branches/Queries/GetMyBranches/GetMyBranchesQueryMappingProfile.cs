@@ -11,7 +11,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
 
             CreateMap<Branch, GetMyBranchesQueryResponse>()
                 .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Images
-                   .Where(i => i.Type == BranchImageType.Logo).Select(i => i.Url)
+                   .Where(i => i.Type == BranchImageType.Logo && i.Status == BranchImageStatus.Active).Select(i => i.Url)
                    .FirstOrDefault()));
 
         }

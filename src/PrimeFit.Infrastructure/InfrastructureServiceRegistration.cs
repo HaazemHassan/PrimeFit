@@ -106,6 +106,7 @@ public static class InfrastructureServiceRegistration
     {
         services.AddScoped<RefreshTokensCleanupJob>();
         services.AddScoped<IImageBackgroundService, HangfireImageBackgroundService>();
+        services.AddScoped<OrphanedImagesCleanupJob>();
 
         return services;
     }

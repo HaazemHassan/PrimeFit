@@ -21,6 +21,14 @@ namespace PrimeFit.Infrastructure.BackgroundJobs
                 SubscriptionStatusLifecycleJob.Schedule
             );
 
+
+            manager.AddOrUpdate<OrphanedImagesCleanupJob>(
+                OrphanedImagesCleanupJob.JobId,
+                job => job.ExecuteAsync(CancellationToken.None),
+                OrphanedImagesCleanupJob.Schedule
+
+            );
+
         }
     }
 }

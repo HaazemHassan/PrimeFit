@@ -21,6 +21,11 @@ namespace PrimeFit.Application.Security
             CancellationToken cancellationToken)
         {
 
+            if (!_currentUserService.IsAuthenticated)
+            {
+                throw new UnauthorizedException();
+            }
+
             if (_currentUserService.UserType == UserType.SuperAdmin)
             {
                 return await next(cancellationToken);

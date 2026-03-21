@@ -7,12 +7,11 @@ using PrimeFit.API.Requests.Branches;
 using PrimeFit.API.Requests.Branches.AddBranchImage;
 using PrimeFit.API.Requests.Branches.Subscriptions;
 using PrimeFit.API.Requests.Branches.UpdateBranchImage;
+using PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages;
 using PrimeFit.Application.Features.Branches.Commands.CreateBranch;
 using PrimeFit.Application.Features.Branches.Commands.CreateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscription;
-using PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails;
-using PrimeFit.Application.Features.Branches.Commands.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.UpdateBranchStatus;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 using PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours;
@@ -153,35 +152,8 @@ namespace PrimeFit.API.Controllers.Owner
             {
                 BranchId = branchId,
                 ImageStream = stream,
-                ImageType = request.ImageType
-            };
-
-
-            var result = await Mediator.Send(command);
-            if (result.IsError)
-            {
-                return Problem(result.Errors);
-            }
-            return Ok(result.Value);
-
-        }
-
-        [HttpPatch("{branchId:int}/images/{imageId}")]
-        public async Task<IActionResult> UpdateBranchImage(int branchId, int imageId, UpdateBranchImageRequest request)
-        {
-            var validationResult = await _updateLocationDetailsValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                throw new ValidationException("Validation Exception", validationResult.Errors);
-            }
-
-            using var stream = request.ImageFile.OpenReadStream();
-
-            var command = new UpdateBranchImageCommand
-            {
-                BranchId = branchId,
-                ImageId = imageId,
-                ImageStream = stream,
+                ImageType = request.ImageType,
+                DisplayOrder = request.DisplayOrder
             };
 
 
@@ -195,25 +167,27 @@ namespace PrimeFit.API.Controllers.Owner
         }
 
 
-        [HttpDelete("{branchId:int}/images/{imageId}")]
-        public async Task<IActionResult> DeleteBranchImage(int branchId, int imageId)
+        [HttpPatch("{branchId:int}/images/activate")]
+        public async Task<IActionResult> ActivateBranchImage(int branchId, [FromBody] ActivateBranchImagesRequest request)
         {
 
-
-            var command = new DeleteBranchImageCommand
+            var command = new ActivateBranchImagesCommand
             {
                 BranchId = branchId,
-                ImageId = imageId
+                Images = request.Images,
             };
+
 
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
                 return Problem(result.Errors);
             }
-            return NoContent();
+            return Ok(result.Value);
 
         }
+
+
 
         [HttpPost("{branchId:int}/packages")]
         public async Task<IActionResult> AddPackage([FromRoute] int branchId, [FromBody] AddPackageRequest request)

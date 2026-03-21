@@ -22,7 +22,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic.Sp
                 Name = b.Name,
                 BranchType = b.BranchType,
                 LogoUrl = b.Images
-                    .Where(i => i.Type == BranchImageType.Logo)
+                    .Where(i => i.Type == BranchImageType.Logo && i.Status == BranchImageStatus.Active)
                     .Select(i => i.Url)
                     .FirstOrDefault()!,
                 Governate = b.Governorate != null ? b.Governorate.Name : null!,
@@ -34,6 +34,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic.Sp
                 AverageRating = Math.Round(b.Reviews.Average(r => (double?)r.Rating) ?? 0, 1)
             });
 
+            Query.OrderByDescending(b => b.CreatedAt);
             Query.Paginate(pageNumber, pageSize);
             Query.AsNoTracking();
         }

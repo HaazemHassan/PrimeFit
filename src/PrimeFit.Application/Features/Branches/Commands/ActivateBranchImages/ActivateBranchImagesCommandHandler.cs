@@ -3,14 +3,13 @@ using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.Specifications.Branches;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
 
-namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
+namespace PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages
 {
-    public class DeleteBranchImageCommandHandler : IRequestHandler<DeleteBranchImageCommand, ErrorOr<Success>>
+    public class ActivateBranchImagesCommandHandler : IRequestHandler<ActivateBranchImagesCommand, ErrorOr<Success>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
@@ -19,7 +18,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
         private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
-        public DeleteBranchImageCommandHandler(
+        public ActivateBranchImagesCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
@@ -33,19 +32,18 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
             _branchAuthorizationService = branchAuthorizationService;
         }
 
-        public async Task<ErrorOr<Success>> Handle(DeleteBranchImageCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Success>> Handle(ActivateBranchImagesCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(
-                request.BranchId,
-                Permission.BranchImagesDelete,
-                cancellationToken);
+            var currentUserId = _currentUserService.UserId!.Value;
 
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchImagesWrite, cancellationToken);
             if (authResult.IsError)
             {
                 return authResult.Errors;
             }
 
-            var spec = new BranchWithSpecificImageSpec(request.BranchId, request.ImageId);
+            var spec = new BranchWithActiveAndSelectedPendingImagesSpec(request.BranchId, request.Images);
+
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (branch is null)
@@ -55,21 +53,22 @@ namespace PrimeFit.Application.Features.Branches.Commands.DeleteBranchImage
                     "Branch not found");
             }
 
-            var deleteResult = branch.DeleteImage(request.ImageId);
-            if (deleteResult.IsError)
+
+
+            foreach (var image in branch.Images.Where(i => i.Status == BranchImageStatus.Pending))
             {
-                return deleteResult.Errors;
+                var result = branch.ActivateImage(image);
+                if (result.IsError)
+                {
+                    return result.Errors;
+                }
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var publicId = deleteResult.Value;
-            _imageBackgroundQueue.DeleteImage(publicId);
-
             return Result.Success;
 
         }
-
 
     }
 }

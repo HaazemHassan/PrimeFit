@@ -10,7 +10,7 @@ namespace PrimeFit.Domain.Entities
     public class Branch : FullAuditableEntity<int>
     {
 
-        public const int MaxImageCount = 6;
+        public const int MaxImageCount = 3;
 
         private Branch(int ownerId, string name, string email, string phoneNumber, BranchType branchType)
         {
@@ -61,9 +61,13 @@ namespace PrimeFit.Domain.Entities
 
         private readonly List<BranchImage> _images;
         public IReadOnlyList<BranchImage> Images => _images.AsReadOnly();
-        public BranchImage? Logo => _images.FirstOrDefault(i => i.Type == BranchImageType.Logo);
-        public IReadOnlyList<BranchImage> MarketPlaceImages =>
-            _images.Where(i => i.Type == BranchImageType.MarketPlace).ToList();
+
+
+        public IReadOnlyList<BranchImage> ActiveImages =>
+           _images.Where(i => i.Status == BranchImageStatus.Active).ToList();
+        public BranchImage? ActiveLogo => ActiveImages.FirstOrDefault(i => i.Type == BranchImageType.Logo);
+        public IReadOnlyList<BranchImage> ActiveMarketPlaceImages =>
+            ActiveImages.Where(i => i.Type == BranchImageType.MarketPlace).ToList();
 
 
         private readonly List<Package> _packages;
@@ -185,40 +189,52 @@ namespace PrimeFit.Domain.Entities
         }
 
 
-
-        public ErrorOr<Success> CanAddImage(BranchImageType type)
+        public ErrorOr<Success> ActivateImage(BranchImage image)
         {
-            if (_images.Count > MaxImageCount)
+            if (!_images.Contains(image))
+            {
+                return Error.Validation(
+                    description: "Image not found."
+                );
+            }
+
+
+            if (image.Status != BranchImageStatus.Pending)
+            {
+                return Error.Validation(
+                    description: "Only pending images can be activated."
+                );
+            }
+
+
+            var imageToReplace = ActiveImages.FirstOrDefault(i => i.DisplayOrder == image.DisplayOrder);
+
+            if (imageToReplace is not null)
+            {
+                imageToReplace!.SetStatus(BranchImageStatus.Replaced);
+
+                image.SetStatus(BranchImageStatus.Active);
+
+                return Result.Success;
+            }
+
+
+            if (ActiveMarketPlaceImages.Count > MaxImageCount)
             {
                 return Error.Validation(
                     code: ErrorCodes.Branch.ImagesCountLimitExceeded,
-                    description: $"Cannot add more than {MaxImageCount} images to a branch."
+                    description: $"Cannot add more than {MaxImageCount + 1} images to a branch."
                  );
             }
 
-            if (type == BranchImageType.Logo && _images.Any(i => i.Type == BranchImageType.Logo))
-            {
-                return Error.Conflict(
-                    code: ErrorCodes.Branch.LogoAlreadyExists,
-                    description: "Branch already has a logo"
-                 );
-
-            }
-
+            image.SetStatus(BranchImageStatus.Active);
             return Result.Success;
 
         }
 
-        public ErrorOr<BranchImage> AddImage(string url, string publicId, BranchImageType type)
+        public ErrorOr<BranchImage> AddImage(BranchImage image)
         {
-            var canAddImageResult = CanAddImage(type);
-            if (canAddImageResult.IsError)
-                return canAddImageResult.Errors;
-
-            var image = BranchImage.Create(url, publicId, type, Id);
-
             _images.Add(image);
-
             return image;
         }
         public ErrorOr<string> DeleteImage(int imageId)
@@ -330,13 +346,13 @@ namespace PrimeFit.Domain.Entities
                     description: "Working hours must be defined before activating the branch."
                 );
 
-            if (Logo is null)
+            if (ActiveLogo is null)
                 return Error.Validation(
                     code: ErrorCodes.Branch.LogoRequired,
                     description: "A logo is required to activate the branch."
                 );
 
-            if (MarketPlaceImages.Count == 0)
+            if (ActiveMarketPlaceImages.Count == 0)
                 return Error.Validation(
                     code: ErrorCodes.Branch.MarketPlaceImagesRequired,
                     description: "At least one marketplace image is required to activate the branch."

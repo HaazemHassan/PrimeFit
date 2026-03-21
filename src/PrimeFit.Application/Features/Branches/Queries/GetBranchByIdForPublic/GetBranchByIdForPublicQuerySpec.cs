@@ -39,7 +39,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
                 DistanceInMeters = userLocation != null && b.Coordinates != null
                                 ? Math.Round(b.Coordinates.Distance(userLocation)) : null,
 
-                Images = b.Images.Select(i => new ImageDto
+                Images = b.Images.Where(i => i.Status == BranchImageStatus.Active).Select(i => new ImageDto
                 {
                     Id = i.Id,
                     Url = i.Url,
@@ -82,7 +82,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
                 }).ToList(),
 
             });
-
+            Query.AsNoTracking();
 
         }
     }

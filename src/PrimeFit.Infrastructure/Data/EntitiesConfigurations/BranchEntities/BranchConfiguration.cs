@@ -48,7 +48,9 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                   .HasColumnType("geography");
 
 
-            builder.Ignore(b => b.MarketPlaceImages);
+            builder.Ignore(b => b.ActiveMarketPlaceImages);
+            builder.Ignore(b => b.ActiveImages);
+            builder.Ignore(b => b.ActiveLogo);
 
         }
     }
