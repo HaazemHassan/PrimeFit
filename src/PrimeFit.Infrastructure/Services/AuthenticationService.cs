@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ErrorOr;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.Specifications.RefreshTokens;
+using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
@@ -36,7 +38,8 @@ namespace PrimeFit.Infrastructure.Services
           ILogger<AuthenticationService> logger,
           IDateTimeProvider dateTimeProvider,
           IOtpService otpService,
-          IOptions<EmailVerificationCodeOptions> emailVerificationCodeOptions) : IAuthenticationService
+          IOptions<EmailVerificationCodeOptions> emailVerificationCodeOptions,
+          IEmailBodyBuilderService _emailBodyBuilderService) : IAuthenticationService
     {
 
         private readonly JwtOptions _jwtOptions = jwtOptions.Value;
@@ -197,6 +200,22 @@ namespace PrimeFit.Infrastructure.Services
             await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
 
             return confirmEmailCode;
+        }
+
+        public Task SendConfirmationEmailAsync(DomainUser user, string code)
+        {
+            string emailBody = _emailBodyBuilderService.GenerateEmailBody("EmailConfirmation",
+            new Dictionary<string, string>
+                {
+                        { "Name", user.FirstName },
+                        { "Code", code },
+                        { "Minutes", 15.ToString() },
+                });
+
+
+            BackgroundJob.Enqueue<SendEmailJob>(job => job.Execute(user.Email, "Email Confirmation", emailBody));
+
+            return Task.CompletedTask;
         }
 
 

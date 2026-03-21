@@ -3,11 +3,11 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 
 namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
 {
-    public class HangfireImageBackgroundServicee : IImageBackgroundService
+    public class HangfireImageBackgroundService : IImageBackgroundService
     {
         private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public HangfireImageBackgroundServicee(IBackgroundJobClient backgroundJobClient)
+        public HangfireImageBackgroundService(IBackgroundJobClient backgroundJobClient)
         {
             _backgroundJobClient = backgroundJobClient;
         }

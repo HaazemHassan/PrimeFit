@@ -7,7 +7,7 @@ using PrimeFit.Infrastructure.Common.Options;
 
 namespace PrimeFit.Infrastructure.Emails
 {
-    internal class EmailService : IEmailService
+    public class EmailService : IEmailService
     {
         private readonly MailOptions _mailSettings;
 

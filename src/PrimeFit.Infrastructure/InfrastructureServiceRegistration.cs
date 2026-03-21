@@ -105,7 +105,7 @@ public static class InfrastructureServiceRegistration
     private static IServiceCollection AddBackgroundJobs(IServiceCollection services)
     {
         services.AddScoped<RefreshTokensCleanupJob>();
-        services.AddScoped<IImageBackgroundService, HangfireImageBackgroundServicee>();
+        services.AddScoped<IImageBackgroundService, HangfireImageBackgroundService>();
 
         return services;
     }

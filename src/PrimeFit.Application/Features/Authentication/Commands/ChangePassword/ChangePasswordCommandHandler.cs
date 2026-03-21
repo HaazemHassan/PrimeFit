@@ -13,6 +13,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword
         public async Task<ErrorOr<Success>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.UserId;
+
             return await _authenticationService.ChangePassword(userId!.Value, request.CurrentPassword, request.NewPassword);
         }
     }

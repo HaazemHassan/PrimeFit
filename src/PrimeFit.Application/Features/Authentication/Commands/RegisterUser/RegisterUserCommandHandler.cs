@@ -19,13 +19,15 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
         private readonly IAuthenticationService _authenticationService;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly ITotpService _totpService;
-        private readonly IOtpService _otpService;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IEmailService _emailService;
-        private readonly IEmailBodyBuilderService _emailBodyBuilderService;
 
 
-        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IApplicationUserService applicationUserService, IAuthenticationService authenticationService, IPhoneNumberService phoneNumberService, ITotpService totpService, IOtpService otpService, IDateTimeProvider dateTimeProvider, IEmailService emailService, IEmailBodyBuilderService emailBodyBuilderService)
+        public RegisterUserCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IApplicationUserService applicationUserService,
+            IAuthenticationService authenticationService,
+            IPhoneNumberService phoneNumberService,
+            ITotpService totpService
+            )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -33,10 +35,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             _authenticationService = authenticationService;
             _phoneNumberService = phoneNumberService;
             _totpService = totpService;
-            _otpService = otpService;
-            _dateTimeProvider = dateTimeProvider;
-            _emailService = emailService;
-            _emailBodyBuilderService = emailBodyBuilderService;
         }
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -90,15 +88,8 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
                 return createCodeResult.Errors;
             }
 
-            string emailBody = _emailBodyBuilderService.GenerateEmailBody("EmailConfirmation",
-                new Dictionary<string, string>
-            {
-                { "Name", domainUser.FirstName },
-                { "Code", createCodeResult.Value },
-                { "Minutes", 15.ToString() },
-            });
 
-            //await _emailService.SendEmailAsync(domainUser.Email, "Email Confirmation", emailBody);
+            //await _authenticationService.SendConfirmationEmailAsync(domainUser, createCodeResult.Value);
 
 
             var response = _mapper.Map<UserBaseResponse>(domainUser);
