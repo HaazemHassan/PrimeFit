@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
+using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
@@ -300,8 +301,24 @@ namespace PrimeFit.Infrastructure.Services
             }
             userResponse.SecretKey = appUser.DomainUser.TotpSecret;
 
-            AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);
+            if (appUser.DomainUser.UserType == UserType.Employee)
+            {
+                var employeeContext = await dbContext.Employees
+                  .Where(e => e.UserId == appUser.DomainUserId)
+                  .Select(e => new EmployeeBranchContextDto
+                  {
+                      BranchId = e.BranchId,
+                      BranchName = e.Branch.Name,
+                      RoleId = e.RoleId,
+                      RoleName = e.Role.Name
+                  })
+                  .FirstOrDefaultAsync();
 
+                userResponse.WorksAtBranch = employeeContext;
+
+            }
+
+            AuthResult jwtResult = new(accessToken, refreshTokenDto, userResponse);
 
             return jwtResult;
         }

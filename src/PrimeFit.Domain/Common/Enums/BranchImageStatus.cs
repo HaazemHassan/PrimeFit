@@ -4,6 +4,7 @@
     {
         Pending = 1,
         Active = 2,
-        Replaced = 3
+        Replaced = 3,
+        Deleted = 4
     }
 }

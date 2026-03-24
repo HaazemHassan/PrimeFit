@@ -1,7 +1,5 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
@@ -17,7 +15,6 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
         IGenericRepository<EmployeeRole> employeeRoleRepository,
         IApplicationUserService applicationUserService,
         IPhoneNumberService phoneNumberService,
-        ICurrentUserService currentUserService,
         IBranchAuthorizationService _branchAuthorizationService)
         : IRequestHandler<CreateEmployeeCommand, ErrorOr<CreateEmployeeCommandResponse>>
     {
@@ -25,17 +22,6 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
             CreateEmployeeCommand request,
             CancellationToken cancellationToken)
         {
-
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(
-                request.BranchId,
-                Permission.EmployeesWrite,
-                cancellationToken);
-
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
-
 
             var branch = await unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
             if (branch is null)
@@ -46,6 +32,15 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
 
             }
 
+            var authResult = await _branchAuthorizationService.AuthorizeAsync(
+                request.BranchId,
+                Permission.EmployeesWrite,
+                cancellationToken);
+
+            if (authResult.IsError)
+            {
+                return authResult.Errors;
+            }
 
             var employeeRole = await employeeRoleRepository.GetAsync(
                         r => r.Id == request.EmployeeRoleId,
@@ -69,26 +64,18 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
                 cancellationToken);
 
             if (addUserResult.IsError)
+            {
                 return addUserResult.Errors;
+            }
 
-            var createdUserId = addUserResult.Value;
+            var employee = new Employee(domainUser.Id, request.BranchId, request.EmployeeRoleId);
+            employee.UpdateStatus(active: true);
 
-            var alreadyEmployee = await unitOfWork.Employees.AnyAsync(
-                e => e.UserId == createdUserId && e.BranchId == request.BranchId,
-                cancellationToken);
-
-            if (alreadyEmployee)
-                return Error.Conflict(
-                    code: ErrorCodes.Employee.AlreadyExistsInBranch,
-                    description: "This user is already an employee in this branch.");
-
-            var employee = new Employee(createdUserId, request.BranchId, request.EmployeeRoleId);
             await unitOfWork.Employees.AddAsync(employee, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new CreateEmployeeCommandResponse(
                 employee.Id,
-                createdUserId,
+                domainUser.Id,
                 $"{domainUser.FirstName} {domainUser.LastName}",
                 domainUser.Email,
                 employeeRole.Name);

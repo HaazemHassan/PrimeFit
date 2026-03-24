@@ -75,6 +75,7 @@ public static class ErrorCodes
     {
         public const string RoleNotFound = "EMPLOYEE_ROLE_NOT_FOUND";
         public const string AlreadyExistsInBranch = "EMPLOYEE_ALREADY_EXISTS_IN_BRANCH";
+        public const string NotFound = "EMPLOYEE_NOT_FOUND";
     }
 
     public static class CheckIn

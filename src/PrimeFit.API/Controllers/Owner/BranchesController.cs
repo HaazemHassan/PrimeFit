@@ -5,6 +5,7 @@ using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Requests;
 using PrimeFit.API.Requests.Branches;
 using PrimeFit.API.Requests.Branches.AddBranchImage;
+using PrimeFit.API.Requests.Branches.Employees;
 using PrimeFit.API.Requests.Branches.Subscriptions;
 using PrimeFit.API.Requests.Branches.UpdateBranchImage;
 using PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages;
@@ -22,6 +23,7 @@ using PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackage;
 using PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageStatus;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages;
+using PrimeFit.Application.Features.Employees.Queries.GetBranchEmployees;
 using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
 using PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions;
 
@@ -267,6 +269,26 @@ namespace PrimeFit.API.Controllers.Owner
             {
                 return Problem(result.Errors);
             }
+            return Ok(result.Value);
+        }
+
+
+        [HttpGet("{branchId:int}/employees")]
+        public async Task<IActionResult> GetBranchEmployees([FromRoute] int branchId, [FromQuery] GetBranchEmployeesRequest request)
+        {
+            var query = new GetBranchEmployeesQuery
+            {
+                BranchId = branchId,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
             return Ok(result.Value);
         }
 

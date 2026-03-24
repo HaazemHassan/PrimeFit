@@ -13,8 +13,12 @@ public class SignInCommandHandler(IAuthenticationService _authenticationService,
     public async Task<ErrorOr<AuthResult>> Handle(SignInWithPasswordCommand request, CancellationToken cancellationToken)
     {
         var authResult = await _authenticationService.SignInWithPassword(request.Email, request.Password, cancellationToken);
+
         if (!authResult.IsError)
+        {
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        }
         return authResult;
     }
 }

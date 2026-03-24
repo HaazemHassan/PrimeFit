@@ -31,6 +31,7 @@ namespace PrimeFit.Infrastructure.Data.Identity.Entities
                 throw new ArgumentNullException("This app user is associated with domain user");
 
             DomainUser = domainUser;
+            DomainUserId = domainUser.Id;
         }
 
 

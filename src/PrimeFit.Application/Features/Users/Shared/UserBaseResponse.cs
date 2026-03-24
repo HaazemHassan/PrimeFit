@@ -1,4 +1,5 @@
-﻿using PrimeFit.Domain.Common.Enums;
+﻿using PrimeFit.Application.Features.Authentication.Commands.SignIn;
+using PrimeFit.Domain.Common.Enums;
 using System.Text.Json.Serialization;
 
 namespace PrimeFit.Application.Features.Users.Common
@@ -17,6 +18,7 @@ namespace PrimeFit.Application.Features.Users.Common
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
         public string? SecretKey { get; set; }
+        public EmployeeBranchContextDto? WorksAtBranch { get; set; }
 
     }
 }

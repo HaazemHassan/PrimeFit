@@ -51,7 +51,14 @@ namespace PrimeFit.Domain.Entities
             if (!string.IsNullOrWhiteSpace(phoneNumber))
                 PhoneNumber = phoneNumber;
 
+        }
 
+        public void UpdateEmail(string email)
+        {
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                Email = email;
+            }
         }
 
 
