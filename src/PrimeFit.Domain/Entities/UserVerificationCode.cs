@@ -55,7 +55,7 @@ namespace PrimeFit.Domain.Entities
 
             if (Attempts >= MaxAttempts)
             {
-                MarkAsRevoked();
+                Revoke();
                 return Error.Validation(code: ErrorCodes.Authentication.EmailCodeAttemptsExceeded, description: "Some thing went wrong");
             }
 
@@ -65,18 +65,23 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public void MarkAsUsed()
+        private void MarkAsUsed()
         {
             if (Status != VerificationCodeStatus.Active)
+            {
                 throw new InvalidOperationException("Invalid code status to use this code");
+
+            }
 
             Status = VerificationCodeStatus.Used;
         }
 
-        public void MarkAsRevoked()
+        public void Revoke()
         {
             if (Status != VerificationCodeStatus.Active)
+            {
                 throw new InvalidOperationException("Invalid code status to revoke this code");
+            }
 
             Status = VerificationCodeStatus.Revoked;
         }
@@ -86,9 +91,22 @@ namespace PrimeFit.Domain.Entities
             return DateTime.UtcNow > ExpiresAt;
         }
 
-        public bool CanBeUsed()
+        public bool isValid()
         {
             return !IsExpired() && Attempts < MaxAttempts && Status == VerificationCodeStatus.Active;
+        }
+
+        public ErrorOr<Success> TryUse(string code)
+        {
+            if (!isValid() || Code != code)
+            {
+                var incrementAttemptsResult = IncrementAttempts();
+
+                return Error.Validation(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code.");
+            }
+
+            MarkAsUsed();
+            return Result.Success;
         }
     }
 }

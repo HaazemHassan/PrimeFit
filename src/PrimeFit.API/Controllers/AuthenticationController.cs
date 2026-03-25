@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Common.Filters;
 using PrimeFit.Application.Contracts.Api;
+using PrimeFit.Application.Features.Authentication.Commands.ChangePassword;
 using PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail;
 using PrimeFit.Application.Features.Authentication.Commands.RefreshToken;
 using PrimeFit.Application.Features.Authentication.Commands.RegisterOwner;
 using PrimeFit.Application.Features.Authentication.Commands.RegisterUser;
 using PrimeFit.Application.Features.Authentication.Commands.ResendConfirmEmail;
+using PrimeFit.Application.Features.Authentication.Commands.ResetPassword;
+using PrimeFit.Application.Features.Authentication.Commands.SendResetPasswordEmail;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
 
@@ -121,6 +124,46 @@ namespace PrimeFit.API.Controllers
             return NoContent();
         }
 
+        [HttpPost("send-reset-password-email")]
+        [AnonymousOnly]
+        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailCommand command)
+        {
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("reset-password")]
+        [AnonymousOnly]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+        {
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+            var result = await Mediator.Send(command);
+
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+            return NoContent();
+        }
+
         //[HttpPost("logout")]
         //[Authorize]
         //public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
@@ -165,6 +208,20 @@ namespace PrimeFit.API.Controllers
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

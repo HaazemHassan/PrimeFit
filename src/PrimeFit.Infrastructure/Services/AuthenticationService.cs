@@ -156,13 +156,23 @@ namespace PrimeFit.Infrastructure.Services
         public async Task<ErrorOr<Success>> ChangePassword(int domainUserId, string currentPassword, string newPassword)
         {
             var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId);
+
             if (appUser is null)
+            {
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
+
+            }
+
 
             var result = await userManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
 
             if (!result.Succeeded)
-                return Error.Unauthorized(code: ErrorCodes.Authentication.PasswordChangeFailed, description: result.Errors.FirstOrDefault()?.Description ?? "Password change failed");
+            {
+                return Error.Unauthorized(
+                    code: ErrorCodes.Authentication.InvalidPassword,
+                    description: result.Errors.FirstOrDefault()?.Description ?? "Password change failed");
+
+            }
 
             return Result.Success;
 
@@ -188,7 +198,7 @@ namespace PrimeFit.Infrastructure.Services
                 v.Type == VerificationCodeType.EmailConfirmation &&
                 v.Status == VerificationCodeStatus.Active, ct);
 
-            existingCode?.MarkAsRevoked();
+            existingCode?.Revoke();
 
             var emailCodeLength = _emailOptions.CodeLength;
             var confirmEmailCode = otpService.Generate(length: emailCodeLength);
@@ -219,6 +229,89 @@ namespace PrimeFit.Infrastructure.Services
             return Task.CompletedTask;
         }
 
+        public async Task<ErrorOr<string>> CreatePasswordResetCode(int domainUserId, CancellationToken ct = default)
+        {
+            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
+
+            if (appUser is null)
+            {
+                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
+            }
+
+            var existingCode = await unitOfWork.VerificationCodes.GetAsync(v =>
+                v.ApplicationUserId == appUser.Id &&
+                v.Type == VerificationCodeType.PasswordReset &&
+                v.Status == VerificationCodeStatus.Active, ct);
+
+            existingCode?.Revoke();
+
+            var emailCodeLength = _emailOptions.CodeLength;
+            var resetPasswordCode = otpService.Generate(length: emailCodeLength);
+            var expireInMinutes = _emailOptions.EmailExpireInMinutes;
+
+            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: expireInMinutes);
+            var verificationCode = new VerificationCode(appUser.Id, resetPasswordCode, VerificationCodeType.PasswordReset, codeExpiresAt);
+
+            await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
+
+            return resetPasswordCode;
+        }
+
+        public Task SendPasswordResetEmailAsync(DomainUser user, string code)
+        {
+            string emailBody = _emailBodyBuilderService.GenerateEmailBody("PasswordReset",
+            new Dictionary<string, string>
+                {
+                        { "Name", user.FirstName },
+                        { "Code", code },
+                        { "Minutes", _emailOptions.EmailExpireInMinutes.ToString() },
+                });
+
+            BackgroundJob.Enqueue<SendEmailJob>(job => job.Execute(user.Email, "Password Reset", emailBody));
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<ErrorOr<Success>> ResetPassword(string email, string code, string newPassword, CancellationToken ct = default)
+        {
+            var appUser = await userManager.FindByEmailAsync(email);
+
+            if (appUser is null)
+            {
+                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
+            }
+
+            var verificationCode = await unitOfWork.VerificationCodes.GetAsync(v =>
+                v.ApplicationUserId == appUser.Id &&
+                v.Type == VerificationCodeType.PasswordReset &&
+                v.Status == VerificationCodeStatus.Active,
+                ct);
+
+            if (verificationCode is null)
+            {
+                return Error.NotFound(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code");
+            }
+
+            var usingCodeResult = verificationCode.TryUse(code);
+
+            if (usingCodeResult.IsError)
+            {
+                return usingCodeResult.Errors;
+            }
+
+            var identityResetToken = await userManager.GeneratePasswordResetTokenAsync(appUser);
+            var resetResult = await userManager.ResetPasswordAsync(appUser, identityResetToken, newPassword);
+
+            if (!resetResult.Succeeded)
+            {
+                return Error.Validation(
+                    code: ErrorCodes.Authentication.InvalidPassword,
+                    description: resetResult.Errors.FirstOrDefault()?.Description ?? "Password reset failed");
+            }
+
+            return Result.Success;
+        }
+
 
 
         public async Task<ErrorOr<Success>> ConfirmEmail(int domainUserId, string code, CancellationToken ct = default)
@@ -247,22 +340,12 @@ namespace PrimeFit.Infrastructure.Services
             }
 
 
-            if (verificationCode.Code != code)
+            var usingCodeResult = verificationCode.TryUse(code);
+
+            if (usingCodeResult.IsError)
             {
-                var incrementAttemptsResult = verificationCode.IncrementAttempts();
-
-                return Error.Validation(
-                    code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid verification code.");
+                return usingCodeResult.Errors;
             }
-
-
-            if (!verificationCode.CanBeUsed())
-            {
-                return Error.Validation(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code.");
-            }
-
-
-            verificationCode.MarkAsUsed();
             appUser.EmailConfirmed = true;
             return Result.Success;
         }

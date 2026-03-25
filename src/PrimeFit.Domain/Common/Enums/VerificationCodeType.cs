@@ -3,7 +3,7 @@
     public enum VerificationCodeType
     {
         EmailConfirmation = 1,
-        //PasswordReset = 2,
+        PasswordReset = 2,
         //PhoneVerification = 3  
     }
 }

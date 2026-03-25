@@ -16,7 +16,7 @@ public static class ErrorCodes
         public const string InvalidAccessToken = "INVALID_ACCESS_TOKEN";
         public const string InvalidRefreshToken = "INVALID_REFRESH_TOKEN";
         public const string AlreadySignedOut = "ALREADY_SIGNED_OUT";
-        public const string PasswordChangeFailed = "PASSWORD_CHANGE_FAILED";
+        public const string InvalidPassword = "PASSWORD_CHANGE_FAILED";
         public const string EmailNotVerified = "EMAIL_NOT_VERIFIED";
         public const string EmailAlreadyConfirmed = "EMAIL_ALREADY_CONFIRMED";
         public const string InvalidEmailConfirmationCode = "INVALID_EMAIL_CONFIRMATION_CODE";
