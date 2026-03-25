@@ -33,17 +33,21 @@ namespace PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews
             var totalCount = await _unitOfWork.BranchReviews.CountAsync(specForCount, cancellationToken);
 
             GetBranchReviewsQueryResponse? myReview = null;
+            bool canReview = false;
             if (_currentUserService.IsAuthenticated)
             {
                 myReview = await _unitOfWork.BranchReviews.GetAsync<GetBranchReviewsQueryResponse>(
                    r => r.BranchId == request.BranchId &&
                    r.UserId == curUserId!.Value, cancellationToken);
+
+                bool curUserHasSubscription = await _unitOfWork.Subscriptions.AnyAsync(s => s.UserId == curUserId.Value, cancellationToken);
+                canReview = curUserHasSubscription;
             }
 
 
             var result = new PaginatedResult<GetBranchReviewsQueryResponse>(reviews, totalCount, request.PageNumber, request.PageSize)
             {
-                Meta = new BranchReviewsMeta(myReview)
+                Meta = new BranchReviewsMeta(myReview, canReview)
             };
 
             return result;

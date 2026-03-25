@@ -31,8 +31,8 @@ namespace PrimeFit.Domain.Services
 
             var subscription = createSubscriptionResult.Value;
 
-            var UserHasActiveSubscriptionSpec = new UserActiveSubscriptionInBranchSpec(user.Id, branch.Id);
-            bool isUserHasActiveSubscription = await _subscriptionRepository.AnyAsync(UserHasActiveSubscriptionSpec, ct);
+            var userBranchRunningSubscriptionSpec = new UserBranchRunningSubscriptionSpec(user.Id, branch.Id);
+            bool isUserHasActiveSubscription = await _subscriptionRepository.AnyAsync(userBranchRunningSubscriptionSpec, ct);
 
             if (!isUserHasActiveSubscription)
             {

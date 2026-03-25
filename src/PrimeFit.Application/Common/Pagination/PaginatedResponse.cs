@@ -39,6 +39,7 @@ public class PaginatedResult<T>
     }
 
 
+    public object? Meta { get; set; }
 
     public int CurrentPage { get; set; }
 
@@ -46,7 +47,6 @@ public class PaginatedResult<T>
 
     public int TotalCount { get; set; }
 
-    public object? Meta { get; set; }
 
     public int PageSize { get; set; }
 

@@ -10,5 +10,5 @@ namespace PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews
         public DateTimeOffset ReviewedAt { get; set; }
     }
 
-    public record BranchReviewsMeta(GetBranchReviewsQueryResponse? MyReview);
+    public record BranchReviewsMeta(GetBranchReviewsQueryResponse? MyReview, bool canReview);
 }
