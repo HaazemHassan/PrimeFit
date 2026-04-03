@@ -9,13 +9,13 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SendResetPasswor
     internal class SendResetPasswordEmailCommandHandler : IRequestHandler<SendResetPasswordEmailCommand, ErrorOr<Success>>
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IPasswordService _passwordService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public SendResetPasswordEmailCommandHandler(ICurrentUserService currentUserService, IAuthenticationService authenticationService, IUnitOfWork unitOfWork)
+        public SendResetPasswordEmailCommandHandler(ICurrentUserService currentUserService, IPasswordService passwordService, IUnitOfWork unitOfWork)
         {
             _currentUserService = currentUserService;
-            _authenticationService = authenticationService;
+            _passwordService = passwordService;
             _unitOfWork = unitOfWork;
         }
 
@@ -27,7 +27,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SendResetPasswor
                 return Result.Success;
             }
 
-            var result = await _authenticationService.CreatePasswordResetCode(user.Id, cancellationToken);
+            var result = await _passwordService.CreatePasswordResetCode(user.Id, cancellationToken);
 
             if (result.IsError)
             {
@@ -36,7 +36,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SendResetPasswor
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _authenticationService.SendPasswordResetEmailAsync(user, result.Value);
+            await _passwordService.SendPasswordResetEmailAsync(user, result.Value);
 
             return Result.Success;
         }

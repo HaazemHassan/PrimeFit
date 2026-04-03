@@ -10,13 +10,13 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
     internal class ResendConfirmationEmailCommandHandler : IRequestHandler<ResendConfirmationEmailCommand, ErrorOr<Success>>
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IEmailVerificationService _emailVerificationService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ResendConfirmationEmailCommandHandler(ICurrentUserService currentUserService, IAuthenticationService authenticationService, IUnitOfWork unitOfWork)
+        public ResendConfirmationEmailCommandHandler(ICurrentUserService currentUserService, IEmailVerificationService emailVerificationService, IUnitOfWork unitOfWork)
         {
             _currentUserService = currentUserService;
-            _authenticationService = authenticationService;
+            _emailVerificationService = emailVerificationService;
             _unitOfWork = unitOfWork;
         }
 
@@ -28,14 +28,14 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
                 return Result.Success;
             }
 
-            var result = await _authenticationService.CreateEmailConfirmationCode(user.Id, cancellationToken);
+            var result = await _emailVerificationService.CreateEmailConfirmationCode(user.Id, cancellationToken);
 
             if (result.IsError)
             {
                 return result.Errors;
             }
 
-            await _authenticationService.SendConfirmationEmailAsync(user, result.Value);
+            await _emailVerificationService.SendConfirmationEmailAsync(user, result.Value);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

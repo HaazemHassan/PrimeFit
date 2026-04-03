@@ -7,18 +7,18 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResetPassword
 {
     internal class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, ErrorOr<Success>>
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IPasswordService _passwordService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ResetPasswordCommandHandler(IAuthenticationService authenticationService, IUnitOfWork unitOfWork)
+        public ResetPasswordCommandHandler(IPasswordService passwordService, IUnitOfWork unitOfWork)
         {
-            _authenticationService = authenticationService;
+            _passwordService = passwordService;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<ErrorOr<Success>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var result = await _authenticationService.ResetPassword(request.Email, request.Code, request.NewPassword, cancellationToken);
+            var result = await _passwordService.ResetPassword(request.Email, request.Code, request.NewPassword, cancellationToken);
 
             if (result.IsError)
             {

@@ -6,7 +6,7 @@ using PrimeFit.Application.Contracts.Infrastructure;
 namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword
 {
 
-    public class ChangePasswordCommandHandler(IAuthenticationService _authenticationService, ICurrentUserService _currentUserService)
+    public class ChangePasswordCommandHandler(IPasswordService _passwordService, ICurrentUserService _currentUserService)
         : IRequestHandler<ChangePasswordCommand, ErrorOr<Success>>
     {
 
@@ -14,7 +14,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ChangePassword
         {
             var userId = _currentUserService.UserId;
 
-            return await _authenticationService.ChangePassword(userId!.Value, request.CurrentPassword, request.NewPassword);
+            return await _passwordService.ChangePassword(userId!.Value, request.CurrentPassword, request.NewPassword);
         }
     }
 }

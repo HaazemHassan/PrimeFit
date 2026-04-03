@@ -9,13 +9,13 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail
     internal class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, ErrorOr<Success>>
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IEmailVerificationService _emailVerificationService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ConfirmEmailCommandHandler(ICurrentUserService currentUserService, IAuthenticationService authenticationService, IUnitOfWork unitOfWork)
+        public ConfirmEmailCommandHandler(ICurrentUserService currentUserService, IEmailVerificationService emailVerificationService, IUnitOfWork unitOfWork)
         {
             _currentUserService = currentUserService;
-            _authenticationService = authenticationService;
+            _emailVerificationService = emailVerificationService;
             _unitOfWork = unitOfWork;
         }
 
@@ -23,7 +23,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail
         {
             var userId = _currentUserService.UserId;
 
-            var result = await _authenticationService.ConfirmEmail(userId!.Value, request.code, cancellationToken);
+            var result = await _emailVerificationService.ConfirmEmail(userId!.Value, request.code, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

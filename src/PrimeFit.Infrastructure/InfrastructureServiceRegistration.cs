@@ -145,6 +145,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ISeederService, SeederService>();
         services.AddScoped<IApplicationUserService, ApplicationUserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPasswordService, PasswordService>();
+        services.AddScoped<IEmailVerificationService, EmailVerificationService>();
         services.AddScoped<IPolicyEnforcer, PolicyEnforcer>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IBranchAuthorizationService, BranchAuthorizationService>();

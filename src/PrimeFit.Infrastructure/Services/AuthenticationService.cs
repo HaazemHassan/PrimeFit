@@ -1,35 +1,25 @@
 ﻿using AutoMapper;
 using ErrorOr;
-using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
-using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
-using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.Specifications.RefreshTokens;
-using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
-using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace PrimeFit.Infrastructure.Services
 {
     internal class AuthenticationService(
-         IOptions<JwtOptions> jwtOptions,
           UserManager<ApplicationUser> userManager,
           IUnitOfWork unitOfWork,
           IMapper mapper,
@@ -37,14 +27,9 @@ namespace PrimeFit.Infrastructure.Services
           ICurrentUserService currentUserService,
           AppDbContext dbContext,
           ILogger<AuthenticationService> logger,
-          IDateTimeProvider dateTimeProvider,
-          IOtpService otpService,
-          IOptions<EmailVerificationCodeOptions> emailVerificationCodeOptions,
-          IEmailBodyBuilderService _emailBodyBuilderService) : IAuthenticationService
+          ITokenService tokenService) : IAuthenticationService
     {
 
-        private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-        private readonly EmailVerificationCodeOptions _emailOptions = emailVerificationCodeOptions.Value;
 
 
         public async Task<ErrorOr<AuthResult>> SignInWithPassword(string email, string password, CancellationToken ct = default)
@@ -74,21 +59,21 @@ namespace PrimeFit.Infrastructure.Services
 
         public async Task<ErrorOr<AuthResult>> ReAuthenticateAsync(string refreshToken, string accessToken, CancellationToken ct = default)
         {
-            var isValidAccessToken = ValidateAccessToken(accessToken, validateLifetime: false);
+            var isValidAccessToken = tokenService.ValidateAccessToken(accessToken, validateLifetime: false);
             if (!isValidAccessToken)
             {
                 logger.LogWarning("ReAuthenticate failed - Invalid access token");
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidAccessToken, description: "Invalid access token");
             }
 
-            var jwt = ReadJWT(accessToken);
-            if (jwt is null)
+            var tokenId = tokenService.GetTokenId(accessToken);
+            if (string.IsNullOrWhiteSpace(tokenId))
             {
                 logger.LogWarning("ReAuthenticate failed - Cannot read JWT");
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidAccessToken, description: "Invalid access token");
             }
 
-            var domainUserId = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var domainUserId = tokenService.GetClaimValue(accessToken, ClaimTypes.NameIdentifier);
             if (domainUserId is null)
             {
                 logger.LogWarning("ReAuthenticate failed - User id is null in JWT");
@@ -102,7 +87,7 @@ namespace PrimeFit.Infrastructure.Services
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found");
             }
 
-            var currentRefreshTokenSpec = new ActiveRefreshTokenByJtiAndTokenSpec(jwt.Id, refreshToken, appUser.Id);
+            var currentRefreshTokenSpec = new ActiveRefreshTokenByJtiAndTokenSpec(tokenId, refreshToken, appUser.Id);
             var currentRefreshToken = await unitOfWork.RefreshTokens.FirstOrDefaultAsync(currentRefreshTokenSpec, ct);
 
 
@@ -153,213 +138,6 @@ namespace PrimeFit.Infrastructure.Services
         }
 
 
-        public async Task<ErrorOr<Success>> ChangePassword(int domainUserId, string currentPassword, string newPassword)
-        {
-            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId);
-
-            if (appUser is null)
-            {
-                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
-
-            }
-
-
-            var result = await userManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
-
-            if (!result.Succeeded)
-            {
-                return Error.Unauthorized(
-                    code: ErrorCodes.Authentication.InvalidPassword,
-                    description: result.Errors.FirstOrDefault()?.Description ?? "Password change failed");
-
-            }
-
-            return Result.Success;
-
-        }
-
-
-        public async Task<ErrorOr<string>> CreateEmailConfirmationCode(int domainUserId, CancellationToken ct = default)
-        {
-            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
-
-            if (appUser is null)
-            {
-                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
-            }
-
-            if (appUser.EmailConfirmed)
-            {
-                return Error.Validation(code: ErrorCodes.Authentication.EmailAlreadyConfirmed, description: "Email is already confirmed.");
-            }
-
-            var existingCode = await unitOfWork.VerificationCodes.GetAsync(v =>
-                v.ApplicationUserId == appUser.Id &&
-                v.Type == VerificationCodeType.EmailConfirmation &&
-                v.Status == VerificationCodeStatus.Active, ct);
-
-            if (existingCode is not null)
-            {
-                var elapsedSinceCreation = dateTimeProvider.UtcNow - existingCode.CreatedAt;
-                if (elapsedSinceCreation < TimeSpan.FromMinutes(1))
-                {
-                    return Error.Failure(description: "Please retry after a minute.");
-                }
-
-                existingCode.Revoke();
-            }
-
-            var emailCodeLength = _emailOptions.CodeLength;
-            var confirmEmailCode = otpService.Generate(length: emailCodeLength);
-            var expireInMinutes = _emailOptions.EmailExpireInMinutes;
-
-
-            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: expireInMinutes);
-            var verificationCode = new VerificationCode(appUser.Id, confirmEmailCode, VerificationCodeType.EmailConfirmation, codeExpiresAt);
-
-            await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
-
-            return confirmEmailCode;
-        }
-
-        public Task SendConfirmationEmailAsync(DomainUser user, string code)
-        {
-            string emailBody = _emailBodyBuilderService.GenerateEmailBody("EmailConfirmation",
-            new Dictionary<string, string>
-                {
-                        { "Name", user.FirstName },
-                        { "Code", code },
-                        { "Minutes", 15.ToString() },
-                });
-
-
-            BackgroundJob.Enqueue<SendEmailJob>(job => job.Execute(user.Email, "Email Confirmation", emailBody));
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<ErrorOr<string>> CreatePasswordResetCode(int domainUserId, CancellationToken ct = default)
-        {
-            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
-
-            if (appUser is null)
-            {
-                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
-            }
-
-            var existingCode = await unitOfWork.VerificationCodes.GetAsync(v =>
-                v.ApplicationUserId == appUser.Id &&
-                v.Type == VerificationCodeType.PasswordReset &&
-                v.Status == VerificationCodeStatus.Active, ct);
-
-            existingCode?.Revoke();
-
-            var emailCodeLength = _emailOptions.CodeLength;
-            var resetPasswordCode = otpService.Generate(length: emailCodeLength);
-            var expireInMinutes = _emailOptions.EmailExpireInMinutes;
-
-            var codeExpiresAt = dateTimeProvider.UtcNow.AddMinutes(minutes: expireInMinutes);
-            var verificationCode = new VerificationCode(appUser.Id, resetPasswordCode, VerificationCodeType.PasswordReset, codeExpiresAt);
-
-            await unitOfWork.VerificationCodes.AddAsync(verificationCode, ct);
-
-            return resetPasswordCode;
-        }
-
-        public Task SendPasswordResetEmailAsync(DomainUser user, string code)
-        {
-            string emailBody = _emailBodyBuilderService.GenerateEmailBody("PasswordReset",
-            new Dictionary<string, string>
-                {
-                        { "Name", user.FirstName },
-                        { "Code", code },
-                        { "Minutes", _emailOptions.EmailExpireInMinutes.ToString() },
-                });
-
-            BackgroundJob.Enqueue<SendEmailJob>(job => job.Execute(user.Email, "Password Reset", emailBody));
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<ErrorOr<Success>> ResetPassword(string email, string code, string newPassword, CancellationToken ct = default)
-        {
-            var appUser = await userManager.FindByEmailAsync(email);
-
-            if (appUser is null)
-            {
-                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
-            }
-
-            var verificationCode = await unitOfWork.VerificationCodes.GetAsync(v =>
-                v.ApplicationUserId == appUser.Id &&
-                v.Type == VerificationCodeType.PasswordReset &&
-                v.Status == VerificationCodeStatus.Active,
-                ct);
-
-            if (verificationCode is null)
-            {
-                return Error.NotFound(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code");
-            }
-
-            var usingCodeResult = verificationCode.TryUse(code);
-
-            if (usingCodeResult.IsError)
-            {
-                return usingCodeResult.Errors;
-            }
-
-            var identityResetToken = await userManager.GeneratePasswordResetTokenAsync(appUser);
-            var resetResult = await userManager.ResetPasswordAsync(appUser, identityResetToken, newPassword);
-
-            if (!resetResult.Succeeded)
-            {
-                return Error.Validation(
-                    code: ErrorCodes.Authentication.InvalidPassword,
-                    description: resetResult.Errors.FirstOrDefault()?.Description ?? "Password reset failed");
-            }
-
-            return Result.Success;
-        }
-
-
-
-        public async Task<ErrorOr<Success>> ConfirmEmail(int domainUserId, string code, CancellationToken ct = default)
-        {
-            var appUser = await userManager.Users.FirstOrDefaultAsync(au => au.DomainUserId == domainUserId, cancellationToken: ct);
-
-            if (appUser is null)
-            {
-                return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found.");
-            }
-
-            if (appUser.EmailConfirmed)
-            {
-                return Error.Validation(code: ErrorCodes.Authentication.EmailAlreadyConfirmed, description: "Email is already confirmed.");
-            }
-
-            var verificationCode = await unitOfWork.VerificationCodes.GetAsync(v =>
-                v.ApplicationUserId == appUser.Id &&
-                v.Type == VerificationCodeType.EmailConfirmation &&
-                v.Status == VerificationCodeStatus.Active,
-                ct);
-
-            if (verificationCode is null)
-            {
-                return Error.NotFound(code: ErrorCodes.Authentication.InvalidEmailConfirmationCode, description: "Invalid code");
-            }
-
-
-            var usingCodeResult = verificationCode.TryUse(code);
-
-            if (usingCodeResult.IsError)
-            {
-                return usingCodeResult.Errors;
-            }
-            appUser.EmailConfirmed = true;
-            return Result.Success;
-        }
-
-
 
         #region Helper functions
 
@@ -371,11 +149,15 @@ namespace PrimeFit.Infrastructure.Services
 
             var userClaims = await GetUserClaims(appUser);
 
-            var jwtSecurityToken = GenerateAccessToken(userClaims);
-            var refreshToken = GenerateRefreshToken(appUser.Id, jwtSecurityToken.Id, refreshTokenExpDate);
-            await unitOfWork.RefreshTokens.AddAsync(refreshToken);
+            var accessToken = tokenService.GenerateAccessToken(userClaims);
+            var jti = userClaims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            if (string.IsNullOrWhiteSpace(jti))
+            {
+                return Error.Failure(code: ErrorCodes.Authentication.InvalidAccessToken, description: "Invalid token payload.");
+            }
 
-            string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            var refreshToken = tokenService.GenerateRefreshToken(appUser.Id, jti, refreshTokenExpDate);
+            await unitOfWork.RefreshTokens.AddAsync(refreshToken);
 
             RefreshTokenDTO refreshTokenDto = new()
             {
@@ -418,16 +200,6 @@ namespace PrimeFit.Infrastructure.Services
             return jwtResult;
         }
 
-        private JwtSecurityToken GenerateAccessToken(List<Claim> userClaims)
-        {
-            return new JwtSecurityToken(
-                  issuer: _jwtOptions.Issuer,
-                  audience: _jwtOptions.Audience,
-                  claims: userClaims,
-                  signingCredentials: GetSigningCredentials(),
-                  expires: DateTimeOffset.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpirationMinutes).UtcDateTime
-              );
-        }
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
         {
             var claims = new List<Claim>()
@@ -466,57 +238,6 @@ namespace PrimeFit.Infrastructure.Services
             }
 
             return claims;
-        }
-        private SigningCredentials GetSigningCredentials()
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.Secret));
-            return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        }
-        private RefreshToken GenerateRefreshToken(int userId, string accessTokenJTI, DateTimeOffset? expirationDate = null)
-        {
-            var randomBytes = new byte[64];
-            RandomNumberGenerator.Fill(randomBytes);
-            string Token = Convert.ToBase64String(randomBytes);
-
-            expirationDate ??= DateTimeOffset.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationDays);
-            return new RefreshToken(Token, expirationDate.Value, accessTokenJTI, userId);
-
-        }
-
-
-        private bool ValidateAccessToken(string token, bool validateLifetime = true)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
-                ValidateIssuer = false,
-                ValidateAudience = true,
-                ValidIssuer = _jwtOptions.Issuer,
-                ValidAudience = _jwtOptions.Audience,
-                ValidateLifetime = validateLifetime,
-                ClockSkew = TimeSpan.FromMinutes(2)  //default = 5 min (security gap)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                return false;
-
-            return principal is not null;
-        }
-
-        private static JwtSecurityToken ReadJWT(string accessToken)
-        {
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
-            }
-            var handler = new JwtSecurityTokenHandler();
-            var response = handler.ReadJwtToken(accessToken);
-            return response;
         }
 
         #endregion
