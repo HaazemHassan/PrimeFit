@@ -11,9 +11,9 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUserById
     {
         public GetUserByIdQuery(int userId)
         {
-            OwnerUserId = userId;
+            UserId = userId;
         }
 
-        public int OwnerUserId { get; set; }
+        public int UserId { get; set; }
     }
 }

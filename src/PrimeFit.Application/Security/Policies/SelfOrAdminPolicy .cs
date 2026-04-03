@@ -36,7 +36,7 @@ namespace PrimeFit.Application.Security.Policies
             var isAdmin = _currentUserService.UserType == UserType.SuperAdmin;
 
 
-            if (isAdmin || ownedRequest.OwnerUserId == _currentUserService.UserId)
+            if (isAdmin || ownedRequest.UserId == _currentUserService.UserId)
             {
                 return Result.Success;
             }

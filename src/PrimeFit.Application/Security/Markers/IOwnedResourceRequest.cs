@@ -3,6 +3,6 @@
 
     public interface IOwnedResourceRequest : IAuthorizedRequest
     {
-        public int OwnerUserId { get; }
+        public int UserId { get; }
     }
 }

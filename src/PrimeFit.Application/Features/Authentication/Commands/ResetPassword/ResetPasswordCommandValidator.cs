@@ -19,7 +19,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResetPassword
         private void ApplyValidationRules()
         {
             RuleFor(x => x.Email).Required();
-            RuleFor(x => x.code).Required();
+            RuleFor(x => x.Code).Required();
             RuleFor(x => x.NewPassword).Required();
             RuleFor(x => x.ConfirmNewPassword).Required();
 

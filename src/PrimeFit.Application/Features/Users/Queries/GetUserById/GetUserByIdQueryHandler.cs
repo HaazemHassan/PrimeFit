@@ -21,7 +21,7 @@ namespace PrimeFit.Application.Features.Users.Queries.GetUserById
 
         public async Task<ErrorOr<GetUserByIdQueryResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var spec = new GetByIdSpec<DomainUser>(request.OwnerUserId);
+            var spec = new GetByIdSpec<DomainUser>(request.UserId);
             var user = await _unitOfWork.Users.GetAsync<GetUserByIdQueryResponse>(spec, cancellationToken);
             if (user is null)
                 return Error.NotFound(code: ErrorCodes.User.UserNotFound, description: "User not found");

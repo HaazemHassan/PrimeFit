@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Features\Attendance\Queries\" />
     <Folder Include="Features\Branches\Queries\GetBranchWorkingHours\" />
+    <Folder Include="Features\EmployeeRoles\Queries\GetAllEmployeeRoles\" />
   </ItemGroup>
 
 </Project>

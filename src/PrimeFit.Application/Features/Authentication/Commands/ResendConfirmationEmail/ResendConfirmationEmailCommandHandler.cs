@@ -35,6 +35,8 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
                 return result.Errors;
             }
 
+            await _authenticationService.SendConfirmationEmailAsync(user, result.Value);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success;

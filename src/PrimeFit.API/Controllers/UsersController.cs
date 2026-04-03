@@ -61,12 +61,15 @@ namespace PrimeFit.API.Controllers
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateMyPorfileRequest request)
         {
             var command = _mapper.Map<UpdateProfileCommand>(request);
-            command.OwnerUserId = _currentUserService.UserId!.Value;
+            command.UserId = _currentUserService.UserId!.Value;
 
             var result = await Mediator.Send(command);
 
             if (result.IsError)
+            {
                 return Problem(result.Errors);
+
+            }
 
             return Ok(result.Value);
         }

@@ -1,6 +1,5 @@
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Domain.RepositoriesContracts;
 
@@ -19,7 +18,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResetPassword
 
         public async Task<ErrorOr<Success>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var result = await _authenticationService.ResetPassword(request.Email, request.code, request.NewPassword, cancellationToken);
+            var result = await _authenticationService.ResetPassword(request.Email, request.Code, request.NewPassword, cancellationToken);
 
             if (result.IsError)
             {

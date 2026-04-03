@@ -27,7 +27,7 @@ namespace PrimeFit.Application.Security.Policies
 
 
 
-            if (ownedRequest.OwnerUserId == _currentUserService.UserId)
+            if (ownedRequest.UserId == _currentUserService.UserId)
             {
                 return Result.Success;
             }

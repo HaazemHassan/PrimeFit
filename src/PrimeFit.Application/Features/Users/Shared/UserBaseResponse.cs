@@ -13,6 +13,7 @@ namespace PrimeFit.Application.Features.Users.Common
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
+        public bool EmailConfirmed { get; set; }
         public UserType UserType { get; set; }
         public UserRole? UserRole { get; set; }
 

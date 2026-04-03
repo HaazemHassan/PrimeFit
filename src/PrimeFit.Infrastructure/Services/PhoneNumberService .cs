@@ -34,12 +34,18 @@ namespace PrimeFit.Infrastructure.Services
 
         {
             if (phoneNumber is null)
+            {
                 throw new ValidationException("Phone number cannot be null", [new ValidationFailure()]);
+
+            }
 
             var parsed = _util.Parse(phoneNumber, DefaultRegion);
 
             if (!_util.IsValidNumber(parsed))
+            {
                 throw new ValidationException("Invalid phone number", [new ValidationFailure()]);
+
+            }
 
             return _util.Format(parsed, PhoneNumberFormat.E164);
         }

@@ -198,7 +198,16 @@ namespace PrimeFit.Infrastructure.Services
                 v.Type == VerificationCodeType.EmailConfirmation &&
                 v.Status == VerificationCodeStatus.Active, ct);
 
-            existingCode?.Revoke();
+            if (existingCode is not null)
+            {
+                var elapsedSinceCreation = dateTimeProvider.UtcNow - existingCode.CreatedAt;
+                if (elapsedSinceCreation < TimeSpan.FromMinutes(1))
+                {
+                    return Error.Failure(description: "Please retry after a minute.");
+                }
+
+                existingCode.Revoke();
+            }
 
             var emailCodeLength = _emailOptions.CodeLength;
             var confirmEmailCode = otpService.Generate(length: emailCodeLength);
@@ -376,6 +385,9 @@ namespace PrimeFit.Infrastructure.Services
             };
 
             var userResponse = mapper.Map<UserBaseResponse>(appUser.DomainUser);
+
+            userResponse.EmailConfirmed = appUser.EmailConfirmed;
+
             var userRole = (await userManager.GetRolesAsync(appUser)).FirstOrDefault();
             if (userRole is not null)
             {
