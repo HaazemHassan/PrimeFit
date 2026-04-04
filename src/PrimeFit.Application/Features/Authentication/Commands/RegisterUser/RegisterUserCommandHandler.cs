@@ -39,7 +39,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var normalizedPhone = _phoneNumberService.Normalize(request.PhoneNumber!);
+            string? normalizedPhone = null;
+            if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                normalizedPhone = _phoneNumberService.Normalize(request.PhoneNumber);
+            }
 
             var existingDomainUser = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email, cancellationToken);
 
@@ -52,13 +56,16 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             }
             else
             {
-                var phoneExists = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == normalizedPhone, cancellationToken);
-
-                if (phoneExists)
+                if (!string.IsNullOrWhiteSpace(normalizedPhone))
                 {
-                    return Error.Conflict(
-                        code: ErrorCodes.User.PhoneAlreadyExists,
-                        description: "Phone number already exists");
+                    var phoneExists = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == normalizedPhone, cancellationToken);
+
+                    if (phoneExists)
+                    {
+                        return Error.Conflict(
+                            code: ErrorCodes.User.PhoneAlreadyExists,
+                            description: "Phone number already exists");
+                    }
                 }
 
                 var totpSecret = _totpService.GenerateTotpSecret();

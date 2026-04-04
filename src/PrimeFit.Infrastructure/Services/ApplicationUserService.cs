@@ -43,12 +43,15 @@ namespace PrimeFit.Infrastructure.Services
             }
 
 
-            var phoneExists = await _userManager.Users.AnyAsync(au => au.PhoneNumber == domainUser.PhoneNumber, ct);
-            if (phoneExists)
+            if (!string.IsNullOrWhiteSpace(domainUser.PhoneNumber))
             {
-                return Error.Conflict(
-                    code: ErrorCodes.User.PhoneAlreadyExists,
-                    description: "Phone number already exists");
+                var phoneExists = await _userManager.Users.AnyAsync(au => au.PhoneNumber == domainUser.PhoneNumber, ct);
+                if (phoneExists)
+                {
+                    return Error.Conflict(
+                        code: ErrorCodes.User.PhoneAlreadyExists,
+                        description: "Phone number already exists");
+                }
             }
 
             await _unitOfWork.Users.AddAsync(domainUser);

@@ -157,6 +157,9 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<IOtpService, OtpService>();
 
 
+        services.Configure<GoogleAuthOptions>(configuration.GetSection(GoogleAuthOptions.SectionName));
+        services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
         services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.SectionName));
         services.AddScoped<IImageService, CloudinaryImageService>();
 

@@ -8,8 +8,10 @@ using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Users.Common;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Domain.Specifications.RefreshTokens;
 using PrimeFit.Infrastructure.Data;
@@ -32,7 +34,7 @@ namespace PrimeFit.Infrastructure.Services
 
 
 
-        public async Task<ErrorOr<AuthResult>> SignInWithPassword(string email, string password, CancellationToken ct = default)
+        public async Task<ErrorOr<AuthResult>> SignInWithPasswordAsync(string email, string password, CancellationToken ct = default)
         {
             var userFromDb = await userManager.Users.Include(au => au.DomainUser)
                                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken: ct);
@@ -135,6 +137,87 @@ namespace PrimeFit.Infrastructure.Services
             logger.LogInformation("Successful logout for user: {Email}", appUser.Email);
             return Result.Success;
 
+        }
+
+        public async Task<ErrorOr<AuthResult>> SignInWithGoogleAsync(GoogleUserInfo googleUser, CancellationToken ct = default)
+        {
+            const string googleProvider = "Google";
+
+            var appUser = await userManager.FindByLoginAsync(googleProvider, googleUser.GoogleId);
+
+            if (appUser is not null)
+            {
+                appUser = await userManager.Users
+                    .Include(u => u.DomainUser)
+                    .FirstOrDefaultAsync(u => u.Id == appUser.Id, ct);
+
+                return await AuthenticateAsync(appUser!);
+            }
+
+            appUser = await userManager.Users
+                .Include(u => u.DomainUser)
+                .FirstOrDefaultAsync(u => u.Email == googleUser.Email, ct);
+
+            if (appUser is not null)
+            {
+                var loginInfo = new UserLoginInfo(googleProvider, googleUser.GoogleId, googleProvider);
+                var addLoginResult = await userManager.AddLoginAsync(appUser, loginInfo);
+
+                if (!addLoginResult.Succeeded)
+                {
+                    logger.LogError("Failed to link Google account for user: {Email}. Errors: {Errors}",
+                        googleUser.Email,
+                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+
+                    return Error.Unexpected(description: "Failed to link Google account.");
+                }
+
+                if (!appUser.EmailConfirmed && googleUser.IsEmailVerified)
+                {
+                    appUser.EmailConfirmed = true;
+                }
+
+                logger.LogInformation("Google account linked to existing user: {Email}", googleUser.Email);
+                return await AuthenticateAsync(appUser);
+            }
+
+            return await CreateUserFromGoogleAsync(googleUser, ct);
+        }
+
+        private async Task<ErrorOr<AuthResult>> CreateUserFromGoogleAsync(GoogleUserInfo googleUser, CancellationToken ct)
+        {
+            const string googleProvider = "Google";
+
+            var domainUser = new DomainUser(
+                userType: UserType.Customer,
+                firstName: googleUser.FirstName,
+                lastName: googleUser.LastName,
+                email: googleUser.Email
+            );
+
+            var appUser = new ApplicationUser(googleUser.Email);
+
+            appUser.LinkToDomainUser(domainUser);
+            appUser.EmailConfirmed = googleUser.IsEmailVerified;
+
+            var createResult = await userManager.CreateAsync(appUser);
+            if (!createResult.Succeeded)
+            {
+                logger.LogError("Failed to create user from Google. Email: {Email}. Errors: {Errors}",
+                    googleUser.Email,
+                    string.Join(", ", createResult.Errors.Select(e => e.Description)));
+
+
+                return Error.Unexpected(description: "Failed to create user account.");
+            }
+
+            var loginInfo = new UserLoginInfo(googleProvider, googleUser.GoogleId, googleProvider);
+            await userManager.AddLoginAsync(appUser, loginInfo);
+
+
+
+            logger.LogInformation("New user created via Google Sign-In: {Email}", googleUser.Email);
+            return await AuthenticateAsync(appUser);
         }
 
 

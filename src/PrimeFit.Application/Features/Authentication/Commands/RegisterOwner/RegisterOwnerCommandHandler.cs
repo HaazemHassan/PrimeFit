@@ -30,6 +30,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 
         public async Task<ErrorOr<UserBaseResponse>> Handle(RegisterOwnerCommand request, CancellationToken cancellationToken)
         {
+            string? normalizedPhoneNumber = null;
+            if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber);
+            }
 
             var isEmailUsed = await _unitOfWork.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
 
@@ -40,16 +45,17 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
                    description: "Email already exists");
             }
 
-            var isPhoneUsed = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == request.PhoneNumber, cancellationToken);
-
-            if (isPhoneUsed)
+            if (!string.IsNullOrWhiteSpace(normalizedPhoneNumber))
             {
-                return Error.Conflict(
-                   code: ErrorCodes.User.PhoneAlreadyExists,
-                   description: "Phone already exists");
-            }
+                var isPhoneUsed = await _unitOfWork.Users.AnyAsync(u => u.PhoneNumber == normalizedPhoneNumber, cancellationToken);
 
-            var normalizedPhoneNumber = _phoneNumberService.Normalize(request.PhoneNumber!);
+                if (isPhoneUsed)
+                {
+                    return Error.Conflict(
+                       code: ErrorCodes.User.PhoneAlreadyExists,
+                       description: "Phone already exists");
+                }
+            }
 
             var userToAdd = new DomainUser(
                 UserType.PartnerAdmin,

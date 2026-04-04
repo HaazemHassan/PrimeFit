@@ -86,6 +86,30 @@ namespace PrimeFit.Infrastructure.Services
             return Task.CompletedTask;
         }
 
+        public async Task<ErrorOr<bool>> IsPasswordResetCodeValid(string email, string code, CancellationToken ct = default)
+        {
+            var appUser = await userManager.FindByEmailAsync(email);
+
+            if (appUser is null)
+            {
+                return false;
+            }
+
+            var verificationCode = await unitOfWork.VerificationCodes.GetAsync(v =>
+                v.ApplicationUserId == appUser.Id &&
+                v.Type == VerificationCodeType.PasswordReset &&
+                v.Status == VerificationCodeStatus.Active &&
+                v.Code == code,
+                ct);
+
+            if (verificationCode is null)
+            {
+                return false;
+            }
+
+            return verificationCode.isValid();
+        }
+
         public async Task<ErrorOr<Success>> ResetPassword(string email, string code, string newPassword, CancellationToken ct = default)
         {
             var appUser = await userManager.FindByEmailAsync(email);

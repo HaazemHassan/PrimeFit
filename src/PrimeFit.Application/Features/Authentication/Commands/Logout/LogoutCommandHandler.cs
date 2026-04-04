@@ -1,6 +1,6 @@
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Contracts.Infrastructure;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.Logout;

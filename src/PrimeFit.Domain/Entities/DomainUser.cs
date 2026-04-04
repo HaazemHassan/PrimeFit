@@ -9,7 +9,7 @@ namespace PrimeFit.Domain.Entities
             string firstName,
             string lastName,
             string email,
-            string phoneNumber,
+            string? phoneNumber = default,
             string? totpSecret = default)
         {
             _subscriptions = [];
@@ -27,7 +27,7 @@ namespace PrimeFit.Domain.Entities
         public string FirstName { get; private set; } = string.Empty;
         public string LastName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
-        public string PhoneNumber { get; private set; } = string.Empty;
+        public string? PhoneNumber { get; private set; }
         public UserType UserType { get; private set; }
         public string? TotpSecret { get; private set; }
         public string FullName => $"{FirstName} {LastName}";

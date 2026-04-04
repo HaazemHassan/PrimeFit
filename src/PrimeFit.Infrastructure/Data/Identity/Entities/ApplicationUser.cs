@@ -8,7 +8,7 @@ namespace PrimeFit.Infrastructure.Data.Identity.Entities
     {
 
 
-        public ApplicationUser(string email, string phoneNumber)
+        public ApplicationUser(string email, string? phoneNumber = default)
         {
             UserName = email;
             Email = email;

@@ -12,7 +12,9 @@ using PrimeFit.Application.Features.Authentication.Commands.ResendConfirmEmail;
 using PrimeFit.Application.Features.Authentication.Commands.ResetPassword;
 using PrimeFit.Application.Features.Authentication.Commands.SendResetPasswordEmail;
 using PrimeFit.Application.Features.Authentication.Commands.SignIn;
+using PrimeFit.Application.Features.Authentication.Commands.SignInWithGoogle;
 using PrimeFit.Application.Features.Authentication.Common;
+using PrimeFit.Application.Features.Authentication.Queries.ValidateResetPasswordCode;
 
 namespace PrimeFit.API.Controllers
 {
@@ -73,6 +75,22 @@ namespace PrimeFit.API.Controllers
             return Ok(result.Value);
         }
 
+        [HttpPost("google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignInWithGoogle([FromBody] SignInWithGoogleCommand command)
+        {
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+
+            }
+
+            HandleRefreshToken(result.Value);
+            return Ok(result.Value);
+        }
+
         [HttpPost("refresh-token")]
         [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
@@ -107,6 +125,20 @@ namespace PrimeFit.API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPost("validate-reset-password-code")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ValidateResetPasswordCode([FromBody] ValidateResetPasswordCodeQuery query)
+        {
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+
+            }
+
+            return Ok(result.Value);
         }
 
 
