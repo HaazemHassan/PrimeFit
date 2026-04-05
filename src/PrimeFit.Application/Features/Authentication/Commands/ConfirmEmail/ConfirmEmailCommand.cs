@@ -1,11 +1,12 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Security;
-using PrimeFit.Application.Security.Markers;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail
 {
-    [Authorize]
-    public record ConfirmEmailCommand(string code) : IRequest<ErrorOr<Success>>, IAuthorizedRequest;
+    public class ConfirmEmailCommand : IRequest<ErrorOr<Success>>
+    {
+        public string Email { get; init; }
+        public string Code { get; init; }
+    }
 
 }

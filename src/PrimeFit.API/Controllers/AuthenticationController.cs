@@ -114,7 +114,7 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost("confirm-email")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand command)
         {
             var result = await Mediator.Send(command);
