@@ -9,9 +9,7 @@ using PrimeFit.Infrastructure.Common.Options;
 
 namespace PrimeFit.Infrastructure.Services
 {
-    internal sealed class GoogleAuthService(
-     IOptions<GoogleAuthOptions> googleOptions,
-     ILogger<GoogleAuthService> logger) : IGoogleAuthService
+    internal sealed class GoogleAuthService(IOptions<GoogleAuthOptions> googleOptions, ILogger<GoogleAuthService> logger) : IGoogleAuthService
     {
         private readonly GoogleAuthOptions _googleOptions = googleOptions.Value;
 
@@ -21,43 +19,54 @@ namespace PrimeFit.Infrastructure.Services
             {
                 var settings = new GoogleJsonWebSignature.ValidationSettings
                 {
-                    Audience = [_googleOptions.ClientId]
+                    Audience = [_googleOptions.ClientId],
+                    ExpirationTimeClockTolerance = TimeSpan.FromMinutes(1),
+                    IssuedAtClockTolerance = TimeSpan.FromMinutes(1)
                 };
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
 
                 if (!payload.EmailVerified)
                 {
-                    logger.LogWarning("Google login attempt with unverified email: {Email}", payload.Email);
+                    logger.LogWarning(
+                        "Google login attempt with unverified email: {Email}",
+                        payload.Email);
+
                     return Error.Validation(
                         code: ErrorCodes.Authentication.InvalidCredentials,
                         description: "Google account email is not verified.");
                 }
 
-                var firstName = payload.GivenName ?? payload.Name?.Split(' ').FirstOrDefault() ?? "User";
-                var lastName = payload.FamilyName ?? payload.Name?.Split(' ').LastOrDefault() ?? string.Empty;
+                var firstName =
+                    payload.GivenName ??
+                    payload.Name?.Split(' ').FirstOrDefault() ??
+                    "User";
+
+                var lastName =
+                    payload.FamilyName ??
+                    payload.Name?.Split(' ').LastOrDefault() ??
+                    string.Empty;
 
                 return new GoogleUserInfo(
-                    GoogleId: payload.Subject,
-                    Email: payload.Email,
-                    FirstName: firstName,
-                    LastName: lastName,
-                    IsEmailVerified: payload.EmailVerified
+                    payload.Subject,
+                    payload.Email,
+                    firstName,
+                    lastName,
+                    payload.EmailVerified
                 );
             }
             catch (InvalidJwtException ex)
             {
-                logger.LogWarning(ex, "Invalid Google ID token received");
-                return Error.Unauthorized(
-                    code: ErrorCodes.Authentication.InvalidCredentials,
-                    description: "Invalid Google token.");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Unexpected error during Google token validation");
-                return Error.Unexpected(description: "An error occurred while validating Google token.");
+                logger.LogWarning(
+                    ex,
+                    "Invalid or expired Google ID token received");
+
+                return Error.Validation(
+                    code: ErrorCodes.Authentication.InvalidAccessToken,
+                    description: "Invalid ID token.");
             }
         }
     }
-
 }
+
+

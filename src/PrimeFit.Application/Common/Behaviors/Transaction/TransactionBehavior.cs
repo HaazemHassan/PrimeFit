@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ErrorOr;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using PrimeFit.Domain.RepositoriesContracts;
 
@@ -25,18 +26,17 @@ namespace PrimeFit.Application.Common.Behaviors.Transaction
             CancellationToken cancellationToken)
         {
             if (request is not ITransactionalRequest)
-                return await next();
+                return await next(cancellationToken);
 
             if (_unitOfWork.HasCurrentTransaction())
-                return await next();
+                return await next(cancellationToken);
 
             var requestName = typeof(TRequest).Name;
             var strategy = _unitOfWork.CreateExecutionStrategy();
 
             return await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await _unitOfWork
-                    .BeginTransactionAsync(cancellationToken);
+                await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
                 _logger.LogInformation(
                     "Begin transaction for {RequestName}",
@@ -45,6 +45,11 @@ namespace PrimeFit.Application.Common.Behaviors.Transaction
                 try
                 {
                     var response = await next();
+                    if (response is IErrorOr { IsError: true })
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return response;
+                    }
 
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                     await transaction.CommitAsync(cancellationToken);

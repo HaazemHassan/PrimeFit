@@ -240,21 +240,3 @@ namespace PrimeFit.API.Controllers
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

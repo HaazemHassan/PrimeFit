@@ -87,7 +87,8 @@ services:
       - Serilog__WriteTo__0__Name=File
       - Serilog__WriteTo__0__Args__path=${SERILOG_FILE_PATH}
       - Serilog__WriteTo__0__Args__rollingInterval=${SERILOG_FILE_ROLLING_INTERVAL}
-      - Serilog__Properties__Application=${SERILOG_APPLICATION_NAME}
+      - Serilog__WriteTo__0__Args__formatter=${SERILOG_FILE_FORMATTER}
+      - Serilog__Properties__ApplicationName=${SERILOG_APPLICATION_NAME}
 
       # ========================================
       # Hangfire
@@ -102,6 +103,26 @@ services:
       - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}
       - Cloudinary__ApiKey=${CLOUDINARY_API_KEY}
       - Cloudinary__ApiSecret=${CLOUDINARY_API_SECRET}
+
+      # ========================================
+      # Mail
+      # ========================================
+      - MailSettings__DisplayName=${MAIL_DISPLAY_NAME}
+      - MailSettings__Mail=${MAIL_ADDRESS}
+      - MailSettings__Password=${MAIL_PASSWORD}
+      - MailSettings__Host=${MAIL_HOST}
+      - MailSettings__Port=${MAIL_PORT}
+
+      # ========================================
+      # Verification Code
+      # ========================================
+      - VerificationCodeOptions__EmailExpireInMinutes=${VERIFICATION_EMAIL_EXPIRE_IN_MINUTES:-15}
+      - VerificationCodeOptions__CodeLength=${VERIFICATION_CODE_LENGTH:-6}
+
+      # ========================================
+      # Google Auth
+      # ========================================
+      - GoogleAuth__ClientId=${GOOGLE_AUTH_CLIENT_ID}
 
     ports:
       - "${API_EXTERNAL_PORT:-44000}:8080"
