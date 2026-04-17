@@ -348,7 +348,7 @@ namespace PrimeFit.API.Controllers.Owner
         }
 
         [HttpGet("{branchId:int}/statistics")]
-        public async Task<IActionResult> GetBranchStatistics([FromRoute] int branchId, [FromBody] GetBranchStatisticsRequest request)
+        public async Task<IActionResult> GetBranchStatistics([FromRoute] int branchId, [FromQuery] GetBranchStatisticsRequest request)
         {
             var query = new GetBranchStatisticsQuery(branchId)
             {

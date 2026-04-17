@@ -41,7 +41,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 
 
             var now = _dateTimeProvider.GetTimeZoneNow("Africa/Cairo");
-            var startDate = GetStartDate(request.TimePeriod, now);
+
+            DateTimeOffset? startDate = null;
+            if (request.TimePeriod.HasValue)
+            {
+                startDate = GetStartDate(request.TimePeriod.Value, now);
+            }
 
             var statisticsSpec = new BranchStatisticsSpec(request.BranchId, startDate, now);
 

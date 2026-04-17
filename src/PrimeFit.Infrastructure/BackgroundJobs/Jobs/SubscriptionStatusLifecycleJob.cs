@@ -34,7 +34,6 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
             _dbContext = dbContext;
         }
 
-
         public async Task ExecuteAsync(CancellationToken ct = default)
         {
             var now = _timeProvider.GetUtcNow();
@@ -48,7 +47,7 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
 
                 var expiredPairs = ProcessBatch(batch, now);
 
-                if (expiredPairs.Any())
+                if (expiredPairs.Count > 0)
                     await ActivateNextScheduledAsync(expiredPairs, now, ct);
 
                 await _dbContext.SaveChangesAsync(ct);
@@ -81,31 +80,27 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
             DateTimeOffset now,
             CancellationToken ct)
         {
-            var expiredSet = expiredPairs
-                .Select(p => new { p.UserId, p.BranchId })
+            var userIds = expiredPairs
+                .Select(p => p.UserId)
+                .Distinct()
                 .ToList();
 
-            var nextScheduled = await _dbContext.Subscriptions
-                .Where(s => s.Status == SubscriptionStatus.Scheduled)
-                .Where(s => expiredSet.Contains(new { s.UserId, s.BranchId }))
-                .GroupBy(s => new { s.UserId, s.BranchId })
-                .Select(g => g.OrderBy(x => x.CreatedAt).First())
+            var candidates = await _dbContext.Subscriptions
+                .Where(s =>
+                    s.Status == SubscriptionStatus.Scheduled &&
+                    userIds.Contains(s.UserId))
                 .ToListAsync(ct);
 
+            var expiredSet = expiredPairs.ToHashSet();
+
+            var nextScheduled = candidates
+                .Where(s => expiredSet.Contains((s.UserId, s.BranchId)))
+                .GroupBy(s => new { s.UserId, s.BranchId })
+                .Select(g => g.OrderBy(x => x.CreatedAt).First());
+
             foreach (var scheduled in nextScheduled)
-            {
-                bool pairExpired = expiredPairs.Any(p =>
-                    p.UserId == scheduled.UserId &&
-                    p.BranchId == scheduled.BranchId);
-
-                if (!pairExpired)
-                    continue;
-
                 scheduled.Activate(now);
-            }
         }
-
-
 
         private List<(int UserId, int BranchId)> ProcessBatch(
             List<Subscription> batch,

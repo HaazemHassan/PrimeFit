@@ -13,7 +13,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
     {
 
         public int BranchId { get; set; }
-        public TimePeriod TimePeriod { get; set; }
+        public TimePeriod? TimePeriod { get; set; }
 
 
         public GetBranchStatisticsQuery()

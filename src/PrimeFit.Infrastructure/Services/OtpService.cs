@@ -8,7 +8,10 @@ namespace PrimeFit.Infrastructure.Services
         public string Generate(int length = 6)
         {
             if (length <= 0)
+            {
                 throw new ArgumentException("OTP length must be greater than zero.");
+
+            }
 
             var digits = new char[length];
 

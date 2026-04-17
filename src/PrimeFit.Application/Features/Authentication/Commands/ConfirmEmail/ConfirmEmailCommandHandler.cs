@@ -27,6 +27,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail
 
             var result = await _emailVerificationService.ConfirmEmail(user.Id, request.Code, cancellationToken);
 
+            if (result.IsError)
+            {
+                return result.Errors;
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return result;

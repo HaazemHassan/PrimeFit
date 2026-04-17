@@ -14,6 +14,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
 
             _phoneNumberService = phoneNumberService;
 
+            ApplyValidationRules();
 
         }
 

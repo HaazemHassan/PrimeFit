@@ -44,7 +44,7 @@ namespace PrimeFit.Application.Common.Behaviors.Transaction
 
                 try
                 {
-                    var response = await next();
+                    var response = await next(cancellationToken);
                     if (response is IErrorOr { IsError: true })
                     {
                         await transaction.RollbackAsync(cancellationToken);

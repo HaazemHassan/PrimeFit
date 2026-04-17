@@ -67,12 +67,14 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
             var packageSpec = new PackageWithBranchSpec(request.PackageId);
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(packageSpec, cancellationToken);
 
+
             var branch = package?.Branch;
 
             if (package is null || branch is null || branch.Id != request.BranchId)
             {
                 return Error.Validation(description: "Package not found");
             }
+
 
 
             var totpSecret = _totpService.GenerateTotpSecret();
@@ -96,7 +98,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
 
             await _unitOfWork.Subscriptions.AddAsync(createSubResult.Value, cancellationToken);
 
-            await transaction.CommitAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
 
             var subscription = createSubResult.Value;
             return _mapper.Map<CreateMemberWithSubscriptionCommandResponse>(subscription);
