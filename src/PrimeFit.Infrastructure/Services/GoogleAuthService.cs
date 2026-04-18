@@ -61,9 +61,11 @@ namespace PrimeFit.Infrastructure.Services
                     ex,
                     "Invalid or expired Google ID token received");
 
-                return Error.Validation(
-                    code: ErrorCodes.Authentication.InvalidAccessToken,
-                    description: "Invalid ID token.");
+
+
+                //return Error.Validation(
+                //    code: ErrorCodes.Authentication.InvalidAccessToken,
+                //    description: "Invalid ID token.");
             }
         }
     }
