@@ -63,9 +63,9 @@ namespace PrimeFit.Infrastructure.Services
 
 
 
-                //return Error.Validation(
-                //    code: ErrorCodes.Authentication.InvalidAccessToken,
-                //    description: "Invalid ID token.");
+                return Error.Validation(
+                    code: ErrorCodes.Authentication.InvalidAccessToken,
+                    description: "Invalid ID token.");
             }
         }
     }
