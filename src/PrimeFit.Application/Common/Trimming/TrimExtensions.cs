@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace PrimeFit.Application.Common.Behaviors.Trimming
+namespace PrimeFit.Application.Common.Trimming
 {
     public static class TrimExtensions
     {

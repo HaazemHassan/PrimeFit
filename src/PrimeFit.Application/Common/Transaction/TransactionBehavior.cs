@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using PrimeFit.Domain.RepositoriesContracts;
 
-namespace PrimeFit.Application.Common.Behaviors.Transaction
+namespace PrimeFit.Application.Common.Transaction
 {
     public class TransactionBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>

@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Application.Common.Behaviors.Trimming
+﻿namespace PrimeFit.Application.Common.Trimming
 {
 
     [AttributeUsage(AttributeTargets.Property)]

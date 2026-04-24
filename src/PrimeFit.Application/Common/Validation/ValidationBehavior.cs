@@ -2,7 +2,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace PrimeFit.Application.Common.Behaviors
+namespace PrimeFit.Application.Common.Validation
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
   where TRequest : IRequest<TResponse>

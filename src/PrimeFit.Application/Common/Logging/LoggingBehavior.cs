@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace PrimeFit.Application.Common.Behaviors
+namespace PrimeFit.Application.Common.Logging
 {
     public class LoggingBehavior<TRequest, TResponse>
         : IPipelineBehavior<TRequest, TResponse>
@@ -40,7 +40,7 @@ namespace PrimeFit.Application.Common.Behaviors
 
                 try
                 {
-                    var response = await next();
+                    var response = await next(cancellationToken);
                     stopwatch.Stop();
                     var elapsed = stopwatch.ElapsedMilliseconds;
 

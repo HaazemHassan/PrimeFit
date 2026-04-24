@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Common.Behaviors.Transaction;
+using PrimeFit.Application.Common.Transaction;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Application.Security.Policies;

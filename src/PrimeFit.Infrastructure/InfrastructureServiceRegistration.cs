@@ -7,10 +7,12 @@ using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
+using PrimeFit.Infrastructure.Cashing;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
@@ -31,6 +33,7 @@ public static class InfrastructureServiceRegistration
 
         AddDbContextConfiguations(services, configuration);
         AddIdentityConfigurations(services, configuration);
+        AddCashing(services);
         AddRepositories(services);
         AddServices(services, configuration);
         AddHangfireConfiguration(services, configuration);
@@ -107,6 +110,15 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<RefreshTokensCleanupJob>();
         services.AddScoped<IImageBackgroundService, HangfireImageBackgroundService>();
         services.AddScoped<OrphanedImagesCleanupJob>();
+
+        return services;
+    }
+
+
+    private static IServiceCollection AddCashing(IServiceCollection services)
+    {
+        services.AddHybridCache();
+        services.AddScoped<ICacheService, HybridCacheService>();
 
         return services;
     }

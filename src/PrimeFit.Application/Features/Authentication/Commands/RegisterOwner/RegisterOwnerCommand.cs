@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Common.Behaviors.Transaction;
+using PrimeFit.Application.Common.Transaction;
 using PrimeFit.Application.Features.Users.Common;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner

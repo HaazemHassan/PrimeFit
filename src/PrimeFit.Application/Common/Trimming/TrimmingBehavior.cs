@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace PrimeFit.Application.Common.Behaviors.Trimming
+namespace PrimeFit.Application.Common.Trimming
 {
     public class TrimmingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
          where TRequest : notnull, IRequest<TResponse>
