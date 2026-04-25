@@ -67,9 +67,9 @@ namespace PrimeFit.API.Controllers
 
 
         [HttpGet("{branchId:int}/packages")]
-        public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId)
+        public async Task<IActionResult> GetBranchPackages([FromRoute] int branchId, [FromQuery] GetBranchPackagesForCustomersRequest request)
         {
-            var query = new GetBranchPackagesForCustomersQuery(branchId);
+            var query = new GetBranchPackagesForCustomersQuery(branchId, request.PageNumber, request.PageSize);
 
             var result = await Mediator.Send(query);
             if (result.IsError)

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeFit.Application.Common;
+using PrimeFit.Application.Common.Caching;
 using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Common.Logging;
 using PrimeFit.Application.Common.Transaction;
@@ -28,6 +29,7 @@ namespace PrimeFit.Application
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
+                cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
             });
 
 
@@ -35,7 +37,8 @@ namespace PrimeFit.Application
 
 
             AddAuthorizationPolicies(services);
-            AddCashingPolicies(services);
+            AddCachePolicies(services, typeof(ICachePolicy<>));
+            AddCachePolicies(services, typeof(ICacheInvalidationPolicy<>));
 
             return services;
         }
@@ -50,24 +53,26 @@ namespace PrimeFit.Application
         }
 
 
-        private static void AddCashingPolicies(IServiceCollection services)
+        private static void AddCachePolicies(IServiceCollection services, Type openGenericPolicyInterface)
         {
-            var assembly = typeof(ICachePolicy<>).Assembly;
+            var assembly = typeof(ApplicationAssemblyMarker).Assembly;
 
-            var policyInterfaceType = typeof(ICachePolicy<>);
-
-            var types = assembly.GetTypes()
+            var implementations = assembly.GetTypes()
                 .Where(t => t is { IsClass: true, IsAbstract: false })
-                .SelectMany(t => t.GetInterfaces(), (t, i) => new { Implementation = t, Interface = i })
+                .SelectMany(t => t.GetInterfaces(),
+                    (implementation, iface) => new
+                    {
+                        Implementation = implementation,
+                        Interface = iface
+                    })
                 .Where(x =>
                     x.Interface.IsGenericType &&
-                    x.Interface.GetGenericTypeDefinition() == policyInterfaceType);
+                    x.Interface.GetGenericTypeDefinition() == openGenericPolicyInterface);
 
-            foreach (var type in types)
+            foreach (var type in implementations)
             {
                 services.AddTransient(type.Interface, type.Implementation);
             }
-
         }
 
     }

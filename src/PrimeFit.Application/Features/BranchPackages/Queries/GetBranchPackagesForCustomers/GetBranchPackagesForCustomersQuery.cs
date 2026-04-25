@@ -10,9 +10,11 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
     {
 
 
-        public GetBranchPackagesForCustomersQuery(int branchId)
+        public GetBranchPackagesForCustomersQuery(int branchId, int pageNumber, int pageSize)
         {
             BranchId = branchId;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
         public int BranchId { get; set; }
 
