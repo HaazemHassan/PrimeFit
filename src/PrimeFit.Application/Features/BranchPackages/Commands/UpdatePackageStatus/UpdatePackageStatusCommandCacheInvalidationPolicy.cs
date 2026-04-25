@@ -7,7 +7,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageSta
     {
         public IEnumerable<string> GetTags(UpdatePackageStatusCommand request)
         {
-            yield return BranchPackagesCacheKeys.Tag(request.BranchId);
+            yield return BranchPackagesCache.Tag(request.BranchId);
         }
     }
 }

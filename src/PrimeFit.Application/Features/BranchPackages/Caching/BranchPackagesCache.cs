@@ -1,6 +1,6 @@
 ﻿namespace PrimeFit.Application.Features.BranchPackages.Caching
 {
-    public static class BranchPackagesCacheKeys
+    public static class BranchPackagesCache
     {
         public static string Tag(int branchId) => $"branch:{branchId}:packages";
 

@@ -9,12 +9,12 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 
         public string GetCacheKey(GetBranchPackagesForCustomersQuery request)
         {
-            return BranchPackagesCacheKeys.Paginated(request.BranchId, request.PageNumber, request.PageSize);
+            return BranchPackagesCache.Paginated(request.BranchId, request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetBranchPackagesForCustomersQuery request)
         {
-            return [BranchPackagesCacheKeys.Tag(request.BranchId)];
+            return [BranchPackagesCache.Tag(request.BranchId)];
         }
 
 

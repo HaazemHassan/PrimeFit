@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PrimeFit.API.Requests.BranchReviews;
 using PrimeFit.Application.Features.BranchReviews.Commands.AddBranchReview;
+using PrimeFit.Application.Features.BranchReviews.Commands.UpdateMyBranchReview;
 using PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews;
 
 namespace PrimeFit.API.Controllers
@@ -41,6 +42,26 @@ namespace PrimeFit.API.Controllers
                 return Problem(result.Errors);
             }
             return Created(string.Empty, result.Value);
+        }
+
+
+        [HttpPut("{reviewId:int}")]
+        public async Task<IActionResult> UpdateMyReview([FromRoute] int branchId, [FromRoute] int reviewId, [FromBody] UpdateMyBranchReviewRequest request)
+        {
+            var command = new UpdateMyBranchReviewCommand
+            {
+                BranchId = branchId,
+                ReviewId = reviewId,
+                Rating = request.Rating,
+                Comment = request.Comment
+            };
+
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
         }
 
     }

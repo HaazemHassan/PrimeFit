@@ -7,7 +7,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
     {
         public IEnumerable<string> GetTags(DeletePackageCommand request)
         {
-            yield return BranchPackagesCacheKeys.Tag(request.BranchId);
+            yield return BranchPackagesCache.Tag(request.BranchId);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace PrimeFit.Application.Features.Governorates.Queries.GetGovernorates
 
         public string GetCacheKey(GetGovernoratesQuery request)
         {
-            return GovernoratesCacheKeys.Governorates;
+            return GovernoratesCache.Governorates;
         }
     }
 }

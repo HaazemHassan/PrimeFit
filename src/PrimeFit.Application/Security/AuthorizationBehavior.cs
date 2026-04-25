@@ -45,9 +45,9 @@ namespace PrimeFit.Application.Security
 
             foreach (var attribute in attributes)
             {
-                var userTypes = attribute.UserTypes ?? [];
-                var roles = attribute.Roles ?? [];
-                var permissions = attribute.Permissions ?? [];
+                var userTypes = attribute.UserTypes;
+                var roles = attribute.Roles;
+                var permissions = attribute.Permissions;
 
                 var policies = string.IsNullOrWhiteSpace(attribute.Policy)
                     ? Array.Empty<string>()

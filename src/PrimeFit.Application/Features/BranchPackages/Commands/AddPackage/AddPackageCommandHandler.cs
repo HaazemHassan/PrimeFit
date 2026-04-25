@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using ErrorOr;
 using MediatR;
-using PrimeFit.Application.Features.BranchPackages.Commands.AddPackage;
+using PrimeFit.Application.Features.Packages.Commands.AddPackage;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
 
-namespace PrimeFit.Application.Features.Packages.Commands.AddPackage
+namespace PrimeFit.Application.Features.BranchPackages.Commands.AddPackage
 {
     public class AddPackageCommandHandler : IRequestHandler<AddPackageCommand, ErrorOr<AddPackageCommandResponse>>
     {
