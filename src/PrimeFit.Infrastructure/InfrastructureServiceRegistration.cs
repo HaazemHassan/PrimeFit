@@ -138,7 +138,6 @@ public static class InfrastructureServiceRegistration
     private static IServiceCollection AddRepositories(IServiceCollection services)
     {
 
-        // UnitOfWork should be Scoped to maintain consistency across a single request
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

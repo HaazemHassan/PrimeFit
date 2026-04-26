@@ -25,7 +25,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
                 return true;
             }
 
-            if (request.search is not null)
+            if (!string.IsNullOrEmpty(request.search))
             {
                 return true;
             }

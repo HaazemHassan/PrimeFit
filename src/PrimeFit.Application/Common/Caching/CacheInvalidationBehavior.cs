@@ -18,8 +18,7 @@ namespace PrimeFit.Application.Common.Caching
             this.policies = policies;
         }
 
-        public async Task<TResponse> Handle(
-            TRequest request,
+        public async Task<TResponse> Handle(TRequest request,
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
