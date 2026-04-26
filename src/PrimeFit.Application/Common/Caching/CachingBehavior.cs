@@ -2,6 +2,7 @@
 using MediatR;
 using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace PrimeFit.Application.Common.Caching
@@ -12,6 +13,9 @@ namespace PrimeFit.Application.Common.Caching
         : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
+
+        private static readonly ConcurrentDictionary<Type, MethodInfo> _methodCache = new();
+
         public async Task<TResponse> Handle(
             TRequest request,
             RequestHandlerDelegate<TResponse> next,
@@ -32,8 +36,7 @@ namespace PrimeFit.Application.Common.Caching
             {
                 var valueType = responseType.GetGenericArguments()[0];
 
-                var method = typeof(CachingBehavior<TRequest, TResponse>).GetMethod(nameof(HandleCacheAsync),
-                         BindingFlags.NonPublic | BindingFlags.Instance)!.MakeGenericMethod(valueType);
+                var method = GetHandleCacheMethod(valueType);
 
                 var task = (Task<TResponse>)method.Invoke(this,
                 [
@@ -87,6 +90,14 @@ namespace PrimeFit.Application.Common.Caching
             {
                 return (TResponse)(object)ex.Response;
             }
+        }
+
+        private MethodInfo GetHandleCacheMethod(Type valueType)
+        {
+            return _methodCache.GetOrAdd(valueType, t =>
+                typeof(CachingBehavior<TRequest, TResponse>)
+                    .GetMethod(nameof(HandleCacheAsync), BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .MakeGenericMethod(t));
         }
     }
 }

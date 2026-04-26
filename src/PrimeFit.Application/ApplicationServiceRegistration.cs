@@ -28,8 +28,8 @@ namespace PrimeFit.Application
                 cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-                cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
             });
 
 

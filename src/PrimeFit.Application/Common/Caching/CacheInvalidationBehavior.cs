@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ErrorOr;
+using MediatR;
 using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
 
 namespace PrimeFit.Application.Common.Caching
@@ -24,13 +25,21 @@ namespace PrimeFit.Application.Common.Caching
         {
             var response = await next(cancellationToken);
 
+            if (response is IErrorOr { IsError: true })
+            {
+                return response;
+
+            }
+
             foreach (var policy in policies)
             {
                 foreach (var tag in policy.GetTags(request))
                 {
                     await cache.RemoveByTagAsync(tag, cancellationToken);
+
                 }
             }
+
 
             return response;
         }

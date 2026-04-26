@@ -25,6 +25,11 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
                 return true;
             }
 
+            if (request.search is not null)
+            {
+                return true;
+            }
+
             if (request.PageNumber > 3)
             {
                 return true;

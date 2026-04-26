@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeFit.Application.Common.Options;
@@ -117,7 +118,17 @@ public static class InfrastructureServiceRegistration
 
     private static IServiceCollection AddCashing(IServiceCollection services)
     {
-        services.AddHybridCache();
+        services.AddHybridCache(options =>
+        {
+            options.MaximumPayloadBytes = 1 * 1024 * 1024;
+
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromMinutes(5),
+                LocalCacheExpiration = TimeSpan.FromMinutes(1)
+            };
+        });
+
         services.AddScoped<ICacheService, HybridCacheService>();
 
         return services;
