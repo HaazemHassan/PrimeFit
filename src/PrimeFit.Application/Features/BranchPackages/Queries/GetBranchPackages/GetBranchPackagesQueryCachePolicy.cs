@@ -28,6 +28,13 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
                 return true;
             }
 
+
+
+            if (request.PageNumber > 3)
+            {
+                return true;
+            }
+
             return false;
         }
     }

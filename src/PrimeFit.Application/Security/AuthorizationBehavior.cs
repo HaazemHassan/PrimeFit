@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Exceptions;
 using PrimeFit.Application.Contracts.Api;

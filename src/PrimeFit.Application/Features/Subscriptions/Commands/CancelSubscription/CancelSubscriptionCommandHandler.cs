@@ -1,13 +1,13 @@
 using ErrorOr;
 using MediatR;
+using PrimeFit.Application.Features.Branches.Caching;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
-using PrimeFit.Application.Features.Branches.Caching;
 
 namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscription
 {
@@ -19,8 +19,8 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
         private readonly ICacheService _cacheService;
 
         public CancelSubscriptionCommandHandler(
-            IUnitOfWork unitOfWork, 
-            IDateTimeProvider dateTimeProvider, 
+            IUnitOfWork unitOfWork,
+            IDateTimeProvider dateTimeProvider,
             IBranchAuthorizationService branchAuthorizationService,
             ICacheService cacheService)
         {
@@ -73,7 +73,10 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
+
+            //Manual invalidation instead of creating invalidation policy because the command doesn't contain BranchId property
+            //Update later
             await _cacheService.RemoveByTagAsync(BranchesCache.ByIdTag(subscriptionToCancel.BranchId), cancellationToken);
 
             return Result.Success;

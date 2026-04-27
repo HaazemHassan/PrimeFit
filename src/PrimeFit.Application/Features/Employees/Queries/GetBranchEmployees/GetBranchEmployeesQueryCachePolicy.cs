@@ -17,7 +17,6 @@ namespace PrimeFit.Application.Features.Employees.Queries.GetBranchEmployees
         {
             return [
                 BranchesCache.ByIdTag(request.BranchId),
-                BranchesCache.ListTag()
             ];
         }
 

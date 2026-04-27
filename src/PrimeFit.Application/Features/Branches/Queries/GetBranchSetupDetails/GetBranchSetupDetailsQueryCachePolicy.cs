@@ -16,13 +16,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
         {
             return [
                 BranchesCache.ByIdTag(request.BranchId),
-                BranchesCache.ListTag()
             ];
-        }
-
-        public bool ShouldSkipCache(GetBranchSetupDetailsQuery request)
-        {
-            return false;
         }
     }
 }
