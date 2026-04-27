@@ -13,24 +13,17 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly TimeProvider _timeProvider;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, TimeProvider timeProvider, IBranchAuthorizationService branchAuthorizationService)
+        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, TimeProvider timeProvider)
         {
             _unitOfWork = unitOfWork;
             _timeProvider = timeProvider;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
 
 
         public async Task<ErrorOr<PaginatedResult<GetBranchSubscriptionsQueryResponse>>> Handle(GetBranchSubscriptionsQuery request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.SubscriptionsView, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var dataSpec = new BranchSubscriptionsPaginatedSpec(request.BranchId, request.SubscriptionStatus, request.Search, request.PageNumber, request.PageSize);
             var countSpec = new BranchSubscriptionSearchSpec(request.BranchId, request.Search);

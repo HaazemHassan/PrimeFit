@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Transaction;
@@ -8,7 +9,8 @@ using PrimeFit.Application.Security.Policies;
 namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
 {
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class CreateEmployeeCommand : IRequest<ErrorOr<CreateEmployeeCommandResponse>>, IAuthorizedRequest, ITransactionalRequest
+    [BranchAuthorize(BranchPermissions = [Permission.EmployeesWrite])]
+    public class CreateEmployeeCommand : IRequest<ErrorOr<CreateEmployeeCommandResponse>>, IBranchAuthorizedRequest, ITransactionalRequest
     {
         public int BranchId { get; set; }
         public int EmployeeRoleId { get; set; }

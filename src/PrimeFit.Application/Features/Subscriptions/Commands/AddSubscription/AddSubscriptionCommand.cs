@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Security;
@@ -8,7 +9,8 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class AddSubscriptionCommand : IRequest<ErrorOr<AddSubscriptionCommandResponse>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.SubscriptionsWrite])]
+    public class AddSubscriptionCommand : IRequest<ErrorOr<AddSubscriptionCommandResponse>>, IBranchAuthorizedRequest
     {
         public string Email { get; set; }
         public int PackageId { get; set; }

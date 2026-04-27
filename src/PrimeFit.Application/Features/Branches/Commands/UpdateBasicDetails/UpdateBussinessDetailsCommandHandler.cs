@@ -14,30 +14,22 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
         public UpdateBussinessDetailsCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue,
-            IBranchAuthorizationService branchAuthorizationService)
+            IImageBackgroundService imageBackgroundQueue)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
 
         public async Task<ErrorOr<Success>> Handle(UpdateBussinessDetailsCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchDetailsWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 

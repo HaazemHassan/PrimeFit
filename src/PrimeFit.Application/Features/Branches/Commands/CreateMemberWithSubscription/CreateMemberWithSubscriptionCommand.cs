@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Security;
@@ -8,8 +9,9 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
+    [BranchAuthorize(BranchPermissions = [Permission.MembersWrite])]
     public class CreateMemberWithSubscriptionCommand : IRequest<ErrorOr<CreateMemberWithSubscriptionCommandResponse>>,
-        IAuthorizedRequest
+        IBranchAuthorizedRequest
 
     {
         public string FirstName { get; set; }

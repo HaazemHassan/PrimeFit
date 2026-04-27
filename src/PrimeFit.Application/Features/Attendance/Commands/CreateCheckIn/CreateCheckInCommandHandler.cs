@@ -14,17 +14,11 @@ namespace PrimeFit.Application.Features.Attendance.Commands.CreateCheckIn
     public class CreateCheckInCommandHandler(
         IUnitOfWork _unitOfWork,
         IGenericRepository<CheckIn> _checkInRepository,
-        ITotpService _totpService,
-        IBranchAuthorizationService _branchAuthorizationService)
+        ITotpService _totpService)
         : IRequestHandler<CreateCheckInCommand, ErrorOr<CreateCheckInCommandResponse>>
     {
         public async Task<ErrorOr<CreateCheckInCommandResponse>> Handle(CreateCheckInCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.CheckInWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
 
             var spec = new SubscriptionForCheckInSpec(request.CustomerId, request.BranchId);

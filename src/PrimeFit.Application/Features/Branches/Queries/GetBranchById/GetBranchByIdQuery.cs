@@ -3,12 +3,14 @@ using MediatR;
 using PrimeFit.Application.Security;
 using PrimeFit.Application.Security.Markers;
 using PrimeFit.Application.Security.Policies;
+using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchById
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class GetBranchByIdQuery : IRequest<ErrorOr<GetBranchByIdQueryResponse>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.BranchDetailsRead])]
+    public class GetBranchByIdQuery : IRequest<ErrorOr<GetBranchByIdQueryResponse>>, IBranchAuthorizedRequest
     {
 
         public int BranchId { get; set; }

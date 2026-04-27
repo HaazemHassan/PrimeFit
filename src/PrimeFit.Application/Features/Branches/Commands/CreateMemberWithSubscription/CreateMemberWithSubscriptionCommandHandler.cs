@@ -21,9 +21,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
         private readonly IMapper _mapper;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly ITotpService _totpService;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IPhoneNumberService phoneNumberService, ITotpService totpService, IBranchAuthorizationService branchAuthorizationService)
+        public CreateMemberWithSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IPhoneNumberService phoneNumberService, ITotpService totpService)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
@@ -31,22 +30,10 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateMemberWithSubscr
             _mapper = mapper;
             _phoneNumberService = phoneNumberService;
             _totpService = totpService;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<CreateMemberWithSubscriptionCommandResponse>> Handle(CreateMemberWithSubscriptionCommand request, CancellationToken cancellationToken)
         {
-
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(
-                request.BranchId,
-                Permission.MembersWrite,
-                cancellationToken);
-
-
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
 
             var user = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email, cancellationToken);

@@ -10,7 +10,8 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class GetBranchSubscriptionsQuery : PaginatedQuery, IRequest<ErrorOr<PaginatedResult<GetBranchSubscriptionsQueryResponse>>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.SubscriptionsView])]
+    public class GetBranchSubscriptionsQuery : PaginatedQuery, IRequest<ErrorOr<PaginatedResult<GetBranchSubscriptionsQueryResponse>>>, IBranchAuthorizedRequest
     {
         public int BranchId { get; set; }
         public SubscriptionStatus? SubscriptionStatus { get; set; }

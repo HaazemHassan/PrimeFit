@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Transaction;
@@ -9,7 +10,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateWorkingHours
 
 {
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class UpdateWorkingHoursCommand : IRequest<ErrorOr<Success>>, IAuthorizedRequest, ITransactionalRequest
+    [BranchAuthorize(BranchPermissions = [Permission.BranchDetailsWrite])]
+    public class UpdateWorkingHoursCommand : IRequest<ErrorOr<Success>>, IBranchAuthorizedRequest, ITransactionalRequest
     {
         public int BranchId { get; set; }
         public List<WorkingHourDto> WorkingHours { get; set; } = [];

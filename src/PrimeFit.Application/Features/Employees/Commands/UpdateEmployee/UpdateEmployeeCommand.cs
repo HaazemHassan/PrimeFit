@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Transaction;
@@ -8,7 +9,8 @@ using PrimeFit.Application.Security.Policies;
 namespace PrimeFit.Application.Features.Employees.Commands.UpdateEmployee
 {
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class UpdateEmployeeCommand : IRequest<ErrorOr<UpdateEmployeeCommandResponse>>, IAuthorizedRequest, ITransactionalRequest
+    [BranchAuthorize(BranchPermissions = [Permission.EmployeesWrite])]
+    public class UpdateEmployeeCommand : IRequest<ErrorOr<UpdateEmployeeCommandResponse>>, IBranchAuthorizedRequest, ITransactionalRequest
     {
         public int EmployeeId { get; set; }
         public int BranchId { get; set; }

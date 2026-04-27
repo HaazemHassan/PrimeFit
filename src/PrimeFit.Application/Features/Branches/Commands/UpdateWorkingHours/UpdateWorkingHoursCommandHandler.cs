@@ -17,23 +17,16 @@ namespace PrimeFit.Application.Features.Branches.Commands.AddWorkingHours
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public UpdateWorkingHoursCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService, IBranchAuthorizationService branchAuthorizationService)
+        public UpdateWorkingHoursCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _currentUserService = currentUserService;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UpdateWorkingHoursCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchDetailsWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var getBranchWithWorkingHoursSpec = new GetBranchWithWorkingHoursSpec(request.BranchId);
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(getBranchWithWorkingHoursSpec, cancellationToken);

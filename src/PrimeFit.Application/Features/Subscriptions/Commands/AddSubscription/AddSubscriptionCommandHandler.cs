@@ -16,24 +16,17 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISubscriptionDomainService _subscriptionService;
         private readonly IMapper _mapper;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper, IBranchAuthorizationService branchAuthorizationService)
+        public AddSubscriptionCommandHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, ISubscriptionDomainService subscriptionService, IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _subscriptionService = subscriptionService;
             _mapper = mapper;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<AddSubscriptionCommandResponse>> Handle(AddSubscriptionCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.SubscriptionsWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             int curUserId = _currentUserService.UserId!.Value;
 

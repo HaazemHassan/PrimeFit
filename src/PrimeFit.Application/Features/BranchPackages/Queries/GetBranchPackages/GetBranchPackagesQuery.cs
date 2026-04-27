@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
@@ -9,8 +10,9 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
+    [BranchAuthorize(BranchPermissions = [Permission.PackagesView])]
     public class GetBranchPackagesQuery : PaginatedQuery
-        , IRequest<ErrorOr<PaginatedResult<GetBranchPackagesQueryResponse>>>, IAuthorizedRequest
+        , IRequest<ErrorOr<PaginatedResult<GetBranchPackagesQueryResponse>>>, IBranchAuthorizedRequest
     {
 
         public int BranchId { get; set; }

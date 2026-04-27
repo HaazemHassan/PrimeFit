@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Security;
@@ -8,7 +9,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class UpdateLocationDetailsCommand : IRequest<ErrorOr<Success>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.BranchDetailsWrite])]
+    public class UpdateLocationDetailsCommand : IRequest<ErrorOr<Success>>, IBranchAuthorizedRequest
     {
         public int BranchId { get; set; }
         public int GovernorateId { get; set; }

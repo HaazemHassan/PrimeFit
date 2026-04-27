@@ -11,21 +11,14 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageSta
     public class UpdatePackageStatusCommandHandler : IRequestHandler<UpdatePackageStatusCommand, ErrorOr<Success>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public UpdatePackageStatusCommandHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
+        public UpdatePackageStatusCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Success>> Handle(UpdatePackageStatusCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
 

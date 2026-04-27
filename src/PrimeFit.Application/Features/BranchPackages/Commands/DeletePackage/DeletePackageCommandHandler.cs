@@ -11,21 +11,14 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
     public class DeletePackageCommandHandler : IRequestHandler<DeletePackageCommand, ErrorOr<Deleted>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public DeletePackageCommandHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
+        public DeletePackageCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<Deleted>> Handle(DeletePackageCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesDelete, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);

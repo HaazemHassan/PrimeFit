@@ -18,7 +18,6 @@ namespace PrimeFit.Application.Features.Employees.Commands.UpdateEmployee
         private readonly IGenericRepository<EmployeeRole> _employeeRoleRepository;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly IApplicationUserService _applicationUserService;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
         private readonly IMapper _mapper;
 
         public UpdateEmployeeCommandHandler(
@@ -26,29 +25,17 @@ namespace PrimeFit.Application.Features.Employees.Commands.UpdateEmployee
             IGenericRepository<EmployeeRole> employeeRoleRepository,
             IPhoneNumberService phoneNumberService,
             IApplicationUserService applicationUserService,
-            IBranchAuthorizationService branchAuthorizationService,
             IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _employeeRoleRepository = employeeRoleRepository;
             _phoneNumberService = phoneNumberService;
             _applicationUserService = applicationUserService;
-            _branchAuthorizationService = branchAuthorizationService;
             _mapper = mapper;
         }
 
         public async Task<ErrorOr<UpdateEmployeeCommandResponse>> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(
-                                        request.BranchId,
-                                        Permission.EmployeesWrite,
-                                        cancellationToken
-                                    );
-
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var employeeSpec = new EmployeeByIdAndBranchIdSpec(request.EmployeeId, request.BranchId);
             var employee = await _unitOfWork.Employees.FirstOrDefaultAsync(employeeSpec, cancellationToken);

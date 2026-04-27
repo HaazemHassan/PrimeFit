@@ -11,21 +11,14 @@ namespace PrimeFit.Application.Features.Employees.Queries.GetBranchEmployees
     public class GetBranchEmployeesQueryHandler : IRequestHandler<GetBranchEmployeesQuery, ErrorOr<PaginatedResult<GetBranchEmployeesQueryResponse>>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public GetBranchEmployeesQueryHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
+        public GetBranchEmployeesQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<PaginatedResult<GetBranchEmployeesQueryResponse>>> Handle(GetBranchEmployeesQuery request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.EmployeesView, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var dataSpec = new BranchEmployeesPaginatedSpec(request.BranchId, request.PageNumber, request.PageSize);
 

@@ -8,7 +8,8 @@ using PrimeFit.Domain.Common.Enums;
 namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
 {
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class AddBranchImageCommand : IRequest<ErrorOr<AddBranchImageCommandResponse>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.BranchImagesWrite])]
+    public class AddBranchImageCommand : IRequest<ErrorOr<AddBranchImageCommandResponse>>, IBranchAuthorizedRequest
     {
 
         public int BranchId { get; set; }

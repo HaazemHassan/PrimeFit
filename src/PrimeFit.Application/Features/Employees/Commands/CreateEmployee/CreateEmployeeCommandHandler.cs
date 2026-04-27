@@ -14,8 +14,7 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
         IUnitOfWork unitOfWork,
         IGenericRepository<EmployeeRole> employeeRoleRepository,
         IApplicationUserService applicationUserService,
-        IPhoneNumberService phoneNumberService,
-        IBranchAuthorizationService _branchAuthorizationService)
+        IPhoneNumberService phoneNumberService)
         : IRequestHandler<CreateEmployeeCommand, ErrorOr<CreateEmployeeCommandResponse>>
     {
         public async Task<ErrorOr<CreateEmployeeCommandResponse>> Handle(
@@ -30,16 +29,6 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
                     code: ErrorCodes.Branch.BranchNotFound,
                     description: "Branch not found");
 
-            }
-
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(
-                request.BranchId,
-                Permission.EmployeesWrite,
-                cancellationToken);
-
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
             }
 
             var employeeRole = await employeeRoleRepository.GetAsync(

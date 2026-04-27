@@ -11,21 +11,14 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
     public class GetBranchPackagesQueryHandler : IRequestHandler<GetBranchPackagesQuery, ErrorOr<PaginatedResult<GetBranchPackagesQueryResponse>>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public GetBranchPackagesQueryHandler(IUnitOfWork unitOfWork, IBranchAuthorizationService branchAuthorizationService)
+        public GetBranchPackagesQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<PaginatedResult<GetBranchPackagesQueryResponse>>> Handle(GetBranchPackagesQuery request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesView, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var branchPackagesPaginatedSpec = new BranchPackagesPaginatedSpec(
                 request.BranchId,

@@ -1,3 +1,4 @@
+using PrimeFit.Domain.Common.Enums;
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Security;
@@ -8,7 +9,8 @@ namespace PrimeFit.Application.Features.Attendance.Commands.CreateCheckIn
 {
 
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class CreateCheckInCommand : IRequest<ErrorOr<CreateCheckInCommandResponse>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.CheckInWrite])]
+    public class CreateCheckInCommand : IRequest<ErrorOr<CreateCheckInCommandResponse>>, IBranchAuthorizedRequest
     {
         public int CustomerId { get; set; }
         public string Code { get; set; }

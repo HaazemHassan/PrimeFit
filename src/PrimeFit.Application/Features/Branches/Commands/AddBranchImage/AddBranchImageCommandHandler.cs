@@ -16,32 +16,23 @@ namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchImage
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
         private readonly IImageBackgroundService _imageBackgroundQueue;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
 
         public AddBranchImageCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue,
-            IBranchAuthorizationService branchAuthorizationService)
+            IImageBackgroundService imageBackgroundQueue)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
             _imageBackgroundQueue = imageBackgroundQueue;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<AddBranchImageCommandResponse>> Handle(AddBranchImageCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.UserId!.Value;
-
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.BranchImagesWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 

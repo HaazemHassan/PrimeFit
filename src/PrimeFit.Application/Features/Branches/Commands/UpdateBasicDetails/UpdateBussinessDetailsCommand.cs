@@ -8,7 +8,8 @@ using PrimeFit.Domain.Common.Enums;
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails
 {
     [Authorize(Policy = AuthorizationPolicies.BranchStaffOnly)]
-    public class UpdateBussinessDetailsCommand : IRequest<ErrorOr<Success>>, IAuthorizedRequest
+    [BranchAuthorize(BranchPermissions = [Permission.BranchDetailsWrite])]
+    public class UpdateBussinessDetailsCommand : IRequest<ErrorOr<Success>>, IBranchAuthorizedRequest
     {
         public int BranchId { get; set; }
         public string? Name { get; set; } = string.Empty;

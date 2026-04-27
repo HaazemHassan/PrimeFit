@@ -31,8 +31,7 @@ namespace PrimeFit.Application.Common.Caching
 
             var responseType = typeof(TResponse);
 
-            if (responseType.IsGenericType &&
-                responseType.GetGenericTypeDefinition() == typeof(ErrorOr<>))
+            if (responseType.IsGenericType && responseType.GetGenericTypeDefinition() == typeof(ErrorOr<>))
             {
                 var valueType = responseType.GetGenericArguments()[0];
 

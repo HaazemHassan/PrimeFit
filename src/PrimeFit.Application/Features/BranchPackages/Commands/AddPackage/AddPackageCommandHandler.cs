@@ -13,22 +13,15 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.AddPackage
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IBranchAuthorizationService _branchAuthorizationService;
 
-        public AddPackageCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IBranchAuthorizationService branchAuthorizationService)
+        public AddPackageCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _branchAuthorizationService = branchAuthorizationService;
         }
 
         public async Task<ErrorOr<AddPackageCommandResponse>> Handle(AddPackageCommand request, CancellationToken cancellationToken)
         {
-            var authResult = await _branchAuthorizationService.AuthorizeAsync(request.BranchId, Permission.PackagesWrite, cancellationToken);
-            if (authResult.IsError)
-            {
-                return authResult.Errors;
-            }
 
             var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 
