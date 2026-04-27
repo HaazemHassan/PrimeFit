@@ -22,10 +22,6 @@ namespace PrimeFit.Application.Security
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
-            if (!currentUserService.IsAuthenticated)
-            {
-                throw new UnauthorizedException();
-            }
 
             if (currentUserService.UserType == UserType.SuperAdmin)
             {
