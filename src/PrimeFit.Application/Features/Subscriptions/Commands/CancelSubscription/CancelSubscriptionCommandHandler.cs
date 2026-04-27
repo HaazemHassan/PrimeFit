@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
@@ -6,6 +6,8 @@ using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.Features.Branches.Caching;
 
 namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscription
 {
@@ -14,12 +16,18 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IBranchAuthorizationService _branchAuthorizationService;
+        private readonly ICacheService _cacheService;
 
-        public CancelSubscriptionCommandHandler(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider, IBranchAuthorizationService branchAuthorizationService)
+        public CancelSubscriptionCommandHandler(
+            IUnitOfWork unitOfWork, 
+            IDateTimeProvider dateTimeProvider, 
+            IBranchAuthorizationService branchAuthorizationService,
+            ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
             _branchAuthorizationService = branchAuthorizationService;
+            _cacheService = cacheService;
         }
 
         public async Task<ErrorOr<Success>> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)
@@ -65,6 +73,9 @@ namespace PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscriptio
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            await _cacheService.RemoveByTagAsync(BranchesCache.ByIdTag(subscriptionToCancel.BranchId), cancellationToken);
+
             return Result.Success;
 
         }

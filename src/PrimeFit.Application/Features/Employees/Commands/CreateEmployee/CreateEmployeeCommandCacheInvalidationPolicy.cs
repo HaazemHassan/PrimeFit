@@ -10,7 +10,7 @@ namespace PrimeFit.Application.Features.Employees.Commands.CreateEmployee
         public IEnumerable<string> GetTags(CreateEmployeeCommand request)
         {
             yield return SecurityCache.BranchAuthTag(request.BranchId);
-            yield return BranchesCache.Tag(request.BranchId);
+            yield return BranchesCache.ByIdTag(request.BranchId);
         }
     }
 }

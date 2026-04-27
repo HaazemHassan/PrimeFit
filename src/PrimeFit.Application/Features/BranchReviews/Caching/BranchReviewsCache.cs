@@ -1,12 +1,12 @@
-﻿namespace PrimeFit.Application.Features.BranchReviews.Caching
+namespace PrimeFit.Application.Features.BranchReviews.Caching
 {
     public static class BranchReviewsCache
     {
 
-        public static string Tag(int branchId)
-            => $"branch:{branchId}:reviews";
+        public static string ListTag(int branchId)
+            => $"tag:branch:{branchId}:reviews:list";
 
-        public static string Paginated(int branchId, int pageNumber, int pageSize)
+        public static string PaginatedCacheKey(int branchId, int pageNumber, int pageSize)
             => $"branch:{branchId}:reviews:pageNumber:{pageNumber}:size:{pageSize}";
 
     }

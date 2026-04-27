@@ -1,7 +1,6 @@
 using PrimeFit.Application.Common.Caching;
-using PrimeFit.Application.Features.Employees.Commands.UpdateEmployee;
-using PrimeFit.Application.Security.Caching;
 using PrimeFit.Application.Features.Branches.Caching;
+using PrimeFit.Application.Security.Caching;
 
 namespace PrimeFit.Application.Features.Employees.Commands.UpdateEmployee
 {
@@ -10,7 +9,7 @@ namespace PrimeFit.Application.Features.Employees.Commands.UpdateEmployee
         public IEnumerable<string> GetTags(UpdateEmployeeCommand request)
         {
             yield return SecurityCache.BranchAuthTag(request.BranchId);
-            yield return BranchesCache.Tag(request.BranchId);
+            yield return BranchesCache.ByIdTag(request.BranchId);
         }
     }
 }

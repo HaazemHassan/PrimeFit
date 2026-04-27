@@ -2,6 +2,7 @@
 {
     public static class GovernoratesCache
     {
-        public const string Governorates = "lookups:governorates";
+        public static string ListCacheKey()
+            => $"governorate:list";
     }
 }

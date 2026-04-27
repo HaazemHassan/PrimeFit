@@ -8,7 +8,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages
         public IEnumerable<string> GetTags(ActivateBranchImagesCommand request)
         {
             yield return BranchesCache.ListTag();
-            yield return BranchesCache.Tag(request.BranchId);
+            yield return BranchesCache.ByIdTag(request.BranchId);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace PrimeFit.Infrastructure.Security
                 return Error.Unauthorized(description: "User is not authenticated");
             }
 
-            var cacheKey = SecurityCache.BranchAuthKey(currentUserId.Value, branchId);
+            var cacheKey = SecurityCache.BranchAuthCacheKey(currentUserId.Value, branchId);
             var cacheTag = SecurityCache.BranchAuthTag(branchId);
 
             var authorizationInfo = await cacheService.GetOrCreateAsync(

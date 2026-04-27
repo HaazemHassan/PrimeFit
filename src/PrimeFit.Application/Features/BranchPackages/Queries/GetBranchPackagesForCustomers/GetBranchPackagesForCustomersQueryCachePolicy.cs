@@ -1,4 +1,4 @@
-﻿using PrimeFit.Application.Common.Cashing;
+using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Features.BranchPackages.Caching;
 
 namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForCustomers
@@ -9,12 +9,12 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 
         public string GetCacheKey(GetBranchPackagesForCustomersQuery request)
         {
-            return BranchPackagesCache.Paginated(request.BranchId, request.PageNumber, request.PageSize);
+            return BranchPackagesCache.PublicPaginatedCacheKey(request.BranchId, request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetBranchPackagesForCustomersQuery request)
         {
-            return [BranchPackagesCache.Tag(request.BranchId)];
+            return [BranchPackagesCache.ListTag(request.BranchId)];
         }
 
 

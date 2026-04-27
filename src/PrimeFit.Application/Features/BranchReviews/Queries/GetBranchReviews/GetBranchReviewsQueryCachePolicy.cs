@@ -18,12 +18,12 @@ namespace PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews
 
         public string GetCacheKey(GetBranchReviewsQuery request)
         {
-            return BranchReviewsCache.Paginated(request.BranchId, request.PageNumber, request.PageSize);
+            return BranchReviewsCache.PaginatedCacheKey(request.BranchId, request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetBranchReviewsQuery request)
         {
-            return [BranchReviewsCache.Tag(request.BranchId)];
+            return [BranchReviewsCache.ListTag(request.BranchId)];
         }
 
 

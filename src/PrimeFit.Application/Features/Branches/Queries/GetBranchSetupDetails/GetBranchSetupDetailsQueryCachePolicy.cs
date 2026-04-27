@@ -9,13 +9,13 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
 
         public string GetCacheKey(GetBranchSetupDetailsQuery request)
         {
-            return BranchesCache.SetupDetails(request.BranchId);
+            return BranchesCache.SetupDetailsCacheKey(request.BranchId);
         }
 
         public string[] GetCacheTags(GetBranchSetupDetailsQuery request)
         {
             return [
-                BranchesCache.Tag(request.BranchId),
+                BranchesCache.ByIdTag(request.BranchId),
                 BranchesCache.ListTag()
             ];
         }

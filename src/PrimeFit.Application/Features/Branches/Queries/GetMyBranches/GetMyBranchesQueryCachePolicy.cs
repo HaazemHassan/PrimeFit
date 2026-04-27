@@ -17,7 +17,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
 
         public string GetCacheKey(GetMyBranchesQuery request)
         {
-            return BranchesCache.OwnerPaginated(_currentUserService.UserId!.Value, request.PageNumber, request.PageSize);
+            return BranchesCache.OwnerPaginatedCacheKey(_currentUserService.UserId!.Value, request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetMyBranchesQuery request)

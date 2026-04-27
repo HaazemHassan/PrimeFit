@@ -1,4 +1,4 @@
-﻿using PrimeFit.Application.Common.Cashing;
+using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Features.Branches.Caching;
 
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
@@ -9,13 +9,13 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
 
         public string GetCacheKey(GetBranchByIdForPublicQuery request)
         {
-            return BranchesCache.ById(request.BranchId);
+            return BranchesCache.ByIdForPublicCacheKey(request.BranchId);
         }
 
         public string[] GetCacheTags(GetBranchByIdForPublicQuery request)
         {
             return [
-                    BranchesCache.Tag(request.BranchId),
+                    BranchesCache.ByIdTag(request.BranchId),
                     BranchesCache.ListTag()
                    ];
         }

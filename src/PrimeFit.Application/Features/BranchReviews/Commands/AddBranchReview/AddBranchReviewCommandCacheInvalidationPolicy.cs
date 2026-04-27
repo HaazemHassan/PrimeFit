@@ -7,7 +7,7 @@ namespace PrimeFit.Application.Features.BranchReviews.Commands.AddBranchReview
     {
         public IEnumerable<string> GetTags(AddBranchReviewCommand request)
         {
-            yield return BranchReviewsCache.Tag(request.BranchId);
+            yield return BranchReviewsCache.ListTag(request.BranchId);
         }
     }
 }

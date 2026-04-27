@@ -1,5 +1,6 @@
 using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Features.Branches.Caching;
+using PrimeFit.Application.Features.BranchPackages.Caching;
 
 namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 {
@@ -9,14 +10,14 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 
         public string GetCacheKey(GetBranchPackagesQuery request)
         {
-            return BranchesCache.BranchPackages(request.BranchId, request.PageNumber, request.PageSize);
+            return BranchPackagesCache.AdminPaginatedCacheKey(request.BranchId, request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetBranchPackagesQuery request)
         {
             return [
-                BranchesCache.Tag(request.BranchId),
-                BranchesCache.ListTag()
+                BranchesCache.ByIdTag(request.BranchId),
+                BranchPackagesCache.ListTag(request.BranchId)
             ];
         }
 

@@ -9,7 +9,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
 
         public string GetCacheKey(GetBranchesForPublicQuery request)
         {
-            return BranchesCache.Paginated(request.PageNumber, request.PageSize);
+            return BranchesCache.PublicPaginatedCacheKey(request.PageNumber, request.PageSize);
         }
 
         public string[] GetCacheTags(GetBranchesForPublicQuery request)

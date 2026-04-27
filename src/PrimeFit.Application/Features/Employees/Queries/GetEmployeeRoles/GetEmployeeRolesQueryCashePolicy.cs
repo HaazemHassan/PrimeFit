@@ -9,7 +9,7 @@ namespace PrimeFit.Application.Features.Employees.Queries.GetEmployeeRoles
 
         public string GetCacheKey(GetEmployeeRolesQuery request)
         {
-            return EmployeeCashingKeys.EmployeeRoles;
+            return EmployeeCache.EmployeeRolesCacheKey();
         }
     }
 }

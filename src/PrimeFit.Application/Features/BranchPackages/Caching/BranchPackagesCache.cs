@@ -1,12 +1,15 @@
-﻿namespace PrimeFit.Application.Features.BranchPackages.Caching
+namespace PrimeFit.Application.Features.BranchPackages.Caching
 {
     public static class BranchPackagesCache
     {
-        public static string Tag(int branchId) => $"branch:{branchId}:packages";
+        public static string ListTag(int branchId) => $"tag:branch:{branchId}:packages:list";
 
 
-        public static string Paginated(int branchId, int pageNumber, int pageSize)
-           => $"branch:{branchId}:packages:pageNumber:{pageNumber}:size:{pageSize}";
+        public static string AdminPaginatedCacheKey(int branchId, int pageNumber, int pageSize)
+           => $"branch:{branchId}:packages:admin:page:{pageNumber}:size:{pageSize}";
+
+        public static string PublicPaginatedCacheKey(int branchId, int pageNumber, int pageSize)
+           => $"branch:{branchId}:packages:public:page:{pageNumber}:size:{pageSize}";
 
     }
 }
