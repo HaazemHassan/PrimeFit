@@ -16,7 +16,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchByIdForPublic
         {
             return [
                     BranchesCache.Tag(request.BranchId),
-                    BranchesCache.Tag()
+                    BranchesCache.ListTag()
                    ];
         }
 

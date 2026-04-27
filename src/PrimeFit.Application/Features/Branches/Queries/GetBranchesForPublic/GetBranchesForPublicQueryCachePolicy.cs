@@ -14,7 +14,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
 
         public string[] GetCacheTags(GetBranchesForPublicQuery request)
         {
-            return [BranchesCache.Tag()];
+            return [BranchesCache.ListTag()];
         }
 
 

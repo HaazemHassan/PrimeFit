@@ -8,7 +8,8 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBranchStatus
     {
         public IEnumerable<string> GetTags(UpdateBranchStatusCommand request)
         {
-            yield return BranchesCache.Tag();
+            yield return BranchesCache.ListTag();
+            yield return BranchesCache.Tag(request.BranchId);
             yield return BranchReviewsCache.Tag(request.BranchId);
 
         }

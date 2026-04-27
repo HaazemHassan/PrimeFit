@@ -1,5 +1,6 @@
-﻿using PrimeFit.Application.Common.Caching;
+using PrimeFit.Application.Common.Caching;
 using PrimeFit.Application.Features.BranchPackages.Caching;
+using PrimeFit.Application.Features.Branches.Caching;
 
 namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
 {
@@ -8,6 +9,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
         public IEnumerable<string> GetTags(DeletePackageCommand request)
         {
             yield return BranchPackagesCache.Tag(request.BranchId);
+            yield return BranchesCache.Tag(request.BranchId);
         }
     }
 }
