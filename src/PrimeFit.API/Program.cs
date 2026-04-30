@@ -11,7 +11,7 @@ namespace PrimeFit.API
             var builder = WebApplication.CreateBuilder(args);
 
 
-            builder.Services.AddDependencies(builder.Configuration);
+            builder.Services.AddDependencies(builder.Configuration, builder.Environment);
             builder.Host.UseSerilog((hostingContext, configuration) =>
             {
                 configuration.ReadFrom.Configuration(hostingContext.Configuration);

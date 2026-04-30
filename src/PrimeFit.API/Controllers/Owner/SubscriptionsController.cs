@@ -18,8 +18,7 @@ namespace PrimeFit.API.Controllers.Owner
             }
 
 
-            //i will update this lateer
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { id = result.Value.Id }, result.Value);
+            return CreatedAtRoute(RouteNames.Subscriptions.GetSubscriptionById, new { id = result.Value.Id }, result.Value);
         }
 
 

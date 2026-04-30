@@ -135,15 +135,6 @@ namespace PrimeFit.API.Services
             return permissions.All(p => userPermissions.Contains(p));
         }
 
-        public bool HasAnyPermission(params Permission[] permissions)
-        {
-            if (!IsAuthenticated || permissions.Length == 0)
-                return false;
-
-            var userPermissions = GetPermissions();
-            return permissions.Any(p => userPermissions.Contains(p));
-        }
-
 
     }
 }

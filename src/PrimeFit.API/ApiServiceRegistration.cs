@@ -25,12 +25,12 @@ namespace PrimeFit.API
     {
         private const string GuestIdKey = "GuestId";   // used for ratelimiting
 
-        public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             AddDomainServices(services);
             services.AddApplication();
             services.AddInfrastructure(configuration);
-            AddApi(services, configuration);
+            AddApi(services, configuration, environment);
 
 
             return services;
@@ -39,10 +39,10 @@ namespace PrimeFit.API
         }
 
 
-        private static IServiceCollection AddApi(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddApi(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddControllers();
-            AddAuthenticationConfigurations(services, configuration);
+            AddAuthenticationConfigurations(services, configuration, environment);
             AddSwaggerConfigurations(services);
             AddRateLimitingConfigurations(services, configuration);
             services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
@@ -109,7 +109,7 @@ namespace PrimeFit.API
         }
 
 
-        private static IServiceCollection AddAuthenticationConfigurations(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddAuthenticationConfigurations(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
@@ -124,7 +124,7 @@ namespace PrimeFit.API
             })
            .AddJwtBearer(x =>
            {
-               x.RequireHttpsMetadata = false;
+               x.RequireHttpsMetadata = !environment.IsDevelopment();
                x.SaveToken = true;
                x.TokenValidationParameters = new TokenValidationParameters
                {
