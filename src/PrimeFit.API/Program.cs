@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using PrimeFit.API.Extentions;
 using PrimeFit.API.Middlewares;
 using Serilog;
@@ -37,9 +39,14 @@ namespace PrimeFit.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.MapHealthChecks(pattern: "api/health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
             app.UseExceptionHandler();
             app.UseSerilogRequestLogging();
-            app.UseForwardedHeaders();   // Use Forwarded Headers (must be early in pipeline)
+            app.UseForwardedHeaders();
             app.UseSecurityHeaders();
 
 

@@ -42,10 +42,11 @@ namespace PrimeFit.API
         private static IServiceCollection AddApi(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddControllers();
+            services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
+
             AddAuthenticationConfigurations(services, configuration, environment);
             AddSwaggerConfigurations(services);
             AddRateLimitingConfigurations(services, configuration);
-            services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
 
             // Register Exception Handler
             services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -74,7 +75,6 @@ namespace PrimeFit.API
                     Description = "API for PrimeFit application"
                 });
 
-                //options.EnableAnnotations();
 
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

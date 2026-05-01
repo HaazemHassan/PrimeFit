@@ -18,8 +18,6 @@ namespace PrimeFit.API.Extentions
             #region Initialize Database
             using (var scope = app.Services.CreateScope())
             {
-
-
                 // needed to dockerize the application to make the DB created and updated automatically
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
@@ -32,7 +30,6 @@ namespace PrimeFit.API.Extentions
                     Console.WriteLine($"Database migration error: {ex.Message}");
                     throw;
                 }
-
 
 
                 var logger = app.Services.GetRequiredService<ILogger<Program>>();

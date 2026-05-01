@@ -22,6 +22,7 @@ using PrimeFit.Infrastructure.Data.Interceptors;
 using PrimeFit.Infrastructure.Data.Repositories;
 using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Emails;
+using PrimeFit.Infrastructure.Health;
 using PrimeFit.Infrastructure.Idempotency;
 using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
@@ -42,10 +43,23 @@ public static class InfrastructureServiceRegistration
         AddServices(services, configuration);
         AddHangfireConfiguration(services, configuration);
         AddBackgroundJobs(services);
+        AddHealthChecks(services, configuration);
 
         return services;
     }
 
+    private static void AddHealthChecks(IServiceCollection services, IConfiguration configuration)
+    {
+
+        string dbConnectionString = configuration.GetConnectionString("DefaultConnection")!;
+
+        services.AddHealthChecks()
+                .AddSqlServer(dbConnectionString)
+                .AddCheck<CloudinaryHealthCheck>(
+                    name: "cloudinary",
+                    tags: ["storage", "external"]
+                 );
+    }
 
     private static void AddDbContextConfiguations(IServiceCollection services, IConfiguration configuration)
     {
