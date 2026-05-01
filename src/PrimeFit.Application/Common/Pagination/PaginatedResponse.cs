@@ -3,20 +3,18 @@
 public class PaginatedResult<T>
 {
 
-
-
-    public List<T> Data { get; set; }
-
     public PaginatedResult(List<T> data)
     {
         Data = data;
     }
 
-    internal PaginatedResult(List<T> data, int count = 0, int page = 1, int pageSize = PaginationConstants.DefaultPageSize)
+    public List<T> Data { get; set; }
+
+    internal PaginatedResult(List<T> data, int count = 0, int page = PaginationConstants.MinimumPageSize, int pageSize = PaginationConstants.DefaultPageSize)
     {
-        if (page < 1)
+        if (page < PaginationConstants.MinimumPageSize)
         {
-            page = 1;
+            page = PaginationConstants.MinimumPageSize;
 
         }
 

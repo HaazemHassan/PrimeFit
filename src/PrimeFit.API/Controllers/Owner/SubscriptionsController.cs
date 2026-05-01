@@ -1,25 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PrimeFit.API.Common.Constants;
-using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PrimeFit.Application.Features.Subscriptions.Commands.CancelSubscription;
 
 namespace PrimeFit.API.Controllers.Owner
 {
     public class SubscriptionsController : OwnerBaseController
     {
+        private readonly IMapper _mapper;
 
-        [HttpPost()]
-        public async Task<IActionResult> Add([FromBody] AddSubscriptionCommand command)
+        public SubscriptionsController(IMapper mapper)
         {
-            var result = await Mediator.Send(command);
-            if (result.IsError)
-            {
-                return Problem(result.Errors);
-            }
-
-
-            return CreatedAtRoute(RouteNames.Subscriptions.GetSubscriptionById, new { id = result.Value.Id }, result.Value);
+            _mapper = mapper;
         }
+
+        //[HttpPost()]
+        //public async Task<IActionResult> Add([FromBody] AddSubscriptionRequest request, [FromHeader(Name = "x-request-id")] string requestId)
+        //{
+        //    var command = new AddSubscriptionCommand(Guid.Parse(requestId))
+        //    {
+        //        Email = request.Email,
+        //        PackageId = request.PackageId,
+        //        BranchId = request.BranchId
+
+        //    };
+        //    var result = await Mediator.Send(command);
+        //    if (result.IsError)
+        //    {
+        //        return Problem(result.Errors);
+        //    }
+
+
+        //    return CreatedAtRoute(RouteNames.Subscriptions.GetSubscriptionById, new { id = result.Value.Id }, result.Value);
+        //}
 
 
 

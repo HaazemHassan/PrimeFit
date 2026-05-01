@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeFit.Application.Common.Idempotency;
 using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
@@ -20,6 +21,7 @@ using PrimeFit.Infrastructure.Data.Identity.Entities;
 using PrimeFit.Infrastructure.Data.Repositories;
 using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Emails;
+using PrimeFit.Infrastructure.Idempotency;
 using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
 using PrimeFit.Infrastructure.Storage;
@@ -173,6 +175,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPolicyEnforcer, PolicyEnforcer>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IBranchAuthorizationService, BranchAuthorizationService>();
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
+
+
         services.AddSingleton<IPhoneNumberService, PhoneNumberService>();
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<ITotpService, TotpService>();

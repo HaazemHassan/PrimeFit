@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Caching;
 using PrimeFit.Application.Common.Cashing;
+using PrimeFit.Application.Common.Idempotency;
 using PrimeFit.Application.Common.Logging;
 using PrimeFit.Application.Common.Transaction;
 using PrimeFit.Application.Common.Trimming;
@@ -28,6 +29,7 @@ namespace PrimeFit.Application
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(BranchAuthorizationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(IdempotentCommandPipelineBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));

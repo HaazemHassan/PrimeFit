@@ -308,18 +308,22 @@ namespace PrimeFit.API.Controllers.Owner
             }
 
 
-            //i will update this later
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { branchId = result.Value.Id }, result.Value);
+            return CreatedAtRoute(RouteNames.Subscriptions.GetSubscriptionById, new { subscriptionId = result.Value.Id }, result.Value);
         }
 
 
 
         [HttpPost("{branchId:int}/subscriptions")]
-        public async Task<IActionResult> AddSubscription([FromRoute] int branchId, [FromBody] AddSubscriptionRequest request)
+        public async Task<IActionResult> AddSubscription([FromRoute] int branchId, [FromBody] AddSubscriptionRequest request/*, [FromHeader(Name = "x-request-id")] string requestId*/)
         {
 
-            var command = _mapper.Map<AddSubscriptionCommand>(request);
-            command.BranchId = branchId;
+            var command = new AddSubscriptionCommand()
+            {
+                Email = request.Email,
+                PackageId = request.PackageId,
+                BranchId = branchId
+
+            };
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -327,8 +331,7 @@ namespace PrimeFit.API.Controllers.Owner
             }
 
 
-            //i will update this lateer
-            return CreatedAtRoute(RouteNames.Branches.GetBranchById, new { branchId = result.Value.Id }, result.Value);
+            return CreatedAtRoute(RouteNames.Subscriptions.GetSubscriptionById, new { SubscriptionId = result.Value.Id }, result.Value);
         }
 
 
