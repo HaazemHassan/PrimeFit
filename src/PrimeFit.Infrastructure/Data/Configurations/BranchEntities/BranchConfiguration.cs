@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
+namespace PrimeFit.Infrastructure.Data.Configurations.BranchEntities
 {
     public class BranchConfiguration : IEntityTypeConfiguration<Branch>
     {

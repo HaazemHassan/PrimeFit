@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
+namespace PrimeFit.Infrastructure.Data.Configurations
 {
     internal class IdentityUserClaimConfiguration : IEntityTypeConfiguration<IdentityUserClaim<int>>
     {

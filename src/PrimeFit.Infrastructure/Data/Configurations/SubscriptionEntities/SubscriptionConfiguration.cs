@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntities
+namespace PrimeFit.Infrastructure.Data.Configurations.SubscriptionEntities
 {
     public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
     {

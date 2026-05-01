@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntities
+namespace PrimeFit.Infrastructure.Data.Configurations.SubscriptionEntities
 {
     internal class CheckInConfiguration : IEntityTypeConfiguration<CheckIn>
     {

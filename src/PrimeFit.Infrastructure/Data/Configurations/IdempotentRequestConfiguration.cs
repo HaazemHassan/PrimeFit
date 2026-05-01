@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Infrastructure.Idempotency;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
+namespace PrimeFit.Infrastructure.Data.Configurations
 {
     internal sealed class IdempotentRequestConfiguration : IEntityTypeConfiguration<IdempotentRequest>
     {

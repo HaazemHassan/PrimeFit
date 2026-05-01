@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
+namespace PrimeFit.Infrastructure.Data.Configurations.BranchEntities
 {
     internal class BranchImageConfiguration : IEntityTypeConfiguration<BranchImage>
     {

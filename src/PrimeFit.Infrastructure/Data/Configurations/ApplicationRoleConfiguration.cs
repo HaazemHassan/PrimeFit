@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 
-namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
+namespace PrimeFit.Infrastructure.Data.Configurations
 {
     internal class ApplicationRoleConfiguration : IEntityTypeConfiguration<ApplicationRole>
     {

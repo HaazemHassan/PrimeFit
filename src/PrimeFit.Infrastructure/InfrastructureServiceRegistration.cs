@@ -18,6 +18,7 @@ using PrimeFit.Infrastructure.Cashing;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
+using PrimeFit.Infrastructure.Data.Interceptors;
 using PrimeFit.Infrastructure.Data.Repositories;
 using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Emails;
@@ -48,7 +49,7 @@ public static class InfrastructureServiceRegistration
 
     private static void AddDbContextConfiguations(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
             options.UseSqlServer(
                 configuration["ConnectionStrings:DefaultConnection"],
@@ -57,7 +58,11 @@ public static class InfrastructureServiceRegistration
                     x.UseNetTopologySuite();
                     x.MigrationsHistoryTable("__EFMigrationsHistory", "ef");
                 });
+
+            options.AddInterceptors(serviceProvider.GetRequiredService<AuditingInterceptor>());
         });
+
+        services.AddScoped<AuditingInterceptor>();
 
     }
 
