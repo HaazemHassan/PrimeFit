@@ -8,7 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.ToTable("RefreshTokens");
+            builder.ToTable("RefreshTokens", "auth");
 
             builder.HasKey(rt => rt.Id);
 

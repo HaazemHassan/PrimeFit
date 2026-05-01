@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
@@ -8,6 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
     {
         public void Configure(EntityTypeBuilder<Governorate> builder)
         {
+            builder.ToTable("Governorates", "location");
             builder.Property(x => x.Name)
                    .HasMaxLength(30)
                    .IsRequired();

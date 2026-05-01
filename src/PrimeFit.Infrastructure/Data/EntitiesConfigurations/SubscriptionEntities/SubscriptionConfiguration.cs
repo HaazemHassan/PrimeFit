@@ -73,7 +73,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
             builder.HasIndex(s => new { s.UserId, s.BranchId, s.Status })
                 .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
 
-            builder.ToTable(t =>
+            builder.ToTable("Subscriptions", "subscriptions", t =>
             {
                 t.HasCheckConstraint(
                     "CK_Subscription_PaidAmount_NonNegative",

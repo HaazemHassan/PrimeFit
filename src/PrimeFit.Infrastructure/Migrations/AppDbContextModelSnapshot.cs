@@ -44,7 +44,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -68,7 +68,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -89,7 +89,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -104,7 +104,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -123,7 +123,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
@@ -199,7 +199,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchImage", b =>
@@ -250,7 +250,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("BranchImages");
+                    b.ToTable("BranchImages", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -293,7 +293,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("BranchReviews", t =>
+                    b.ToTable("BranchReviews", "branches", t =>
                         {
                             t.HasCheckConstraint("CK_BranchReview_Rating_Range", "[Rating] >= 1 AND [Rating] <= 5");
                         });
@@ -341,7 +341,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("BranchId", "Day")
                         .IsUnique();
 
-                    b.ToTable("BranchWorkingHours");
+                    b.ToTable("BranchWorkingHours", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.CheckIn", b =>
@@ -384,7 +384,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("CheckIns", (string)null);
+                    b.ToTable("CheckIns", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
@@ -446,7 +446,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[PhoneNumber] IS NOT NULL");
 
-                    b.ToTable("DomainUser");
+                    b.ToTable("DomainUsers", "users");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Employee", b =>
@@ -499,7 +499,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees", "employees");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRole", b =>
@@ -524,7 +524,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("EmployeeRoles", (string)null);
+                    b.ToTable("EmployeeRoles", "employees");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRolePermission", b =>
@@ -548,7 +548,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("EmployeeRoleId", "Permission")
                         .IsUnique();
 
-                    b.ToTable("EmployeeRolePermissions", (string)null);
+                    b.ToTable("EmployeeRolePermissions", "employees");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Governorate", b =>
@@ -566,7 +566,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Governorates");
+                    b.ToTable("Governorates", "location");
 
                     b.HasData(
                         new
@@ -769,7 +769,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Packages", t =>
+                    b.ToTable("Packages", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_Package_DurationInMonths_Positive", "[DurationInMonths] > 0");
 
@@ -817,7 +817,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens", "auth");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
@@ -903,7 +903,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId", "Status")
                         .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
 
-                    b.ToTable("Subscriptions", t =>
+                    b.ToTable("Subscriptions", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_Subscription_AllowedFreezeCount_NonNegative", "[AllowedFreezeCount] >= 0");
 
@@ -956,7 +956,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasDatabaseName("IX_SubscriptionFreezes_ActiveFreezes")
                         .HasFilter("[EndDate] IS NULL");
 
-                    b.ToTable("SubscriptionFreezes", t =>
+                    b.ToTable("SubscriptionFreezes", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_SubscriptionFreeze_MaxDays_Positive", "[MaxDays] > 0");
                         });
@@ -994,7 +994,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VerificationCodes");
+                    b.ToTable("VerificationCodes", "auth");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationRole", b =>
@@ -1024,7 +1024,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationUser", b =>
@@ -1103,7 +1103,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[PhoneNumber] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.RolePermission", b =>
@@ -1116,7 +1116,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("RoleId", "Permission");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Idempotency.IdempotentRequest", b =>
@@ -1134,7 +1134,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("idempotent_requests", (string)null);
+                    b.ToTable("IdempotentRequests", "idempotency");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

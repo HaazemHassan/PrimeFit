@@ -8,7 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<RolePermission> builder)
         {
-            builder.ToTable("RolePermissions");
+            builder.ToTable("RolePermissions", "identity");
 
             builder.HasKey(rp => new { rp.RoleId, rp.Permission });
 

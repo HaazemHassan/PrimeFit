@@ -39,7 +39,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
 
 
 
-            builder.ToTable(t =>
+            builder.ToTable("SubscriptionFreezes", "subscriptions", t =>
             {
                 t.HasCheckConstraint(
                     "CK_SubscriptionFreeze_MaxDays_Positive",

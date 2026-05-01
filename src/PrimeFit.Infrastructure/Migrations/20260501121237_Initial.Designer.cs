@@ -13,8 +13,8 @@ using PrimeFit.Infrastructure.Data;
 namespace PrimeFit.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260305000839_Add spatial index")]
-    partial class Addspatialindex
+    [Migration("20260501121237_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,7 +47,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -71,7 +71,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -92,7 +92,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -107,7 +107,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -126,7 +126,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Branch", b =>
@@ -202,7 +202,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchImage", b =>
@@ -216,15 +216,33 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
                     b.Property<string>("PublicId")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -235,7 +253,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("BranchImages");
+                    b.ToTable("BranchImages", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.BranchReview", b =>
@@ -278,7 +296,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("BranchReviews", t =>
+                    b.ToTable("BranchReviews", "branches", t =>
                         {
                             t.HasCheckConstraint("CK_BranchReview_Rating_Range", "[Rating] >= 1 AND [Rating] <= 5");
                         });
@@ -326,7 +344,50 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("BranchId", "Day")
                         .IsUnique();
 
-                    b.ToTable("BranchWorkingHours");
+                    b.ToTable("BranchWorkingHours", "branches");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.CheckIn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("CheckIns", "branches");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.DomainUser", b =>
@@ -365,13 +426,18 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TotpSecret")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -380,9 +446,112 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsUnique();
 
                     b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
+
+                    b.ToTable("DomainUsers", "users");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId", "BranchId")
                         .IsUnique();
 
-                    b.ToTable("DomainUser");
+                    b.ToTable("Employees", "employees");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeRoles", "employees");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Permission")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeRoleId", "Permission")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeRolePermissions", "employees");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Governorate", b =>
@@ -400,7 +569,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Governorates");
+                    b.ToTable("Governorates", "location");
 
                     b.HasData(
                         new
@@ -603,7 +772,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Packages", t =>
+                    b.ToTable("Packages", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_Package_DurationInMonths_Positive", "[DurationInMonths] > 0");
 
@@ -651,7 +820,7 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens", "auth");
                 });
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
@@ -737,7 +906,7 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.HasIndex("UserId", "BranchId", "Status")
                         .HasDatabaseName("IX_Subscriptions_User_Branch_Status");
 
-                    b.ToTable("Subscriptions", t =>
+                    b.ToTable("Subscriptions", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_Subscription_AllowedFreezeCount_NonNegative", "[AllowedFreezeCount] >= 0");
 
@@ -790,10 +959,45 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasDatabaseName("IX_SubscriptionFreezes_ActiveFreezes")
                         .HasFilter("[EndDate] IS NULL");
 
-                    b.ToTable("SubscriptionFreezes", t =>
+                    b.ToTable("SubscriptionFreezes", "subscriptions", t =>
                         {
                             t.HasCheckConstraint("CK_SubscriptionFreeze_MaxDays_Positive", "[MaxDays] > 0");
                         });
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.VerificationCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplicationUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VerificationCodes", "auth");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationRole", b =>
@@ -823,7 +1027,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.ApplicationUser", b =>
@@ -902,7 +1106,7 @@ namespace PrimeFit.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[PhoneNumber] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", "identity");
                 });
 
             modelBuilder.Entity("PrimeFit.Infrastructure.Data.Identity.Entities.RolePermission", b =>
@@ -915,7 +1119,25 @@ namespace PrimeFit.Infrastructure.Migrations
 
                     b.HasKey("RoleId", "Permission");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions", "identity");
+                });
+
+            modelBuilder.Entity("PrimeFit.Infrastructure.Idempotency.IdempotentRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdempotentRequests", "idempotency");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -1028,6 +1250,65 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("PrimeFit.Domain.Entities.CheckIn", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", null)
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.Subscription", null)
+                        .WithMany("CheckIns")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.Employee", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.EmployeeRole", "Role")
+                        .WithMany("Employees")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PrimeFit.Domain.Entities.DomainUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRolePermission", b =>
+                {
+                    b.HasOne("PrimeFit.Domain.Entities.EmployeeRole", "EmployeeRole")
+                        .WithMany("Permissions")
+                        .HasForeignKey("EmployeeRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmployeeRole");
+                });
+
             modelBuilder.Entity("PrimeFit.Domain.Entities.Package", b =>
                 {
                     b.HasOne("PrimeFit.Domain.Entities.Branch", "Branch")
@@ -1125,6 +1406,13 @@ namespace PrimeFit.Infrastructure.Migrations
                     b.Navigation("Subscriptions");
                 });
 
+            modelBuilder.Entity("PrimeFit.Domain.Entities.EmployeeRole", b =>
+                {
+                    b.Navigation("Employees");
+
+                    b.Navigation("Permissions");
+                });
+
             modelBuilder.Entity("PrimeFit.Domain.Entities.Package", b =>
                 {
                     b.Navigation("Subscriptions");
@@ -1132,6 +1420,8 @@ namespace PrimeFit.Infrastructure.Migrations
 
             modelBuilder.Entity("PrimeFit.Domain.Entities.Subscription", b =>
                 {
+                    b.Navigation("CheckIns");
+
                     b.Navigation("Freezes");
                 });
 

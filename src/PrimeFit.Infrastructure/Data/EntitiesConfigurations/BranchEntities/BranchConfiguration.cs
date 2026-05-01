@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
@@ -9,6 +9,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
     {
         public void Configure(EntityTypeBuilder<Branch> builder)
         {
+            builder.ToTable("Branches", "branches");
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Name)

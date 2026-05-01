@@ -8,6 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
     {
         public void Configure(EntityTypeBuilder<BranchImage> builder)
         {
+            builder.ToTable("BranchImages", "branches");
             builder.HasKey(i => i.Id);
 
             builder.Property(i => i.PublicId)

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
@@ -8,6 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
     {
         public void Configure(EntityTypeBuilder<BranchWorkingHour> builder)
         {
+            builder.ToTable("BranchWorkingHours", "branches");
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Day).IsRequired();

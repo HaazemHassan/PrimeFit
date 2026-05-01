@@ -8,7 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.SubscriptionEntiti
     {
         public void Configure(EntityTypeBuilder<CheckIn> builder)
         {
-            builder.ToTable("CheckIns");
+            builder.ToTable("CheckIns", "branches");
 
             builder.HasKey(c => c.Id);
 

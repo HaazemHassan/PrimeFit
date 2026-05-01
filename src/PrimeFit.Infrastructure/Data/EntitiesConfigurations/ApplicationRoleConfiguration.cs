@@ -8,6 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<ApplicationRole> builder)
         {
+            builder.ToTable("AspNetRoles", "identity");
 
             builder.HasMany(r => r.Permissions)
                    .WithOne(rp => rp.Role)

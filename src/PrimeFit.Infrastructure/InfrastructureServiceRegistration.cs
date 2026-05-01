@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -52,7 +52,11 @@ public static class InfrastructureServiceRegistration
         {
             options.UseSqlServer(
                 configuration["ConnectionStrings:DefaultConnection"],
-                x => x.UseNetTopologySuite());
+                x =>
+                {
+                    x.UseNetTopologySuite();
+                    x.MigrationsHistoryTable("__EFMigrationsHistory", "ef");
+                });
         });
 
     }
@@ -101,7 +105,10 @@ public static class InfrastructureServiceRegistration
          .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
          .UseSimpleAssemblyNameTypeSerializer()
          .UseRecommendedSerializerSettings()
-         .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+         .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"), new Hangfire.SqlServer.SqlServerStorageOptions
+         {
+             SchemaName = "jobs"
+         }));
 
         services.AddHangfireServer();
 

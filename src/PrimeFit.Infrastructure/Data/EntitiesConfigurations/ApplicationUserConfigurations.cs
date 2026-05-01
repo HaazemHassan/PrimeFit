@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
 
@@ -8,6 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfiguration
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
+            builder.ToTable("AspNetUsers", "identity");
 
             builder.HasMany(u => u.RefreshTokens)
                    .WithOne()

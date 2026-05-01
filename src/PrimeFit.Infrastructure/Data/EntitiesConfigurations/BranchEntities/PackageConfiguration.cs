@@ -43,7 +43,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
                 .HasForeignKey(s => s.PackageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.ToTable(t =>
+            builder.ToTable("Packages", "subscriptions", t =>
             {
                 t.HasCheckConstraint(
                     "CK_Package_Price_Positive",

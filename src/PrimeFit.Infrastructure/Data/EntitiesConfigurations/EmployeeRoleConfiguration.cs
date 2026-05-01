@@ -8,7 +8,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<EmployeeRole> builder)
         {
-            builder.ToTable("EmployeeRoles");
+            builder.ToTable("EmployeeRoles", "employees");
 
             builder.HasKey(r => r.Id);
 

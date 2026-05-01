@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PrimeFit.Domain.Entities;
 
@@ -27,7 +27,7 @@ namespace PrimeFit.Infrastructure.Data.EntitiesConfigurations.BranchEntities
 
             builder.HasQueryFilter(x => !x.Branch.IsDeleted);
 
-            builder.ToTable(t =>
+            builder.ToTable("BranchReviews", "branches", t =>
             {
                 t.HasCheckConstraint(
                     "CK_BranchReview_Rating_Range",
