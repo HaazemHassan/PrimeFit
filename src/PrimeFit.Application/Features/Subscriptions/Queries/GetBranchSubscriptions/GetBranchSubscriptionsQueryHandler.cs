@@ -1,9 +1,8 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
-using PrimeFit.Application.Security.Contracts;
+using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Application.Specifications.Subscriptions;
-using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscriptions
@@ -12,12 +11,12 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly TimeProvider _timeProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, TimeProvider timeProvider)
+        public GetBranchSubscriptionsQueryHandler(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
-            _timeProvider = timeProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
 
@@ -37,7 +36,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
                 FullName = s.User.FullName,
                 Status = s.Status,
                 TotalDurationInDays = s.DurationInMonths * 30,
-                RemainingDurationInDays = s.GetRemainingDays(_timeProvider.GetUtcNow())
+                RemainingDurationInDays = s.GetRemainingDays(_dateTimeProvider.UtcNow)
             }).ToList();
 
             return new PaginatedResult<GetBranchSubscriptionsQueryResponse>(dtos, totalCount, request.PageNumber, request.PageSize);
