@@ -38,7 +38,7 @@ public static class InfrastructureServiceRegistration
 
         AddDbContextConfiguations(services, configuration);
         AddIdentityConfigurations(services, configuration);
-        AddCashing(services);
+        AddCashing(services, configuration);
         AddRepositories(services);
         AddServices(services, configuration);
         AddHangfireConfiguration(services, configuration);
@@ -52,9 +52,15 @@ public static class InfrastructureServiceRegistration
     {
 
         string dbConnectionString = configuration.GetConnectionString("DefaultConnection")!;
+        string redisConnectionString = configuration.GetConnectionString("Redis")!;
 
         services.AddHealthChecks()
                 .AddSqlServer(dbConnectionString)
+                //.AddRedis(
+                //    redisConnectionString,
+                //    name: "redis",
+                //    tags: ["caching", "external"]
+                //)
                 .AddCheck<CloudinaryHealthCheck>(
                     name: "cloudinary",
                     tags: ["storage", "external"]
@@ -144,8 +150,23 @@ public static class InfrastructureServiceRegistration
     }
 
 
-    private static IServiceCollection AddCashing(IServiceCollection services)
+    private static IServiceCollection AddCashing(IServiceCollection services, IConfiguration configuration)
     {
+        //services.AddStackExchangeRedisCache(options =>
+        //{
+        //    var redisOptions = ConfigurationOptions.Parse(configuration.GetConnectionString("Redis")!);
+
+        //    redisOptions.AbortOnConnectFail = false;
+        //    redisOptions.ConnectRetry = 3;
+        //    redisOptions.ConnectTimeout = 5000;
+        //    redisOptions.SyncTimeout = 5000;
+        //    redisOptions.KeepAlive = 60;
+        //    redisOptions.ReconnectRetryPolicy = new ExponentialRetry(5000);
+        //    options.ConfigurationOptions = redisOptions;
+        //    options.InstanceName = "PrimeFit_";
+
+        //});
+
         services.AddHybridCache(options =>
         {
             options.MaximumPayloadBytes = 1 * 1024 * 1024;
