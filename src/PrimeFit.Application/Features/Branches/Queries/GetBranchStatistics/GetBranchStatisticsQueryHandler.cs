@@ -7,6 +7,8 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.RepositoriesContracts;
 
+using PrimeFit.Application.Common.Helpers;
+
 namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 {
     public class GetBranchStatisticsQueryHandler : IRequestHandler<GetBranchStatisticsQuery, ErrorOr<GetBranchStatisticsQueryResponse>>
@@ -32,7 +34,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
             DateTimeOffset? startDate = null;
             if (request.TimePeriod.HasValue)
             {
-                startDate = GetStartDate(request.TimePeriod.Value, now);
+                startDate = DateTimeHelper.GetStartDate(request.TimePeriod.Value, now);
             }
 
             var statisticsSpec = new BranchStatisticsSpec(request.BranchId, startDate, now);
@@ -47,19 +49,6 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchStatistics
 
             return branchResponse;
 
-        }
-
-
-
-        private DateTimeOffset GetStartDate(TimePeriod period, DateTimeOffset now)
-        {
-            return period switch
-            {
-                TimePeriod.Today => now.Date,
-                TimePeriod.ThisWeek => now.AddDays(-(int)now.DayOfWeek),
-                TimePeriod.ThisMonth => new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero),
-                _ => now.Date
-            };
         }
     }
 }

@@ -366,6 +366,22 @@ namespace PrimeFit.API.Controllers.Owner
             return Ok(result.Value);
         }
 
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetOwnerBranchesStatistics([FromQuery] GetOwnerBranchesStatisticsRequest request)
+        {
+            var query = new PrimeFit.Application.Features.Branches.Queries.GetOwnerBranchesStatistics.GetOwnerBranchesStatisticsQuery()
+            {
+                TimePeriod = request.TimePeriod
+            };
+
+            var result = await Mediator.Send(query);
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+            return Ok(result.Value);
+        }
+
 
 
 
