@@ -1,4 +1,4 @@
-﻿
+
 using Hangfire;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 
@@ -26,7 +26,12 @@ namespace PrimeFit.Infrastructure.BackgroundJobs
                 OrphanedImagesCleanupJob.JobId,
                 job => job.ExecuteAsync(CancellationToken.None),
                 OrphanedImagesCleanupJob.Schedule
+            );
 
+            manager.AddOrUpdate<InactiveUsersNotificationJob>(
+                InactiveUsersNotificationJob.JobId,
+                job => job.ExecuteAsync(CancellationToken.None),
+                InactiveUsersNotificationJob.Schedule
             );
 
         }

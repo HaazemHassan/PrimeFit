@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PrimeFit.Domain.Entities;
@@ -26,6 +26,7 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<EmployeeRolePermission> EmployeeRolePermissions => Set<EmployeeRolePermission>();
         public DbSet<CheckIn> CheckIns => Set<CheckIn>();
         public DbSet<VerificationCode> VerificationCodes => Set<VerificationCode>();
+        public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

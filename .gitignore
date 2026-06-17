@@ -467,3 +467,6 @@ FodyWeavers.xsd
 # Serilog/Logging files
 **/Logs/
 *.log
+
+# Firebase service account key (sensitive credentials)
+**/firebase-service-account.json

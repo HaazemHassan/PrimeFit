@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.Data.Transactions;
@@ -19,7 +19,8 @@ internal sealed class UnitOfWork(
     ISubscriptionFreezeRepository subscriptionFreezes,
     ICheckInRepository checkIns,
     IEmployeeRepository employees,
-    IVerificationCodeRepository verificationCodes)
+    IVerificationCodeRepository verificationCodes,
+    IUserDeviceTokenRepository userDeviceTokens)
     : IUnitOfWork
 {
     private readonly AppDbContext _context = context;
@@ -37,6 +38,7 @@ internal sealed class UnitOfWork(
     public ICheckInRepository CheckIns { get; } = checkIns;
     public IEmployeeRepository Employees { get; } = employees;
     public IVerificationCodeRepository VerificationCodes { get; } = verificationCodes;
+    public IUserDeviceTokenRepository UserDeviceTokens { get; } = userDeviceTokens;
 
     private IDbContextTransaction? _transaction;
 

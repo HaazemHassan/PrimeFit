@@ -25,6 +25,7 @@ using PrimeFit.Infrastructure.Emails;
 using PrimeFit.Infrastructure.Health;
 using PrimeFit.Infrastructure.Idempotency;
 using PrimeFit.Infrastructure.Security;
+using PrimeFit.Infrastructure.Notifications;
 using PrimeFit.Infrastructure.Services;
 using PrimeFit.Infrastructure.Storage;
 
@@ -44,6 +45,7 @@ public static class InfrastructureServiceRegistration
         AddHangfireConfiguration(services, configuration);
         AddBackgroundJobs(services);
         AddHealthChecks(services, configuration);
+        AddFirebase(services, configuration);
 
         return services;
     }
@@ -203,6 +205,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ICheckInRepository, CheckInRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
+        services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
 
 
 
@@ -248,5 +251,10 @@ public static class InfrastructureServiceRegistration
         return services;
     }
 
+    private static void AddFirebase(IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<FirebaseOptions>(configuration.GetSection(FirebaseOptions.SectionName));
+        services.AddSingleton<IPushNotificationService, FirebasePushNotificationService>();
+    }
 
 }

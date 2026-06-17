@@ -124,6 +124,11 @@ services:
       # ========================================
       - GoogleAuth__ClientId=${GOOGLE_AUTH_CLIENT_ID}
 
+      # ========================================
+      # Firebase
+      # ========================================
+      - Firebase__ServiceAccountKeyBase64=${FIREBASE_SERVICE_ACCOUNT_KEY_BASE64}
+
     ports:
       - "${API_EXTERNAL_PORT:-44000}:8080"
 

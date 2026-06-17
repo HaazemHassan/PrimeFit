@@ -9,9 +9,9 @@ using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Domain.RepositoriesContracts;
-using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
+using PrimeFit.Infrastructure.Emails;
 
 namespace PrimeFit.Infrastructure.Services
 {

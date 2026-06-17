@@ -1,4 +1,4 @@
-﻿using PrimeFit.Domain.Repositories;
+using PrimeFit.Domain.Repositories;
 
 namespace PrimeFit.Domain.RepositoriesContracts;
 
@@ -18,6 +18,7 @@ public interface IUnitOfWork
     ICheckInRepository CheckIns { get; }
     IEmployeeRepository Employees { get; }
     IVerificationCodeRepository VerificationCodes { get; }
+    IUserDeviceTokenRepository UserDeviceTokens { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

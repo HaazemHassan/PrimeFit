@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
   <TargetFramework>net9.0</TargetFramework>
@@ -17,6 +17,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.28.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
+    <PackageReference Include="FirebaseAdmin" Version="3.5.0" />
 	<PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
 	<PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
@@ -42,6 +43,10 @@
 	 <None Update="Emails/Templates/*.html">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	 </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Notifications\Jobs\" />
   </ItemGroup>
 
 
