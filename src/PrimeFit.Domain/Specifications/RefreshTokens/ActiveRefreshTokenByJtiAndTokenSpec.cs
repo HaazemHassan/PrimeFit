@@ -11,7 +11,8 @@ namespace PrimeFit.Domain.Specifications.RefreshTokens
                     x.AccessTokenJTI == accessTokenJti &&
                     x.Token == refreshToken &&
                     x.UserId == userId &&
-                    x.IsActive
+                    x.RevokationDate == null &&
+                    x.Expires > DateTimeOffset.UtcNow
             );
         }
     }

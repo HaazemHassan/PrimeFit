@@ -5,6 +5,7 @@ using PrimeFit.API.Common.Filters;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.Authentication.Commands.ChangePassword;
 using PrimeFit.Application.Features.Authentication.Commands.ConfirmEmail;
+using PrimeFit.Application.Features.Authentication.Commands.Logout;
 using PrimeFit.Application.Features.Authentication.Commands.RefreshToken;
 using PrimeFit.Application.Features.Authentication.Commands.RegisterOwner;
 using PrimeFit.Application.Features.Authentication.Commands.RegisterUser;
@@ -196,23 +197,23 @@ namespace PrimeFit.API.Controllers
             return NoContent();
         }
 
-        //[HttpPost("logout")]
-        //[Authorize]
-        //public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
-        //{
-        //    if (_clientContextService.IsWebClient())
-        //        command.RefreshToken = Request.Cookies["refreshToken"];
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+        {
+            if (_clientContextService.IsWebClient())
+                command.RefreshToken = Request.Cookies["refreshToken"];
 
-        //    if (command.RefreshToken is null)
-        //        return Unauthorized("Refresh token is required");
+            if (command.RefreshToken is null)
+                return Unauthorized("Refresh token is required");
 
-        //    var result = await Mediator.Send(command);
-        //    if (result.IsError)
-        //        return Problem(result.Errors);
+            var result = await Mediator.Send(command);
+            if (result.IsError)
+                return Problem(result.Errors);
 
-        //    Response.Cookies.Delete("refreshToken");
-        //    return NoContent();
-        //}
+            Response.Cookies.Delete("refreshToken");
+            return NoContent();
+        }
 
         #region Helpers
         private void HandleRefreshToken(AuthResult authResult)
