@@ -39,6 +39,11 @@ namespace PrimeFit.Application.Features.Users.Queries.GetMe
             return new GetMeQueryResponse
             {
                 Id = userId.Value,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 UserType = user.UserType,
                 UserRole = userRole,
                 Branches = branches
