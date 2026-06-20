@@ -11,6 +11,7 @@ namespace PrimeFit.API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            Console.WriteLine("CONSOLE TEST " + DateTime.UtcNow);
 
 
             builder.Services.AddDependencies(builder.Configuration, builder.Environment);

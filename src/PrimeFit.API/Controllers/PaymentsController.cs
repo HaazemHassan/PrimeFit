@@ -14,14 +14,14 @@ namespace PrimeFit.API.Controllers
 {
     public class PaymentsController : BaseController
     {
-        private readonly IPaymentService _stripePaymentService;
+        private readonly IPaymentService _PaymentService;
         private readonly ICurrentUserService _currentUserService;
 
         public PaymentsController(
             IPaymentService stripePaymentService,
             ICurrentUserService currentUserService)
         {
-            _stripePaymentService = stripePaymentService;
+            _PaymentService = stripePaymentService;
             _currentUserService = currentUserService;
         }
 
@@ -67,6 +67,7 @@ namespace PrimeFit.API.Controllers
         }
 
 
+
         [HttpPost("webhook")]
         [AllowAnonymous]
         [DisableRateLimiting]
@@ -80,15 +81,17 @@ namespace PrimeFit.API.Controllers
                 return BadRequest("Missing Stripe-Signature header.");
             }
 
-            var webhookEvent = _stripePaymentService.VerifyAndParseWebhook(payload, signature);
+            var webhookEvent = _PaymentService.VerifyAndParseWebhook(payload, signature);
 
             if (webhookEvent is null)
             {
                 return BadRequest("Invalid webhook signature.");
             }
 
-            if (webhookEvent.EventType == "payment_intent.succeeded")
+            switch (webhookEvent.EventType)
             {
+                case "payment_intent.succeeded":
+
                 var requestId = ConvertToGuid(webhookEvent.EventId);
 
                 var command = new FulfillPaymentCommand(requestId)
@@ -102,6 +105,12 @@ namespace PrimeFit.API.Controllers
                 {
                     return Problem(result.Errors);
                 }
+
+                break;
+
+                default:
+                // Ignore unsupported Stripe events
+                break;
             }
 
             return Ok();
