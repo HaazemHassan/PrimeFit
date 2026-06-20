@@ -11,14 +11,15 @@ namespace PrimeFit.API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            Console.WriteLine("CONSOLE TEST " + DateTime.UtcNow);
-
 
             builder.Services.AddDependencies(builder.Configuration, builder.Environment);
             builder.Host.UseSerilog((hostingContext, configuration) =>
             {
                 configuration.ReadFrom.Configuration(hostingContext.Configuration);
             });
+
+            Console.WriteLine("CONSOLE TEST " + DateTime.UtcNow);
+            Log.Information("SERILOG TEST AFTER CONFIG");
 
 
             var app = builder.Build();
