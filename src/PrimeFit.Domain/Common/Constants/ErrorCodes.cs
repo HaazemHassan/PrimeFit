@@ -101,4 +101,12 @@ public static class ErrorCodes
         public const string ImageDeleteFailed = "IMAGE_DELETE_FAILED";
     }
 
+    public static class Payment
+    {
+
+        public const string TransactionNotFound = "PAYMENT_TRANSACTION_NOT_FOUND";
+        public const string PaymentIntentCreationFailed = "PAYMENT_INTENT_CREATION_FAILED";
+        public const string TransactionAlreadyProcessed = "PAYMENT_TRANSACTION_ALREADY_PROCESSED";
+    }
+
 }

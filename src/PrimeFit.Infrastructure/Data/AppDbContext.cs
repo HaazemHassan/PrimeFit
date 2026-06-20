@@ -27,6 +27,7 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<CheckIn> CheckIns => Set<CheckIn>();
         public DbSet<VerificationCode> VerificationCodes => Set<VerificationCode>();
         public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
+        public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

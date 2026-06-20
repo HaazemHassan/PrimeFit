@@ -38,6 +38,11 @@ namespace PrimeFit.Infrastructure.Data.Configurations.BranchEntities
                 .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Property(x => x.Currency)
+                .HasMaxLength(10)
+                .HasDefaultValue("egp")
+                .IsRequired();
+
             builder.HasMany(x => x.Subscriptions)
                 .WithOne(s => s.Package)
                 .HasForeignKey(s => s.PackageId)

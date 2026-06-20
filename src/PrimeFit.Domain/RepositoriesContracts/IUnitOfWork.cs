@@ -19,7 +19,7 @@ public interface IUnitOfWork
     IEmployeeRepository Employees { get; }
     IVerificationCodeRepository VerificationCodes { get; }
     IUserDeviceTokenRepository UserDeviceTokens { get; }
-
+    IPaymentTransactionRepository PaymentTransactions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

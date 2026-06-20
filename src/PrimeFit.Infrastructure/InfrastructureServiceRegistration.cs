@@ -9,6 +9,7 @@ using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Payments;
 using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
@@ -24,8 +25,9 @@ using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Emails;
 using PrimeFit.Infrastructure.Health;
 using PrimeFit.Infrastructure.Idempotency;
-using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Notifications;
+using PrimeFit.Infrastructure.Payments;
+using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
 using PrimeFit.Infrastructure.Storage;
 
@@ -206,6 +208,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
         services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
+        services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
 
 
 
@@ -247,6 +250,9 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<IEmailBodyBuilderService, EmailBodyBuilderService>();
         services.AddScoped<IEmailService, EmailService>();
 
+
+        services.Configure<StripeOptions>(configuration.GetSection(StripeOptions.SectionName));
+        services.AddScoped<IPaymentService, StripePaymentService>();
 
         return services;
     }

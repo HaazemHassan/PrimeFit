@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Domain.Entities
@@ -9,7 +9,7 @@ namespace PrimeFit.Domain.Entities
         public Package()
         {
             Subscriptions = new HashSet<Subscription>();
-
+            PaymentTransactions = new HashSet<PaymentTransaction>();
         }
 
         public int BranchId { get; set; }
@@ -20,10 +20,10 @@ namespace PrimeFit.Domain.Entities
         public int NumberOfFreezes { get; set; }
         public int FreezeDurationInDays { get; set; }
         public Branch Branch { get; set; } = null!;
+        public string Currency { get; set; } = "egp";
 
         public ICollection<Subscription> Subscriptions { get; set; }
-
-
+        public ICollection<PaymentTransaction> PaymentTransactions { get; set; }
         public ErrorOr<Package> Update(string name, decimal price, int durationInMonths, int numberOfFreezes, int freezeDurationInDays)
         {
             Name = name;

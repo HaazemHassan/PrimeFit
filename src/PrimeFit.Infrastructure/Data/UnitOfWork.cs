@@ -20,7 +20,8 @@ internal sealed class UnitOfWork(
     ICheckInRepository checkIns,
     IEmployeeRepository employees,
     IVerificationCodeRepository verificationCodes,
-    IUserDeviceTokenRepository userDeviceTokens)
+    IUserDeviceTokenRepository userDeviceTokens,
+    IPaymentTransactionRepository paymentTransactions)
     : IUnitOfWork
 {
     private readonly AppDbContext _context = context;
@@ -39,6 +40,7 @@ internal sealed class UnitOfWork(
     public IEmployeeRepository Employees { get; } = employees;
     public IVerificationCodeRepository VerificationCodes { get; } = verificationCodes;
     public IUserDeviceTokenRepository UserDeviceTokens { get; } = userDeviceTokens;
+    public IPaymentTransactionRepository PaymentTransactions { get; } = paymentTransactions;
 
     private IDbContextTransaction? _transaction;
 
