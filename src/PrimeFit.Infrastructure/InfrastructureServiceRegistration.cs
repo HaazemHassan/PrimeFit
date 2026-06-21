@@ -119,7 +119,10 @@ public static class InfrastructureServiceRegistration
             option.SignIn.RequireConfirmedEmail = false;
 
 
-        }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+        })
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders()
+        .AddPasswordValidator<CustomPasswordValidator>();
 
         return services;
     }

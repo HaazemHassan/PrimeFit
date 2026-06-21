@@ -58,8 +58,14 @@ namespace PrimeFit.Application.Features.Users.Common
             {
                 rule = rule.Matches(@"[\W_]")
                     .WithMessage("{PropertyName} must contain at least one special character");
-
             }
+
+            if (settings.RequireDigitOrNonAlphanumeric)
+            {
+                rule = rule.Matches(@"[0-9\W_]")
+                    .WithMessage("{PropertyName} must contain at least one number or symbol");
+            }
+
             return rule;
         }
 

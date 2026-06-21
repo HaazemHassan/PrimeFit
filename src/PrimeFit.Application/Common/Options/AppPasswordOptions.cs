@@ -10,6 +10,7 @@ namespace PrimeFit.Application.Common.Options {
         public bool RequireLowercase { get; set; }
         public bool RequireDigit { get; set; }
         public bool RequireNonAlphanumeric { get; set; }
+        public bool RequireDigitOrNonAlphanumeric { get; set; }
         public int RequiredUniqueChars { get; set; }
     }
 }

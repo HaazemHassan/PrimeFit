@@ -58,12 +58,13 @@ services:
       # ========================================
       # Password Policy
       # ========================================
-      - PasswordSettings__MinLength=${PASSWORD_MIN_LENGTH:-3}
+      - PasswordSettings__MinLength=${PASSWORD_MIN_LENGTH:-8}
       - PasswordSettings__MaxLength=${PASSWORD_MAX_LENGTH:-20}
-      - PasswordSettings__RequireUppercase=${PASSWORD_REQUIRE_UPPERCASE:-false}
-      - PasswordSettings__RequireLowercase=${PASSWORD_REQUIRE_LOWERCASE:-false}
+      - PasswordSettings__RequireUppercase=${PASSWORD_REQUIRE_UPPERCASE:-true}
+      - PasswordSettings__RequireLowercase=${PASSWORD_REQUIRE_LOWERCASE:-true}
       - PasswordSettings__RequireDigit=${PASSWORD_REQUIRE_DIGIT:-false}
       - PasswordSettings__RequireNonAlphanumeric=${PASSWORD_REQUIRE_NON_ALPHANUMERIC:-false}
+      - PasswordSettings__RequireDigitOrNonAlphanumeric=${PASSWORD_REQUIRE_DIGIT_OR_SYMBOL:-true}
       - PasswordSettings__RequiredUniqueChars=${PASSWORD_REQUIRED_UNIQUE_CHARS:-1}
 
       # ========================================
@@ -84,11 +85,12 @@ services:
       # ========================================
       - Serilog__MinimumLevel__Default=${SERILOG_MINIMUM_LEVEL_DEFAULT}
       - Serilog__MinimumLevel__Override__Microsoft.AspNetCore=${SERILOG_MINIMUM_LEVEL_MICROSOFT_ASPNETCORE}
-      - Serilog__WriteTo__0__Name=File
-      - Serilog__WriteTo__0__Args__path=${SERILOG_FILE_PATH}
-      - Serilog__WriteTo__0__Args__rollingInterval=${SERILOG_FILE_ROLLING_INTERVAL}
-      - Serilog__WriteTo__0__Args__formatter=${SERILOG_FILE_FORMATTER}
+      - Serilog__WriteTo__1__Name=File
+      - Serilog__WriteTo__1__Args__path=${SERILOG_FILE_PATH}
+      - Serilog__WriteTo__1__Args__rollingInterval=${SERILOG_FILE_ROLLING_INTERVAL}
+      - Serilog__WriteTo__1__Args__formatter=${SERILOG_FILE_FORMATTER}
       - Serilog__Properties__ApplicationName=${SERILOG_APPLICATION_NAME}
+
 
       # ========================================
       # Hangfire

@@ -21,17 +21,9 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SignIn
             RuleFor(x => x.Email).Required();
             RuleFor(x => x.Password).Required();
 
-
-
-
             When(x => !string.IsNullOrWhiteSpace(x.Email), () =>
             {
                 RuleFor(x => x.Email).ApplyEmailRules();
-            });
-
-            When(x => !string.IsNullOrWhiteSpace(x.Password), () =>
-            {
-                RuleFor(x => x.Password).ApplyPasswordRules(_passwordOptions);
             });
         }
     }
