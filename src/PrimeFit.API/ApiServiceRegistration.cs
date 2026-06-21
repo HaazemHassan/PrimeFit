@@ -135,7 +135,7 @@ namespace PrimeFit.API
                    ValidAudience = jwtSettings.Audience,
                    ValidateAudience = jwtSettings.ValidateAudience,
                    ValidateLifetime = jwtSettings.ValidateLifeTime,
-                   ClockSkew = TimeSpan.FromMinutes(2)
+                   ClockSkew = TimeSpan.Zero
                };
 
 

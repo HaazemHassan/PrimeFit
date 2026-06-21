@@ -175,6 +175,7 @@ namespace PrimeFit.Infrastructure.Services
                 if (!appUser.EmailConfirmed && googleUser.IsEmailVerified)
                 {
                     appUser.EmailConfirmed = true;
+                    await userManager.RemovePasswordAsync(appUser);
                 }
 
                 logger.LogInformation("Google account linked to existing user: {Email}", googleUser.Email);
