@@ -21,6 +21,7 @@ public static class ErrorCodes
         public const string EmailAlreadyConfirmed = "EMAIL_ALREADY_CONFIRMED";
         public const string InvalidEmailConfirmationCode = "INVALID_EMAIL_CONFIRMATION_CODE";
         public const string EmailCodeAttemptsExceeded = "EMAIL_CODE_ATTEMPTS_EXCEEDED";
+        public const string EmployeeMustBeAddedByBranchFirst = "EMPLOYEE_MUST_BE_ADDED_BY_BRANCH_FIRST";
     }
 
     public static class Authorization

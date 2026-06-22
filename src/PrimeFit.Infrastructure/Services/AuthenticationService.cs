@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -139,7 +139,7 @@ namespace PrimeFit.Infrastructure.Services
 
         }
 
-        public async Task<ErrorOr<AuthResult>> SignInWithGoogleAsync(GoogleUserInfo googleUser, CancellationToken ct = default)
+        public async Task<ErrorOr<AuthResult>> SignInWithGoogleAsync(GoogleUserInfo googleUser, UserType requestedUserType, CancellationToken ct = default)
         {
             const string googleProvider = "Google";
 
@@ -151,6 +151,11 @@ namespace PrimeFit.Infrastructure.Services
                     .Include(u => u.DomainUser)
                     .FirstOrDefaultAsync(u => u.Id == appUser.Id, ct);
 
+                if (appUser!.DomainUser.UserType != requestedUserType)
+                {
+                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "User already exists with a different role.");
+                }
+
                 return await AuthenticateAsync(appUser!);
             }
 
@@ -160,6 +165,11 @@ namespace PrimeFit.Infrastructure.Services
 
             if (appUser is not null)
             {
+                if (appUser.DomainUser.UserType != requestedUserType)
+                {
+                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "User already exists with a different role.");
+                }
+
                 var loginInfo = new UserLoginInfo(googleProvider, googleUser.GoogleId, googleProvider);
                 var addLoginResult = await userManager.AddLoginAsync(appUser, loginInfo);
 
@@ -182,15 +192,25 @@ namespace PrimeFit.Infrastructure.Services
                 return await AuthenticateAsync(appUser);
             }
 
-            return await CreateUserFromGoogleAsync(googleUser, ct);
+            if (requestedUserType == UserType.Employee)
+            {
+                return Error.Validation(code: ErrorCodes.Authentication.EmployeeMustBeAddedByBranchFirst, description: "You must be added as an employee by a branch first.");
+            }
+            
+            if (requestedUserType == UserType.PartnerAdmin || requestedUserType == UserType.Customer)
+            {
+                return await CreateUserFromGoogleAsync(googleUser, requestedUserType, ct);
+            }
+
+            return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "Invalid user type for registration.");
         }
 
-        private async Task<ErrorOr<AuthResult>> CreateUserFromGoogleAsync(GoogleUserInfo googleUser, CancellationToken ct)
+        private async Task<ErrorOr<AuthResult>> CreateUserFromGoogleAsync(GoogleUserInfo googleUser, UserType userType, CancellationToken ct)
         {
             const string googleProvider = "Google";
 
             var domainUser = new DomainUser(
-                userType: UserType.Customer,
+                userType: userType,
                 firstName: googleUser.FirstName,
                 lastName: googleUser.LastName,
                 email: googleUser.Email

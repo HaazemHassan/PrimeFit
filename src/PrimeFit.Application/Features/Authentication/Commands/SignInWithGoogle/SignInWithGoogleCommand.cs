@@ -1,12 +1,14 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Transaction;
 using PrimeFit.Application.Features.Authentication.Common;
+using PrimeFit.Domain.Common.Enums;
 
 namespace PrimeFit.Application.Features.Authentication.Commands.SignInWithGoogle
 {
     public class SignInWithGoogleCommand : IRequest<ErrorOr<AuthResult>>, ITransactionalRequest
     {
         public string IdToken { get; set; }
+        public UserType UserType { get; set; }
     }
 }

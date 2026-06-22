@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
@@ -18,7 +18,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SignInWithGoogle
 
             }
 
-            return await authenticationService.SignInWithGoogleAsync(googleUserResult.Value, cancellationToken);
+            return await authenticationService.SignInWithGoogleAsync(googleUserResult.Value, request.UserType, cancellationToken);
         }
     }
 }
