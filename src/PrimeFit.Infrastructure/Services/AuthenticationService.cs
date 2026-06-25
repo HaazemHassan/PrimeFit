@@ -34,7 +34,7 @@ namespace PrimeFit.Infrastructure.Services
 
 
 
-        public async Task<ErrorOr<AuthResult>> SignInWithPasswordAsync(string email, string password, CancellationToken ct = default)
+        public async Task<ErrorOr<AuthResult>> SignInWithPasswordAsync(string email, string password, UserType requestedUserType, CancellationToken ct = default)
         {
             var userFromDb = await userManager.Users.Include(au => au.DomainUser)
                                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken: ct);
@@ -44,11 +44,23 @@ namespace PrimeFit.Infrastructure.Services
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidCredentials, description: "Invalid Email or password");
             }
 
+            if (userFromDb.DomainUser.UserType != requestedUserType)
+            {
+                logger.LogWarning("Failed login attempt for email: {Email} - Invalid UserType {RequestedUserType} vs {ActualUserType}", email, requestedUserType, userFromDb.DomainUser.UserType);
+                return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "Invalid email or password.");
+            }
+
             bool isAuthenticated = await userManager.CheckPasswordAsync(userFromDb, password);
             if (!isAuthenticated)
             {
                 logger.LogWarning("Failed login attempt for email: {Email} - Invalid password", email);
                 return Error.Unauthorized(code: ErrorCodes.Authentication.InvalidCredentials, description: "Invalid Email or password");
+            }
+
+            if (!userFromDb.EmailConfirmed)
+            {
+                logger.LogWarning("Failed login attempt for email: {Email} - Email not confirmed", email);
+                return Error.Unauthorized(code: ErrorCodes.Authentication.EmailNotVerified, description: "Email is not verified");
             }
 
             var result = await AuthenticateAsync(userFromDb);
@@ -196,7 +208,7 @@ namespace PrimeFit.Infrastructure.Services
             {
                 return Error.Validation(code: ErrorCodes.Authentication.EmployeeMustBeAddedByBranchFirst, description: "You must be added as an employee by a branch first.");
             }
-            
+
             if (requestedUserType == UserType.PartnerAdmin || requestedUserType == UserType.Customer)
             {
                 return await CreateUserFromGoogleAsync(googleUser, requestedUserType, ct);

@@ -1,5 +1,6 @@
 using MediatR;
 using PrimeFit.Application.Common.Messaging;
+using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Features.InAppNotifications.Events.SendRealTimeNotification;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
@@ -11,17 +12,28 @@ namespace PrimeFit.Application.Features.BranchPackages.Events
     {
         private readonly INotificationHelperService _notificationHelper;
         private readonly IInMemoryEventDispatcher _eventDispatcher;
+        private readonly ICurrentUserService _currentUserService;
 
         public BranchPackagesUpdatedDomainEventHandler(
             INotificationHelperService notificationHelper,
-            IInMemoryEventDispatcher eventDispatcher)
+            IInMemoryEventDispatcher eventDispatcher,
+            ICurrentUserService currentUserService)
         {
             _notificationHelper = notificationHelper;
             _eventDispatcher = eventDispatcher;
+            _currentUserService = currentUserService;
         }
 
         public async Task Handle(BranchPackagesUpdatedDomainEvent notificationEvent, CancellationToken cancellationToken)
         {
+            int curUserId = _currentUserService.UserId!.Value;
+            if (curUserId == notificationEvent.OwnerId)
+            {
+                return;
+
+            }
+
+
             var notification = await _notificationHelper.AddNotificationAsync(
                 userId: notificationEvent.OwnerId,
                 title: "Branch Packages Updated",

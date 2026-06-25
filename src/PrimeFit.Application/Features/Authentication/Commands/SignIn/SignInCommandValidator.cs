@@ -20,6 +20,7 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SignIn
         {
             RuleFor(x => x.Email).Required();
             RuleFor(x => x.Password).Required();
+            RuleFor(x => x.UserType).IsInEnum();
 
             When(x => !string.IsNullOrWhiteSpace(x.Email), () =>
             {
