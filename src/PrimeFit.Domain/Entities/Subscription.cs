@@ -1,6 +1,7 @@
-﻿using ErrorOr;
+using ErrorOr;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.DomainEvents;
 using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Domain.Entities
@@ -73,7 +74,15 @@ namespace PrimeFit.Domain.Entities
             if (!package.IsActive)
                 return Error.Validation(description: "Cannot subscribe to an inactive package.");
 
-            return new Subscription(user, branch, package);
+            var subscription = new Subscription(user, branch, package);
+
+            subscription.RaiseDomainEvent(new SubscriptionCreatedDomainEvent(
+                subscription.Id,
+                user.Id,
+                branch.Id,
+                branch.Name));
+
+            return subscription;
         }
 
 

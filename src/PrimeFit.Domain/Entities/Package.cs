@@ -1,4 +1,5 @@
 using ErrorOr;
+using PrimeFit.Domain.DomainEvents;
 using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Domain.Entities
@@ -31,6 +32,11 @@ namespace PrimeFit.Domain.Entities
             DurationInMonths = durationInMonths;
             NumberOfFreezes = numberOfFreezes;
             FreezeDurationInDays = freezeDurationInDays;
+            
+            if (Branch != null)
+            {
+                RaiseDomainEvent(new BranchPackagesUpdatedDomainEvent(BranchId, Branch.OwnerId, Branch.Name));
+            }
             return this;
         }
 
@@ -38,7 +44,20 @@ namespace PrimeFit.Domain.Entities
         public ErrorOr<Success> UpdateStatus(bool isActive)
         {
             IsActive = isActive;
+            
+            if (Branch != null)
+            {
+                RaiseDomainEvent(new BranchPackagesUpdatedDomainEvent(BranchId, Branch.OwnerId, Branch.Name));
+            }
             return Result.Success;
+        }
+
+        public void Delete()
+        {
+            if (Branch != null)
+            {
+                RaiseDomainEvent(new BranchPackagesUpdatedDomainEvent(BranchId, Branch.OwnerId, Branch.Name));
+            }
         }
     }
 }

@@ -153,7 +153,7 @@ namespace PrimeFit.Infrastructure.Services
 
                 if (appUser!.DomainUser.UserType != requestedUserType)
                 {
-                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "User already exists with a different role.");
+                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "Invalid email or password.");
                 }
 
                 return await AuthenticateAsync(appUser!);
@@ -167,7 +167,7 @@ namespace PrimeFit.Infrastructure.Services
             {
                 if (appUser.DomainUser.UserType != requestedUserType)
                 {
-                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "User already exists with a different role.");
+                    return Error.Validation(code: ErrorCodes.Authorization.InvalidUserType, description: "Invalid email or password.");
                 }
 
                 var loginInfo = new UserLoginInfo(googleProvider, googleUser.GoogleId, googleProvider);

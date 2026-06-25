@@ -1,10 +1,11 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeFit.Application.Common;
 using PrimeFit.Application.Common.Caching;
 using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Common.Idempotency;
 using PrimeFit.Application.Common.Logging;
+using PrimeFit.Application.Common.Messaging;
 using PrimeFit.Application.Common.Transaction;
 using PrimeFit.Application.Common.Trimming;
 using PrimeFit.Application.Common.Validation;
@@ -19,6 +20,8 @@ namespace PrimeFit.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
 
+            services.AddScoped<IInMemoryEventDispatcher, InMemoryEventDispatcher>();
+
             services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(cfg =>
             {
@@ -32,6 +35,7 @@ namespace PrimeFit.Application
                 cfg.AddOpenBehavior(typeof(IdempotentCommandPipelineBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(PostCommitBehavior<,>));
                 cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
             });
 

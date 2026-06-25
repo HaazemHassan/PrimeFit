@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -41,6 +41,17 @@ namespace PrimeFit.API
 
         private static IServiceCollection AddApi(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.SetIsOriginAllowed(_ => true) // Allow any origin
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials(); // SignalR requires credentials
+                });
+            });
+
             services.AddControllers();
             services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
 
@@ -138,7 +149,20 @@ namespace PrimeFit.API
                    ClockSkew = TimeSpan.Zero
                };
 
-
+               x.Events = new JwtBearerEvents
+               {
+                   OnMessageReceived = context =>
+                   {
+                       var accessToken = context.Request.Query["access_token"];
+                       var path = context.HttpContext.Request.Path;
+                       // Read the token out of the query string for SignalR requests
+                       if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                       {
+                           context.Token = accessToken;
+                       }
+                       return Task.CompletedTask;
+                   }
+               };
            }
         );
 

@@ -1,7 +1,8 @@
-﻿using ErrorOr;
+using ErrorOr;
 using NetTopologySuite.Geometries;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.DomainEvents;
 using PrimeFit.Domain.Entities.Base;
 using PrimeFit.Domain.ValueObjects;
 
@@ -117,6 +118,7 @@ namespace PrimeFit.Domain.Entities
                 BranchType = branchType.Value;
             }
 
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
         }
 
         public void UpdateLocationDetails(Governorate governorate, string address, GeoLocation location)
@@ -129,6 +131,10 @@ namespace PrimeFit.Domain.Entities
             Governorate = governorate;
             Address = address;
             Coordinates = coordinates;
+
+
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
+
         }
 
         public void UpdateWorkingHours(List<BranchWorkingHour> branchWorkingHours)
@@ -139,6 +145,10 @@ namespace PrimeFit.Domain.Entities
             {
                 _workingHours.Add(workingHours);
             }
+
+
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
+
         }
 
 
@@ -228,6 +238,9 @@ namespace PrimeFit.Domain.Entities
             }
 
             image.SetStatus(BranchImageStatus.Active);
+
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
+
             return Result.Success;
 
         }
@@ -270,6 +283,8 @@ namespace PrimeFit.Domain.Entities
 
             _packages.Add(package);
 
+            RaiseDomainEvent(new BranchPackagesUpdatedDomainEvent(Id, OwnerId, Name));
+
             return package;
         }
 
@@ -288,6 +303,10 @@ namespace PrimeFit.Domain.Entities
             }
 
             BranchStatus = BranchStatus.Active;
+
+
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
+
             return Result.Success;
 
         }
@@ -296,6 +315,10 @@ namespace PrimeFit.Domain.Entities
         public ErrorOr<Success> DeActivate()
         {
             BranchStatus = BranchStatus.Inactive;
+
+
+            RaiseDomainEvent(new BranchUpdatedDomainEvent(Id, OwnerId, Name));
+
             return Result.Success;
 
         }

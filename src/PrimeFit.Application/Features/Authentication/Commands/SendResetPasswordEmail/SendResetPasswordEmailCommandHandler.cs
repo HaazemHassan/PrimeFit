@@ -8,13 +8,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.SendResetPasswor
 {
     internal class SendResetPasswordEmailCommandHandler : IRequestHandler<SendResetPasswordEmailCommand, ErrorOr<Success>>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IPasswordService _passwordService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public SendResetPasswordEmailCommandHandler(ICurrentUserService currentUserService, IPasswordService passwordService, IUnitOfWork unitOfWork)
+        public SendResetPasswordEmailCommandHandler(IPasswordService passwordService, IUnitOfWork unitOfWork)
         {
-            _currentUserService = currentUserService;
             _passwordService = passwordService;
             _unitOfWork = unitOfWork;
         }

@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using HangfireBasicAuthenticationFilter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -56,7 +56,6 @@ namespace PrimeFit.API.Extentions
                 {
                     logger.LogError(ex, "An error occurred while seeding the database.");
                     throw;
-
                 }
                 #endregion
             }
@@ -83,7 +82,8 @@ namespace PrimeFit.API.Extentions
             using (var scope = app.Services.CreateScope())
             {
                 var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-                jobManager.RegisterRecurringJobs();
+                var outboxOptions = scope.ServiceProvider.GetRequiredService<IOptions<OutboxOptions>>().Value;
+                jobManager.RegisterRecurringJobs(outboxOptions);
             }
         }
     }

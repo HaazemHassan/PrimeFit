@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PrimeFit.Domain.Entities;
 using PrimeFit.Infrastructure.Data.Filters;
 using PrimeFit.Infrastructure.Data.Identity.Entities;
+using PrimeFit.Infrastructure.Data.Outbox;
 using System.Reflection;
 
 namespace PrimeFit.Infrastructure.Data
@@ -11,6 +12,7 @@ namespace PrimeFit.Infrastructure.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
 
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
         public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Branch> Branches => Set<Branch>();
@@ -28,6 +30,7 @@ namespace PrimeFit.Infrastructure.Data
         public DbSet<VerificationCode> VerificationCodes => Set<VerificationCode>();
         public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
         public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
+        public DbSet<UserNotification> UserNotifications => Set<UserNotification>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

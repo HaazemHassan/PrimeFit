@@ -93,7 +93,6 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
             if (_clientContextService.IsWebClient())

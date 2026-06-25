@@ -2,6 +2,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using PrimeFit.API.Extentions;
 using PrimeFit.API.Middlewares;
+using PrimeFit.Infrastructure.Notifications.InApp;
 using Serilog;
 
 namespace PrimeFit.API
@@ -17,10 +18,6 @@ namespace PrimeFit.API
             {
                 configuration.ReadFrom.Configuration(hostingContext.Configuration);
             });
-
-            Console.WriteLine("CONSOLE TEST " + DateTime.UtcNow);
-            Log.Information("SERILOG TEST AFTER CONFIG");
-
 
             var app = builder.Build();
 
@@ -66,6 +63,7 @@ namespace PrimeFit.API
                 app.UseRateLimiter();
             }
 
+            app.MapHub<NotificationHub>("/hubs/notifications");
             app.MapControllers();
 
             app.Run();

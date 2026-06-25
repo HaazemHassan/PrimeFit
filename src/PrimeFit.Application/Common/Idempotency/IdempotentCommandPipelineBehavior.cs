@@ -26,7 +26,7 @@ internal sealed class IdempotentCommandPipelineBehavior<TRequest, TResponse>(
         await idempotencyService.CreateRequestAsync(request.RequestId, typeof(TRequest).Name, cancellationToken);
 
 
-        var response = await next();
+        var response = await next(cancellationToken);
 
 
         return response;

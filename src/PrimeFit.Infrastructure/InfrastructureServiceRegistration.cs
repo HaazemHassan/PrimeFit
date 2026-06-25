@@ -1,16 +1,18 @@
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeFit.Application.Common.Idempotency;
+using PrimeFit.Application.Common.Messaging;
 using PrimeFit.Application.Common.Options;
 using PrimeFit.Application.Contracts.Infrastructure;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Payments;
 using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Payments;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.BackgroundJobs;
@@ -25,7 +27,9 @@ using PrimeFit.Infrastructure.Data.Seeding;
 using PrimeFit.Infrastructure.Emails;
 using PrimeFit.Infrastructure.Health;
 using PrimeFit.Infrastructure.Idempotency;
+using PrimeFit.Infrastructure.Messaging;
 using PrimeFit.Infrastructure.Notifications;
+using PrimeFit.Infrastructure.Notifications.InApp;
 using PrimeFit.Infrastructure.Payments;
 using PrimeFit.Infrastructure.Security;
 using PrimeFit.Infrastructure.Services;
@@ -45,9 +49,10 @@ public static class InfrastructureServiceRegistration
         AddRepositories(services);
         AddServices(services, configuration);
         AddHangfireConfiguration(services, configuration);
-        AddBackgroundJobs(services);
+        AddBackgroundJobs(services, configuration);
         AddHealthChecks(services, configuration);
         AddFirebase(services, configuration);
+        AddSignalRServices(services);
 
         return services;
     }
@@ -73,6 +78,8 @@ public static class InfrastructureServiceRegistration
 
     private static void AddDbContextConfiguations(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<PublishDomainEventsInterceptor>();
+
         services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
             options.UseSqlServer(
@@ -83,7 +90,10 @@ public static class InfrastructureServiceRegistration
                     x.MigrationsHistoryTable("__EFMigrationsHistory", "ef");
                 });
 
-            options.AddInterceptors(serviceProvider.GetRequiredService<AuditingInterceptor>());
+            options.AddInterceptors(
+                serviceProvider.GetRequiredService<AuditingInterceptor>(),
+                serviceProvider.GetRequiredService<PublishDomainEventsInterceptor>()
+            );
         });
 
         services.AddScoped<AuditingInterceptor>();
@@ -147,11 +157,13 @@ public static class InfrastructureServiceRegistration
         return services;
     }
 
-    private static IServiceCollection AddBackgroundJobs(IServiceCollection services)
+    private static IServiceCollection AddBackgroundJobs(IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<OutboxOptions>(configuration.GetSection(OutboxOptions.SectionName));
         services.AddScoped<RefreshTokensCleanupJob>();
         services.AddScoped<IImageBackgroundService, HangfireImageBackgroundService>();
         services.AddScoped<OrphanedImagesCleanupJob>();
+        services.AddScoped<ProcessOutboxMessagesJob>();
 
         return services;
     }
@@ -212,6 +224,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
         services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+        services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
 
 
 
@@ -238,6 +251,7 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<ITotpService, TotpService>();
         services.AddSingleton<IOtpService, OtpService>();
+        services.AddScoped<IOutboxIntegrationEventPublisher, OutboxIntegrationEventPublisher>();
 
 
         services.Configure<GoogleAuthOptions>(configuration.GetSection(GoogleAuthOptions.SectionName));
@@ -264,6 +278,20 @@ public static class InfrastructureServiceRegistration
     {
         services.Configure<FirebaseOptions>(configuration.GetSection(FirebaseOptions.SectionName));
         services.AddSingleton<IPushNotificationService, FirebasePushNotificationService>();
+    }
+
+    private static void AddSignalRServices(IServiceCollection services)
+    {
+        services.AddSignalR();
+        // TODO: For scale-out across multiple servers, add:
+        // .AddStackExchangeRedis("your-redis-connection-string", options =>
+        // {
+        //     options.Configuration.ChannelPrefix = RedisChannel.Literal("PrimeFit_");
+        // });
+
+        services.AddSingleton<IUserIdProvider, SignalRUserIdProvider>();
+        services.AddScoped<IInAppNotificationService, InAppNotificationService>();
+        services.AddScoped<INotificationHelperService, NotificationHelperService>();
     }
 
 }

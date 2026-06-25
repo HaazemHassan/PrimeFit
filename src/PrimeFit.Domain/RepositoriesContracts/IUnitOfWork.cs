@@ -20,6 +20,7 @@ public interface IUnitOfWork
     IVerificationCodeRepository VerificationCodes { get; }
     IUserDeviceTokenRepository UserDeviceTokens { get; }
     IPaymentTransactionRepository PaymentTransactions { get; }
+    IUserNotificationRepository UserNotifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -1,11 +1,24 @@
-﻿namespace PrimeFit.Domain.Primitives
+namespace PrimeFit.Domain.Primitives
 {
     namespace PrimeFit.Domain.Primitives
     {
-        public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>> where TId : notnull
+        public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>>, IHasDomainEvents where TId : notnull
         {
+            private readonly List<IDomainEvent> _domainEvents = new();
 
             public TId Id { get; set; }
+
+            public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+            protected void RaiseDomainEvent(IDomainEvent domainEvent)
+            {
+                _domainEvents.Add(domainEvent);
+            }
+
+            public void ClearDomainEvents()
+            {
+                _domainEvents.Clear();
+            }
 
             public static bool operator ==(BaseEntity<TId>? left, BaseEntity<TId>? right)
             {

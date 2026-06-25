@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Contracts.Infrastructure;
@@ -9,13 +9,11 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
 {
     internal class ResendConfirmationEmailCommandHandler : IRequestHandler<ResendConfirmationEmailCommand, ErrorOr<Success>>
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IEmailVerificationService _emailVerificationService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ResendConfirmationEmailCommandHandler(ICurrentUserService currentUserService, IEmailVerificationService emailVerificationService, IUnitOfWork unitOfWork)
+        public ResendConfirmationEmailCommandHandler(IEmailVerificationService emailVerificationService, IUnitOfWork unitOfWork)
         {
-            _currentUserService = currentUserService;
             _emailVerificationService = emailVerificationService;
             _unitOfWork = unitOfWork;
         }
@@ -35,9 +33,9 @@ namespace PrimeFit.Application.Features.Authentication.Commands.ResendConfirmati
                 return result.Errors;
             }
 
-            await _emailVerificationService.SendConfirmationEmailAsync(user, result.Value);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _emailVerificationService.SendConfirmationEmailAsync(user, result.Value);
 
             return Result.Success;
         }

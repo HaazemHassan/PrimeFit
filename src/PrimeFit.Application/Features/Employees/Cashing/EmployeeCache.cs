@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.Application.Features.Employees.Cashing
+namespace PrimeFit.Application.Features.Employees.Cashing
 {
     public static class EmployeeCache
     {

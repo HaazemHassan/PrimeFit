@@ -100,6 +100,12 @@ services:
       - HangfireSettings__Password=${HANGFIRE_DASHBOARD_PASSWORD}
 
       # ========================================
+      # Outbox
+      # ========================================
+      - OutboxSettings__ProcessingIntervalSeconds=${OUTBOX_PROCESSING_INTERVAL_SECONDS:-30}
+      - OutboxSettings__BatchSize=${OUTBOX_BATCH_SIZE:-100}
+
+      # ========================================
       # Cloudinary
       # ========================================
       - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}

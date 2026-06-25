@@ -15,15 +15,13 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
     {
         private readonly IMapper _mapper;
         private readonly IApplicationUserService _applicationUserService;
-        private readonly IEmailVerificationService _emailVerificationService;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RegisterOwnerCommandHandler(IMapper mapper, IApplicationUserService applicationUserService, IEmailVerificationService emailVerificationService, IPhoneNumberService phoneNumberService, IUnitOfWork unitOfWork)
+        public RegisterOwnerCommandHandler(IMapper mapper, IApplicationUserService applicationUserService, IPhoneNumberService phoneNumberService, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _applicationUserService = applicationUserService;
-            _emailVerificationService = emailVerificationService;
             _phoneNumberService = phoneNumberService;
             _unitOfWork = unitOfWork;
         }
@@ -77,13 +75,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterOwner
 
             }
 
-            var createCodeResult = await _emailVerificationService.CreateEmailConfirmationCode(userToAdd.Id, cancellationToken);
-            if (createCodeResult.IsError)
-            {
-                return createCodeResult.Errors;
-            }
-
-            await _emailVerificationService.SendConfirmationEmailAsync(userToAdd, createCodeResult.Value);
             var userResponse = _mapper.Map<UserBaseResponse>(userToAdd);
             userResponse.UserType = UserType.PartnerAdmin;
             return userResponse;

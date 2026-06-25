@@ -20,7 +20,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
         public async Task<ErrorOr<Deleted>> Handle(DeletePackageCommand request, CancellationToken cancellationToken)
         {
 
-            var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
+            var spec = new PackageWithBrnachByIdSpec(request.PackageId, request.BranchId);
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);
 
             if (package is null)
@@ -30,6 +30,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.DeletePackage
                     "Package not found");
             }
 
+            package.Delete();
             await _unitOfWork.Packages.DeleteAsync(package, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

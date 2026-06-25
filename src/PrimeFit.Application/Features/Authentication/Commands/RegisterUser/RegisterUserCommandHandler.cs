@@ -16,7 +16,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IApplicationUserService _applicationUserService;
-        private readonly IEmailVerificationService _emailVerificationService;
         private readonly IPhoneNumberService _phoneNumberService;
         private readonly ITotpService _totpService;
 
@@ -24,7 +23,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
         public RegisterUserCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             IApplicationUserService applicationUserService,
-            IEmailVerificationService emailVerificationService,
             IPhoneNumberService phoneNumberService,
             ITotpService totpService
             )
@@ -32,7 +30,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _applicationUserService = applicationUserService;
-            _emailVerificationService = emailVerificationService;
             _phoneNumberService = phoneNumberService;
             _totpService = totpService;
         }
@@ -87,16 +84,6 @@ namespace PrimeFit.Application.Features.Authentication.Commands.RegisterUser
                 return addUserResult.Errors;
 
             }
-
-
-            var createCodeResult = await _emailVerificationService.CreateEmailConfirmationCode(domainUser.Id, cancellationToken);
-            if (createCodeResult.IsError)
-            {
-                return createCodeResult.Errors;
-            }
-
-
-            await _emailVerificationService.SendConfirmationEmailAsync(domainUser, createCodeResult.Value);
 
 
             var response = _mapper.Map<UserBaseResponse>(domainUser);

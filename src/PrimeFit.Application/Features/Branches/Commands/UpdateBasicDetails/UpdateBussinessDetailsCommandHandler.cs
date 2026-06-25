@@ -1,10 +1,9 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using PrimeFit.Application.Contracts.Api;
-using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Constants;
-using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails
@@ -14,23 +13,22 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
-
+        private readonly ILogger<UpdateBussinessDetailsCommandHandler> _logger;
 
         public UpdateBussinessDetailsCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUserService,
             IImageService imageService,
-            IImageBackgroundService imageBackgroundQueue)
+            ILogger<UpdateBussinessDetailsCommandHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _logger = logger;
         }
-
 
         public async Task<ErrorOr<Success>> Handle(UpdateBussinessDetailsCommand request, CancellationToken cancellationToken)
         {
-
             var branch = await _unitOfWork.Branches.GetByIdAsync(request.BranchId, cancellationToken);
 
             if (branch is null)
@@ -45,8 +43,6 @@ namespace PrimeFit.Application.Features.Branches.Commands.UpdateBasicDetails
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success;
-
-
         }
     }
 }

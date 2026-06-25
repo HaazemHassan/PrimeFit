@@ -20,7 +20,7 @@ namespace PrimeFit.Application.Features.BranchPackages.Commands.UpdatePackageSta
         public async Task<ErrorOr<Success>> Handle(UpdatePackageStatusCommand request, CancellationToken cancellationToken)
         {
 
-            var spec = new BranchPackageByIdSpec(request.PackageId, request.BranchId);
+            var spec = new PackageWithBrnachByIdSpec(request.PackageId, request.BranchId);
 
             var package = await _unitOfWork.Packages.FirstOrDefaultAsync(spec, cancellationToken);
 

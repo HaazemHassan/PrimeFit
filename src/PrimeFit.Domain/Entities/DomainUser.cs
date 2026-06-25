@@ -1,10 +1,16 @@
-﻿using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities.Base;
+using PrimeFit.Domain.DomainEvents;
 
 namespace PrimeFit.Domain.Entities
 {
     public sealed class DomainUser : FullAuditableEntity<int>
     {
+        private DomainUser()
+        {
+            _subscriptions = [];
+        }
+
         public DomainUser(UserType userType,
             string firstName,
             string lastName,
@@ -21,6 +27,8 @@ namespace PrimeFit.Domain.Entities
             Email = email;
             PhoneNumber = phoneNumber;
             TotpSecret = totpSecret;
+
+            RaiseDomainEvent(new UserRegisteredDomainEvent(Email));
         }
 
 
