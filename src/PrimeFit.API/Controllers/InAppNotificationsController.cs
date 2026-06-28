@@ -21,6 +21,21 @@ namespace PrimeFit.API.Controllers
             return Ok(result.Value);
         }
 
+        [HttpGet("unread-count")]
+        [Authorize]
+        public async Task<IActionResult> GetUnreadCount(CancellationToken ct)
+        {
+            var query = new PrimeFit.Application.Features.InAppNotifications.Queries.GetUnreadNotificationsCount.GetUnreadNotificationsCountQuery();
+            var result = await Mediator.Send(query, ct);
+
+            if (result.IsError)
+            {
+                return Problem(result.Errors);
+            }
+
+            return Ok(new { UnreadCount = result.Value });
+        }
+
         [HttpPut("{id:int}/read")]
         [Authorize]
         public async Task<IActionResult> MarkAsRead([FromRoute] int id, CancellationToken ct)

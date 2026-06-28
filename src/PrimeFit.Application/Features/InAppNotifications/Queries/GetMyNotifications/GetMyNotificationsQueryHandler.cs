@@ -33,11 +33,22 @@ namespace PrimeFit.Application.Features.InAppNotifications.Queries.GetMyNotifica
 
             var notifications = await _unitOfWork.UserNotifications
                 .ListAsync<InAppNotificationDto>(dataSpec, cancellationToken);
-                
+
             var totalCount = await _unitOfWork.UserNotifications
                 .CountAsync(countSpec, cancellationToken);
 
-            return new PaginatedResult<InAppNotificationDto>(notifications, totalCount, request.PageNumber, request.PageSize);
+            // Get unread count
+            var unreadSpec = new UserUnreadNotificationsSpec(userId);
+            var unreadCount = await _unitOfWork.UserNotifications
+                .CountAsync(unreadSpec, cancellationToken);
+
+            var result = new PaginatedResult<InAppNotificationDto>(notifications, totalCount, request.PageNumber, request.PageSize);
+            result.Meta = new NotificationsMeta
+            {
+                UnreadCount = unreadCount
+            };
+
+            return result;
         }
     }
 }

@@ -30,6 +30,10 @@ namespace PrimeFit.Infrastructure.Data.Configurations
             builder.HasIndex(n => new { n.UserId, n.IsRead })
                 .HasDatabaseName("IX_UserNotifications_UserId_IsRead");
 
+            builder.HasIndex(n => new { n.UserId, n.CreatedAt })
+                .IsDescending(false, true)
+                .HasDatabaseName("IX_UserNotifications_UserId_CreatedAt_Desc");
+
             builder.HasIndex(n => n.CreatedAt)
                 .HasDatabaseName("IX_UserNotifications_CreatedAt");
         }
