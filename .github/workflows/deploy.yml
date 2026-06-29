@@ -1,0 +1,40 @@
+name: Production Deployment to MonsterASP.NET
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore PrimeFit.sln
+
+      - name: Build Project
+        run: dotnet build PrimeFit.sln --configuration Release --no-restore
+
+      # - name: Run Unit Tests (Best Practice)
+        # تم عمل كومنت للخطوة دي مؤقتا لحد ما يتم كتابة الاختبارات
+        # run: dotnet test PrimeFit.sln --configuration Release --no-build
+
+      - name: Publish API
+        run: dotnet publish src/PrimeFit.API/PrimeFit.API.csproj --configuration Release --output ./publish --runtime win-x86
+
+      - name: Deploy to MonsterASP.NET via WebDeploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
