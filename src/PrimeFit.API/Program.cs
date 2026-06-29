@@ -23,7 +23,7 @@ namespace PrimeFit.API
 
             app.UseStaticFiles();
 
-            if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+            if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
             {
                 await app.InitializeDatabaseAsync();
 
