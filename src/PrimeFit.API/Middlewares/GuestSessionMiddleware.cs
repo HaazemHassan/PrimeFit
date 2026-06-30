@@ -1,4 +1,6 @@
-﻿namespace PrimeFit.API.Middlewares {
+using PrimeFit.Application.Contracts.Api;
+
+namespace PrimeFit.API.Middlewares {
     public class GuestSessionMiddleware {
         private readonly RequestDelegate _next;
         private const string GuestCookieName = "guest_session_id";
@@ -7,11 +9,11 @@
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context) {
+        public async Task InvokeAsync(HttpContext context, IClientContextService clientContextService) {
             if (context.Request.Cookies.TryGetValue(GuestCookieName, out var guestId) && !string.IsNullOrEmpty(guestId)) {
                 context.Items["GuestId"] = guestId;
             }
-            else {
+            else if (clientContextService.IsWebClient()) {
                 var newGuestId = Guid.NewGuid().ToString();
 
                 var cookieOptions = new CookieOptions {
