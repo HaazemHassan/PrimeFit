@@ -1,9 +1,7 @@
 using MediatR;
 using PrimeFit.Application.Common.DTOS;
-using PrimeFit.Application.Common.Messaging;
 using PrimeFit.Application.Features.Subscriptions.Commands.AddSubscription;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Domain.DomainEvents;
 using PrimeFit.Domain.RepositoriesContracts;
 
 namespace PrimeFit.Application.Features.Subscriptions.Events
@@ -32,8 +30,8 @@ namespace PrimeFit.Application.Features.Subscriptions.Events
             {
                 var notificationRequest = new PushNotificationRequest
                 {
-                    Title = "PrimeFit",
-                    Body = $"تم إضافة اشتراك جديد لك في فرع {notification.BranchName}"
+                    Title = "Subscriptions",
+                    Body = $"A new subscription has been added for you at {notification.BranchName}."
                 };
 
                 await _pushNotificationService.SendToDevicesAsync(notificationRequest, tokens, cancellationToken);

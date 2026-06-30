@@ -1,4 +1,4 @@
-﻿namespace PrimeFit.API.Extensions
+namespace PrimeFit.API.Extensions
 {
     using FluentValidation;
     using Microsoft.AspNetCore.Http;
@@ -10,8 +10,16 @@
             long minFileSizeInBytes = 5 * 1024,
             long maxFileSizeInBytes = 5 * 1024 * 1024)
         {
-            string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
-            string[] allowedContentTypes = ["image/jpeg", "image/png", "image/webp"];
+            string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".heic", ".heif", ".tiff", ".tif"];
+            string[] allowedContentTypes = [
+                "image/jpeg", "image/pjpeg",
+                "image/png", "image/x-png",
+                "image/webp",
+                "image/gif",
+                "image/bmp", "image/x-bmp",
+                "image/heic", "image/heif",
+                "image/tiff"
+            ];
 
 
 
@@ -34,12 +42,12 @@
                     return !string.IsNullOrWhiteSpace(extension) &&
                            allowedExtensions.Contains(extension);
                 })
-                    .WithMessage("Unsupported file extension. Only JPG, PNG, and WebP are allowed.")
+                    .WithMessage("Unsupported file extension. Allowed extensions are: JPG, JPEG, PNG, WebP, GIF, BMP, HEIC, HEIF, TIFF.")
 
                 .Must(file =>
                 {
                     return allowedContentTypes.Contains(file.ContentType);
-                }).WithMessage("Invalid content type. Only image/jpeg, image/png, and image/webp are allowed.");
+                }).WithMessage("Invalid content type. Allowed image formats are: JPG, JPEG, PNG, WebP, GIF, BMP, HEIC, HEIF, TIFF.");
         }
     }
 }

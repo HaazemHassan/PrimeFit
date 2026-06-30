@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PrimeFit.API.Common.Constants;
 using PrimeFit.API.Common.Filters;
 using PrimeFit.Application.Contracts.Api;
@@ -19,7 +20,6 @@ using PrimeFit.Application.Features.Authentication.Queries.ValidateResetPassword
 
 namespace PrimeFit.API.Controllers
 {
-
     public class AuthenticationController(IClientContextService clientContextService) : BaseController
     {
         private readonly IClientContextService _clientContextService = clientContextService;
@@ -64,6 +64,7 @@ namespace PrimeFit.API.Controllers
 
 
         [HttpPost("login")]
+        [EnableRateLimiting("loginLimiter")]
         [AnonymousOnly]
 
         public async Task<IActionResult> Login([FromBody] SignInWithPasswordCommand command)
@@ -77,6 +78,7 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost("google")]
+        [EnableRateLimiting("loginLimiter")]
         [AllowAnonymous]
         public async Task<IActionResult> SignInWithGoogle([FromBody] SignInWithGoogleCommand command)
         {
