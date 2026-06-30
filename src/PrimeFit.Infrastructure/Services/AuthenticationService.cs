@@ -29,7 +29,9 @@ namespace PrimeFit.Infrastructure.Services
           ICurrentUserService currentUserService,
           AppDbContext dbContext,
           ILogger<AuthenticationService> logger,
-          ITokenService tokenService) : IAuthenticationService
+          ITotpService totpService,
+
+    ITokenService tokenService) : IAuthenticationService
     {
 
 
@@ -221,11 +223,18 @@ namespace PrimeFit.Infrastructure.Services
         {
             const string googleProvider = "Google";
 
+            string totpSecret = null;
+            if (userType == UserType.Customer)
+            {
+                totpSecret = totpService.GenerateTotpSecret();
+            }
+
             var domainUser = new DomainUser(
                 userType: userType,
                 firstName: googleUser.FirstName,
                 lastName: googleUser.LastName,
-                email: googleUser.Email
+                email: googleUser.Email,
+                totpSecret: totpSecret
             );
 
             var appUser = new ApplicationUser(googleUser.Email);
