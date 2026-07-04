@@ -5,7 +5,7 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Infrastructure.Data;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Storage.Jobs
 {
     public class OrphanedImagesCleanupJob
     {

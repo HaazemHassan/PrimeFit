@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PrimeFit.Domain.RepositoriesContracts;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Security.Jobs
 {
     public class RefreshTokensCleanupJob
     {

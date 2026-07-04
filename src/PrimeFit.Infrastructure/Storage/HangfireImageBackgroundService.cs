@@ -1,7 +1,8 @@
 ﻿using Hangfire;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
+using PrimeFit.Infrastructure.Storage.Jobs;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Storage
 {
     public class HangfireImageBackgroundService : IImageBackgroundService
     {

@@ -46,10 +46,6 @@
 	 </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Notifications\Jobs\" />
-  </ItemGroup>
-
 
 
 </Project>

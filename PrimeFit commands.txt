@@ -1,2 +1,0 @@
-dotnet new install . --force
-dotnet new ref -n PrimeFit

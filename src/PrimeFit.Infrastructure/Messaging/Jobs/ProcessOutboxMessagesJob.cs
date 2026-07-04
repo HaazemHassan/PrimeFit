@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PrimeFit.Application.Common.Messaging;
+using PrimeFit.Infrastructure.BackgroundJobs;
 using PrimeFit.Infrastructure.Data;
 using PrimeFit.Infrastructure.Data.Outbox;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Messaging.Jobs
 {
     public class ProcessOutboxMessagesJob
     {

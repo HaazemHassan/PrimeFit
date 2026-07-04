@@ -16,7 +16,6 @@ using PrimeFit.Application.ServicesContracts.Infrastructure.Payments;
 using PrimeFit.Domain.Repositories;
 using PrimeFit.Domain.RepositoriesContracts;
 using PrimeFit.Infrastructure.BackgroundJobs;
-using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
 using PrimeFit.Infrastructure.Cashing;
 using PrimeFit.Infrastructure.Common.Options;
 using PrimeFit.Infrastructure.Data;
@@ -28,12 +27,15 @@ using PrimeFit.Infrastructure.Emails;
 using PrimeFit.Infrastructure.Health;
 using PrimeFit.Infrastructure.Idempotency;
 using PrimeFit.Infrastructure.Messaging;
-using PrimeFit.Infrastructure.Notifications;
+using PrimeFit.Infrastructure.Messaging.Jobs;
 using PrimeFit.Infrastructure.Notifications.InApp;
+using PrimeFit.Infrastructure.Notifications.Push;
 using PrimeFit.Infrastructure.Payments;
 using PrimeFit.Infrastructure.Security;
+using PrimeFit.Infrastructure.Security.Jobs;
 using PrimeFit.Infrastructure.Services;
 using PrimeFit.Infrastructure.Storage;
+using PrimeFit.Infrastructure.Storage.Jobs;
 
 namespace PrimeFit.Infrastructure;
 

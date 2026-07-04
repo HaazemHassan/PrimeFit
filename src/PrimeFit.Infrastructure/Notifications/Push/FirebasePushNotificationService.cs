@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using PrimeFit.Application.Common.DTOS;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Infrastructure.Notifications
+namespace PrimeFit.Infrastructure.Notifications.Push
 {
     public class FirebasePushNotificationService : IPushNotificationService
     {

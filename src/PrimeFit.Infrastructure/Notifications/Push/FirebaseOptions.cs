@@ -1,4 +1,4 @@
-namespace PrimeFit.Infrastructure.Notifications
+namespace PrimeFit.Infrastructure.Notifications.Push
 {
     public class FirebaseOptions
     {

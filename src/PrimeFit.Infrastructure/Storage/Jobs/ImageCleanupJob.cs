@@ -1,6 +1,6 @@
 ﻿using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Storage.Jobs
 {
     public class ImageCleanupJob
     {

@@ -6,12 +6,12 @@ using PrimeFit.Application.ServicesContracts.Infrastructure;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Infrastructure.Data;
 
-namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
+namespace PrimeFit.Infrastructure.Notifications.Jobs
 {
     public class InactiveUsersNotificationJob
     {
         public const string JobId = "InactiveUsersNotificationJob";
-        public static readonly string Schedule = Cron.Daily(12, 0); // 12:00 PM UTC every day
+        public static readonly string Schedule = Cron.Daily(12, 0);
 
         private const int BatchSize = 500;
 
@@ -107,8 +107,8 @@ namespace PrimeFit.Infrastructure.BackgroundJobs.Jobs
 
             var request = new PushNotificationRequest
             {
-                Title = "PrimeFit",
-                Body = "انزل الجيم ياعلق"
+                Title = "We Miss You",
+                Body = "It's been a few days since your last workout. Let's get back on track today!"
             };
 
             int successCount = await _pushNotificationService.SendToDevicesAsync(request, userTokens, ct);

@@ -1,6 +1,10 @@
 
 using Hangfire;
 using PrimeFit.Infrastructure.BackgroundJobs.Jobs;
+using PrimeFit.Infrastructure.Messaging.Jobs;
+using PrimeFit.Infrastructure.Notifications.Jobs;
+using PrimeFit.Infrastructure.Security.Jobs;
+using PrimeFit.Infrastructure.Storage.Jobs;
 
 namespace PrimeFit.Infrastructure.BackgroundJobs
 {
