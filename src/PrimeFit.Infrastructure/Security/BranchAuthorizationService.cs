@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PrimeFit.Application.Contracts.Api;
 using PrimeFit.Application.Security.Caching;
 using PrimeFit.Application.Security.Contracts;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Caching;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Infrastructure.Data;

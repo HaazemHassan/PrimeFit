@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Caching;
 
 namespace PrimeFit.Application.Common.Caching
 {

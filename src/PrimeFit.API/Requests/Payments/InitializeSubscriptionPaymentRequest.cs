@@ -1,5 +1,4 @@
-namespace PrimeFit.API.Requests.Payments
-{
+namespace PrimeFit.Api.Requests.Payments {
     public class InitializeSubscriptionPaymentRequest
     {
         public int PackageId { get; set; }

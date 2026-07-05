@@ -1,8 +1,7 @@
 using AutoMapper;
 using PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews;
 
-namespace PrimeFit.API.Requests.BranchReviews
-{
+namespace PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest {
     public class GetBranchReviewsRequestMappingProfile : Profile
     {
         public GetBranchReviewsRequestMappingProfile()

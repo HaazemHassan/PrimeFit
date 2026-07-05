@@ -1,7 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Cashing;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Caching;
 using System.Collections.Concurrent;
 using System.Reflection;
 

@@ -3,7 +3,7 @@ using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
+using PrimeFit.Domain.Entities.Base;
 using PrimeFit.Domain.Repositories;
 using System.Linq.Expressions;
 

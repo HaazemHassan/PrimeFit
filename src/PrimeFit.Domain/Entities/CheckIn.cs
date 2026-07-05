@@ -1,5 +1,5 @@
-﻿using PrimeFit.Domain.Entities.Contracts;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
+﻿using PrimeFit.Domain.Entities.Base;
+using PrimeFit.Domain.Entities.Contracts;
 
 namespace PrimeFit.Domain.Entities
 {

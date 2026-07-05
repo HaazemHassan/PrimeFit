@@ -3,7 +3,7 @@ using MediatR;
 using PrimeFit.Application.Features.Branches.Caching;
 using PrimeFit.Application.Security.Contracts;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
-using PrimeFit.Application.ServicesContracts.Infrastructure.Cashing;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Caching;
 using PrimeFit.Application.Specifications.Subscriptions;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;

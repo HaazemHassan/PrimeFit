@@ -1,4 +1,5 @@
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
+using PrimeFit.Domain.Primitives;
+
 
 namespace PrimeFit.Domain.DomainEvents
 {

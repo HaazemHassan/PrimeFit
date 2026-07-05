@@ -1,5 +1,5 @@
 using MediatR;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
+using PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Application.Common.Messaging
 {

@@ -1,5 +1,4 @@
-namespace PrimeFit.API.Requests.BranchReviews
-{
+namespace PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest {
     public class GetBranchReviewsRequest
     {
         public int PageNumber { get; set; } = 1;

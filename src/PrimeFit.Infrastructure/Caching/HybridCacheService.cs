@@ -1,0 +1,43 @@
+﻿using Microsoft.Extensions.Caching.Hybrid;
+using PrimeFit.Application.ServicesContracts.Infrastructure.Caching;
+
+namespace PrimeFit.Infrastructure.Caching
+{
+    public class HybridCacheService(HybridCache cache) : ICacheService
+    {
+        public async Task<T> GetOrCreateAsync<T>(
+             string key,
+             Func<CancellationToken, Task<T>> factory,
+             TimeSpan? expiration = null,
+             string[]? tags = null,
+             CancellationToken ct = default)
+        {
+            var options = new HybridCacheEntryOptions
+            {
+                Expiration = expiration ?? TimeSpan.FromMinutes(5)
+            };
+
+            return await cache.GetOrCreateAsync<object?, T>(
+                key,
+                state: null,
+                async (_, token) => await factory(token),
+                options,
+                tags,
+                cancellationToken: ct
+            );
+        }
+
+        public async Task RemoveAsync(string key, CancellationToken ct = default)
+        {
+            await cache.RemoveAsync(key, cancellationToken: ct);
+        }
+
+        public async Task RemoveByTagAsync(string tag, CancellationToken ct = default)
+        {
+            await cache.RemoveByTagAsync(tag, cancellationToken: ct);
+        }
+    }
+}
+
+
+

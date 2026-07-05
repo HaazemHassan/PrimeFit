@@ -1,5 +1,4 @@
-namespace PrimeFit.API.Requests.Branches
-{
+namespace PrimeFit.Api.Requests.Branches.UpdateLocationDetailsRequest {
     public class UpdateLocationDetailsRequest
     {
         public int GovernorateId { get; set; }

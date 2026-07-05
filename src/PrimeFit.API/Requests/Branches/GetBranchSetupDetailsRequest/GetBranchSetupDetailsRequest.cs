@@ -1,5 +1,4 @@
-namespace PrimeFit.API.Requests.Branches
-{
+namespace PrimeFit.Api.Requests.Branches.GetBranchSetupDetailsRequest {
     public class GetBranchSetupDetailsRequest
     {
     }

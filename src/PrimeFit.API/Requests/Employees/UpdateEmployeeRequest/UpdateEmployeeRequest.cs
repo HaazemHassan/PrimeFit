@@ -1,5 +1,4 @@
-namespace PrimeFit.API.Requests.Employees.UpdateEmployeeRequest
-{
+namespace PrimeFit.Api.Requests.Employees.UpdateEmployeeRequest {
     public class UpdateEmployeeRequest
     {
         public int BranchId { get; set; }

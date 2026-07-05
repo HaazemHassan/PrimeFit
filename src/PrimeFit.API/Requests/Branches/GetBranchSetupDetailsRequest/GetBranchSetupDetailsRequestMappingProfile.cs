@@ -1,8 +1,7 @@
 using AutoMapper;
 using PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails;
 
-namespace PrimeFit.API.Requests.Branches
-{
+namespace PrimeFit.Api.Requests.Branches.GetBranchSetupDetailsRequest {
     public class GetBranchSetupDetailsRequestMappingProfile : Profile
     {
         public GetBranchSetupDetailsRequestMappingProfile()

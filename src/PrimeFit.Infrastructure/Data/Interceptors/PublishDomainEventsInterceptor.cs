@@ -1,10 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using PrimeFit.Domain.Entities.Base;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Infrastructure.Data.Interceptors
 {
@@ -34,7 +33,7 @@ namespace PrimeFit.Infrastructure.Data.Interceptors
                 })
                 .ToList();
 
-            if (domainEvents.Any())
+            if (domainEvents.Count != 0)
             {
                 var publisher = dbContext.GetService<IPublisher>();
                 foreach (var domainEvent in domainEvents)

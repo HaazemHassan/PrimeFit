@@ -1,5 +1,5 @@
 ﻿using PrimeFit.Application.Common.Cashing;
-using PrimeFit.Application.Features.Governorates.Cashing;
+using PrimeFit.Application.Features.Governorates.Caching;
 
 namespace PrimeFit.Application.Features.Governorates.Queries.GetGovernorates
 {

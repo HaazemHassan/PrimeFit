@@ -1,8 +1,7 @@
-﻿using FluentValidation;
+using FluentValidation;
 using PrimeFit.API.Extensions;
 
-namespace PrimeFit.API.Requests.Branches.UpdateBranchImage
-{
+namespace PrimeFit.Api.Requests.Branches.UpdateBranchImage {
     public class UploadBranchImageValidator : AbstractValidator<UpdateBranchImageRequest>
     {
         public UploadBranchImageValidator()

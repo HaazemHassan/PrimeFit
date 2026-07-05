@@ -4,7 +4,7 @@ using PrimeFit.Application.Features.Branches.Commands.CreateBranch;
 using PrimeFit.Application.Features.Users.Common;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
 
-namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchBussinessDetails
+namespace PrimeFit.Application.Features.Branches.Commands.CreateBranchBusinessDetails
 {
     public class CreateBranchCommandValidator : AbstractValidator<CreateBranchCommand>
     {

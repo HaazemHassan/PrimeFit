@@ -1,8 +1,8 @@
 ﻿using ErrorOr;
 using PrimeFit.Domain.Common.Constants;
 using PrimeFit.Domain.Common.Enums;
+using PrimeFit.Domain.Entities.Base;
 using PrimeFit.Domain.Entities.Contracts;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
 
 namespace PrimeFit.Domain.Entities
 {

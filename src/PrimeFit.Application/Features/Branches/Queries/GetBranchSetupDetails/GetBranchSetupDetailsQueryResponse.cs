@@ -5,7 +5,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
 {
     public class GetBranchSetupDetailsQueryResponse
     {
-        public BranchBussinessDetailsDto BussinessDetails { get; set; } = null!;
+        public BranchBusinessDetailsDto BusinessDetails { get; set; } = null!;
         public BranchLocationDetailsDto Location { get; set; } = null!;
         public List<WorkingHoursDTO> WorkingHours { get; set; }
         public List<ImageDto> Images { get; set; }
@@ -18,7 +18,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchSetupDetails
         public CoordinatesDto? Coordinates { get; set; }
     }
 
-    public class BranchBussinessDetailsDto
+    public class BranchBusinessDetailsDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

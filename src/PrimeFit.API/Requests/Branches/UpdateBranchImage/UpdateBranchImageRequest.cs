@@ -1,5 +1,4 @@
-﻿namespace PrimeFit.API.Requests.Branches.UpdateBranchImage
-{
+namespace PrimeFit.Api.Requests.Branches.UpdateBranchImage {
     public class UpdateBranchImageRequest
     {
         public IFormFile ImageFile { get; set; } = null!;

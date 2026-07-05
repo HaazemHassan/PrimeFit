@@ -1,6 +1,6 @@
 using PrimeFit.Application.Common.Cashing;
 using PrimeFit.Application.Features.Branches.Caching;
-using PrimeFit.Application.Features.Employees.Cashing;
+using PrimeFit.Application.Features.Employees.Caching;
 
 namespace PrimeFit.Application.Features.Employees.Queries.GetBranchEmployees
 {

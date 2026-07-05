@@ -1,8 +1,7 @@
 using AutoMapper;
 using PrimeFit.Application.Features.Branches.Commands.UpdateLocationDetails;
 
-namespace PrimeFit.API.Requests.Branches
-{
+namespace PrimeFit.Api.Requests.Branches.UpdateLocationDetailsRequest {
     public class UpdateLocationDetailsRequestMappingProfile : Profile
     {
         public UpdateLocationDetailsRequestMappingProfile()

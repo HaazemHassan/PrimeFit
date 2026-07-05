@@ -96,7 +96,7 @@ namespace PrimeFit.Domain.Entities
 
 
 
-        public void UpdateBasicDetails(string? name, string? email, string? phoneNumber, BranchType? branchType)
+        public void UpdateBusinessDetails(string? name, string? email, string? phoneNumber, BranchType? branchType)
         {
             if (!string.IsNullOrEmpty(name))
             {

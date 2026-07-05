@@ -1,6 +1,6 @@
 ﻿
 using Ardalis.Specification;
-using PrimeFit.Domain.Primitives.PrimeFit.Domain.Primitives;
+using PrimeFit.Domain.Entities.Base;
 
 namespace PrimeFit.Application.Specifications.Shared
 {

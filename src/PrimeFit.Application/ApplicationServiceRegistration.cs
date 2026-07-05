@@ -29,8 +29,8 @@ namespace PrimeFit.Application
 
                 cfg.AddOpenBehavior(typeof(TrimmingBehavior<,>));
                 cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(BranchAuthorizationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(IdempotentCommandPipelineBehavior<,>));
                 cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
