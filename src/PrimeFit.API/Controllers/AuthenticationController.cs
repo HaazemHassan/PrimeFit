@@ -43,10 +43,23 @@ using PrimeFit.Application.Features.Authentication.Commands.SignIn;
 using PrimeFit.Application.Features.Authentication.Commands.SignInWithGoogle;
 using PrimeFit.Application.Features.Authentication.Common;
 using PrimeFit.Application.Features.Authentication.Queries.ValidateResetPasswordCode;
+using AutoMapper;
+using PrimeFit.Api.Requests.Authentication.RegisterUser;
+using PrimeFit.Api.Requests.Authentication.RegisterOwner;
+using PrimeFit.Api.Requests.Authentication.SignInWithPassword;
+using PrimeFit.Api.Requests.Authentication.SignInWithGoogle;
+using PrimeFit.Api.Requests.Authentication.RefreshToken;
+using PrimeFit.Api.Requests.Authentication.ConfirmEmail;
+using PrimeFit.Api.Requests.Authentication.ValidateResetPasswordCode;
+using PrimeFit.Api.Requests.Authentication.ResendConfirmationEmail;
+using PrimeFit.Api.Requests.Authentication.SendResetPasswordEmail;
+using PrimeFit.Api.Requests.Authentication.ResetPassword;
+using PrimeFit.Api.Requests.Authentication.ChangePassword;
+using PrimeFit.Api.Requests.Authentication.Logout;
 
 namespace PrimeFit.API.Controllers
 {
-    public class AuthenticationController(IClientContextService clientContextService) : BaseController
+    public class AuthenticationController(IClientContextService clientContextService, IMapper _mapper) : BaseController
     {
         private readonly IClientContextService _clientContextService = clientContextService;
 
@@ -55,8 +68,9 @@ namespace PrimeFit.API.Controllers
         [HttpPost("register-user")]
         [AnonymousOnly]
 
-        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
+            var command = _mapper.Map<RegisterUserCommand>(request);
             var result = await Mediator.Send(command);
 
             if (result.IsError)
@@ -72,8 +86,9 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost("register-owner")]
-        public async Task<IActionResult> RegisterAsOwner([FromBody] RegisterOwnerCommand command)
+        public async Task<IActionResult> RegisterAsOwner([FromBody] RegisterOwnerRequest request)
         {
+            var command = _mapper.Map<RegisterOwnerCommand>(request);
             var result = await Mediator.Send(command);
 
             if (result.IsError)
@@ -93,8 +108,9 @@ namespace PrimeFit.API.Controllers
         [EnableRateLimiting("loginLimiter")]
         [AnonymousOnly]
 
-        public async Task<IActionResult> Login([FromBody] SignInWithPasswordCommand command)
+        public async Task<IActionResult> Login([FromBody] SignInWithPasswordRequest request)
         {
+            var command = _mapper.Map<SignInWithPasswordCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
                 return Problem(result.Errors);
@@ -106,9 +122,9 @@ namespace PrimeFit.API.Controllers
         [HttpPost("google")]
         [EnableRateLimiting("loginLimiter")]
         [AllowAnonymous]
-        public async Task<IActionResult> SignInWithGoogle([FromBody] SignInWithGoogleCommand command)
+        public async Task<IActionResult> SignInWithGoogle([FromBody] SignInWithGoogleRequest request)
         {
-
+            var command = _mapper.Map<SignInWithGoogleCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -121,8 +137,9 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
+            var command = _mapper.Map<RefreshTokenCommand>(request);
             if (_clientContextService.IsWebClient())
                 command.RefreshToken = Request.Cookies["refreshToken"];
 
@@ -143,8 +160,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("confirm-email")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand command)
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
+            var command = _mapper.Map<ConfirmEmailCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -157,8 +175,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("validate-reset-password-code")]
         [AllowAnonymous]
-        public async Task<IActionResult> ValidateResetPasswordCode([FromBody] ValidateResetPasswordCodeQuery query)
+        public async Task<IActionResult> ValidateResetPasswordCode([FromBody] ValidateResetPasswordCodeRequest request)
         {
+            var query = _mapper.Map<ValidateResetPasswordCodeQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)
             {
@@ -172,8 +191,9 @@ namespace PrimeFit.API.Controllers
 
 
         [HttpPost("resend-confirmation-email")]
-        public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailCommand command)
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request)
         {
+            var command = _mapper.Map<ResendConfirmationEmailCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -186,8 +206,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("send-reset-password-email")]
         [AnonymousOnly]
-        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailCommand command)
+        public async Task<IActionResult> SendResetPasswordEmail([FromBody] SendResetPasswordEmailRequest request)
         {
+            var command = _mapper.Map<SendResetPasswordEmailCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -199,8 +220,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("reset-password")]
         [AnonymousOnly]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
+            var command = _mapper.Map<ResetPasswordCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
@@ -212,8 +234,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("change-password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
+            var command = _mapper.Map<ChangePasswordCommand>(request);
             var result = await Mediator.Send(command);
 
             if (result.IsError)
@@ -226,8 +249,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpPost("logout")]
         [Authorize]
-        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {
+            var command = _mapper.Map<LogoutCommand>(request);
             if (_clientContextService.IsWebClient())
                 command.RefreshToken = Request.Cookies["refreshToken"];
 

@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeFit.Application.Features.Employees.Commands.CreateEmployee;
 using PrimeFit.Application.Features.Employees.Commands.UpdateEmployee;
 using PrimeFit.Application.Features.Employees.Queries.GetEmployeeRoles;
+using PrimeFit.Api.Requests.Employees.CreateEmployee;
 
 namespace PrimeFit.API.Controllers
 {
@@ -55,8 +56,9 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command)
+        public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeRequest request)
         {
+            var command = _mapper.Map<CreateEmployeeCommand>(request);
             var result = await Mediator.Send(command);
 
             if (result.IsError)

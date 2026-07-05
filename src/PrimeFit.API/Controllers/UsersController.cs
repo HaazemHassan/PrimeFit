@@ -23,6 +23,7 @@ using PrimeFit.Api.Requests.Common.Pagination;
 using PrimeFit.Api.Requests.Users.UpdateProfile;
 using PrimeFit.Api.Requests.BranchReviews;
 using PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest;
+using PrimeFit.Api.Requests.Users.CheckEmailAvailability;
 using PrimeFit.Api.Requests.Notifications;
 using PrimeFit.Api.Requests.Payments;
 using Microsoft.AspNetCore.Authorization;
@@ -56,8 +57,9 @@ namespace PrimeFit.API.Controllers
 
 
         [HttpGet("check-email")]
-        public async Task<IActionResult> CheckEmailAvailability([FromQuery] CheckEmailAvailabilityQuery query)
+        public async Task<IActionResult> CheckEmailAvailability([FromQuery] CheckEmailAvailabilityRequest request)
         {
+            var query = _mapper.Map<CheckEmailAvailabilityQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)
                 return Problem(result.Errors);

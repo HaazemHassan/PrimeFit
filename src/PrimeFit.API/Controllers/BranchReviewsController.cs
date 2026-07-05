@@ -22,6 +22,7 @@ using PrimeFit.Api.Requests.Subscriptions.GetSubscriptionAttendanceHistory;
 using PrimeFit.Api.Requests.Common.Pagination;
 using PrimeFit.Api.Requests.Users.UpdateProfile;
 using PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest;
+using PrimeFit.Api.Requests.BranchReviews.AddBranchReview;
 using PrimeFit.Api.Requests.Notifications;
 using PrimeFit.Api.Requests.Payments;
 using Microsoft.AspNetCore.Mvc;
@@ -57,8 +58,9 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromRoute] int branchId, [FromBody] AddBranchReviewCommand command)
+        public async Task<IActionResult> AddReview([FromRoute] int branchId, [FromBody] AddBranchReviewRequest request)
         {
+            var command = _mapper.Map<AddBranchReviewCommand>(request);
             command.BranchId = branchId;
 
             var result = await Mediator.Send(command);

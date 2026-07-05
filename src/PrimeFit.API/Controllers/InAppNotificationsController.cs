@@ -28,15 +28,19 @@ using PrimeFit.Api.Requests.Payments;
 using Microsoft.AspNetCore.Mvc;
 using PrimeFit.Application.Features.InAppNotifications.Commands.MarkNotificationAsRead;
 using PrimeFit.Application.Features.InAppNotifications.Queries.GetMyNotifications;
+using PrimeFit.Application.Features.InAppNotifications.Queries.GetMyNotifications;
+using AutoMapper;
+using PrimeFit.Api.Requests.InAppNotifications.GetMyNotifications;
 
 namespace PrimeFit.API.Controllers
 {
-    public class InAppNotificationsController : BaseController
+    public class InAppNotificationsController(IMapper _mapper) : BaseController
     {
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetMyNotifications([FromQuery] GetMyNotificationsQuery query, CancellationToken ct)
+        public async Task<IActionResult> GetMyNotifications([FromQuery] GetMyNotificationsRequest request, CancellationToken ct)
         {
+            var query = _mapper.Map<GetMyNotificationsQuery>(request);
             var result = await Mediator.Send(query, ct);
 
             if (result.IsError)

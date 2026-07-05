@@ -26,15 +26,18 @@ using PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest;
 using PrimeFit.Api.Requests.Notifications;
 using PrimeFit.Api.Requests.Payments;
 using PrimeFit.Application.Features.Attendance.Commands.CreateCheckIn;
+using AutoMapper;
+using PrimeFit.Api.Requests.Attendance.CreateCheckIn;
 
 namespace PrimeFit.API.Controllers
 {
-    public class CheckInsController : BaseController
+    public class CheckInsController(IMapper _mapper) : BaseController
     {
 
         [HttpPost]
-        public async Task<IActionResult> CheckInCustomer([FromBody] CreateCheckInCommand command)
+        public async Task<IActionResult> CheckInCustomer([FromBody] CreateCheckInRequest request)
         {
+            var command = _mapper.Map<CreateCheckInCommand>(request);
             var result = await Mediator.Send(command);
 
 

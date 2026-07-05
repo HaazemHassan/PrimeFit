@@ -34,16 +34,21 @@ using PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic;
 using PrimeFit.Application.Features.Branches.Queries.GetMyBranches;
 using PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackagesForCustomers;
 using PrimeFit.Domain.Common.Enums;
+using AutoMapper;
+using PrimeFit.Api.Requests.Branches.GetMyBranches;
+using PrimeFit.Api.Requests.Branches.GetBranchesForPublic;
 
 namespace PrimeFit.API.Controllers
 {
     public class BranchesController : BaseController
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public BranchesController(ICurrentUserService currentUserService)
+        public BranchesController(ICurrentUserService currentUserService, IMapper mapper)
         {
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
 
         [HttpGet("{branchId:int}", Name = RouteNames.Branches.GetBranchById)]
@@ -79,8 +84,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpGet()]
         [Authorize]
-        public async Task<IActionResult> GetBranches([FromQuery] GetMyBranchesQuery query)
+        public async Task<IActionResult> GetBranches([FromQuery] GetMyBranchesRequest request)
         {
+            var query = _mapper.Map<GetMyBranchesQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)
             {
@@ -105,8 +111,9 @@ namespace PrimeFit.API.Controllers
         }
 
         [HttpGet("public")]
-        public async Task<IActionResult> GetBranches([FromQuery] GetBranchesForPublicQuery query)
+        public async Task<IActionResult> GetBranches([FromQuery] GetBranchesForPublicRequest request)
         {
+            var query = _mapper.Map<GetBranchesForPublicQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)
             {

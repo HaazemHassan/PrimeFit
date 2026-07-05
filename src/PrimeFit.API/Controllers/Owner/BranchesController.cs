@@ -23,6 +23,7 @@ using PrimeFit.Api.Requests.Common.Pagination;
 using PrimeFit.Api.Requests.Users.UpdateProfile;
 using PrimeFit.Api.Requests.BranchReviews;
 using PrimeFit.Api.Requests.BranchReviews.GetBranchReviewsRequest;
+using PrimeFit.Api.Requests.Branches.CreateBranch;
 using PrimeFit.Api.Requests.Notifications;
 using PrimeFit.Api.Requests.Payments;
 using FluentValidation;
@@ -63,8 +64,9 @@ namespace PrimeFit.API.Controllers.Owner
         }
 
         [HttpPost()]
-        public async Task<IActionResult> AddBranch([FromBody] CreateBranchCommand command)
+        public async Task<IActionResult> AddBranch([FromBody] CreateBranchRequest request)
         {
+            var command = _mapper.Map<CreateBranchCommand>(request);
             var result = await Mediator.Send(command);
             if (result.IsError)
             {
