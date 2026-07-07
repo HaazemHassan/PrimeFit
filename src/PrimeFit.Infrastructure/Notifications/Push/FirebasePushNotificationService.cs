@@ -73,6 +73,11 @@ namespace PrimeFit.Infrastructure.Notifications.Push
                     MaskToken(deviceToken), ex.MessagingErrorCode);
                 return false;
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while sending push notification to device. Token: {Token}", MaskToken(deviceToken));
+                return false;
+            }
         }
 
 
@@ -126,6 +131,11 @@ namespace PrimeFit.Infrastructure.Notifications.Push
                 _logger.LogError(ex, "Failed to send multicast push notification. Error: {ErrorCode}", ex.MessagingErrorCode);
                 return 0;
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while sending multicast push notification.");
+                return 0;
+            }
         }
 
 
@@ -149,6 +159,11 @@ namespace PrimeFit.Infrastructure.Notifications.Push
             catch (FirebaseMessagingException ex)
             {
                 _logger.LogError(ex, "Failed to send push notification to topic '{Topic}'. Error: {ErrorCode}", topic, ex.MessagingErrorCode);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while sending push notification to topic '{Topic}'.", topic);
                 return false;
             }
         }
