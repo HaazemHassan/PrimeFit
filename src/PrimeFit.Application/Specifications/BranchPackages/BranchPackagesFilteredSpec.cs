@@ -3,11 +3,16 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.BranchPackages
 {
-    public class BranchPackagesSpec : Specification<Package>
+    public class BranchPackagesFilteredSpec : Specification<Package>
     {
-        public BranchPackagesSpec(int branchId, string? search = null)
+        public BranchPackagesFilteredSpec(int branchId, string? search = null, bool? isActive = null)
         {
             Query.Where(p => p.BranchId == branchId);
+
+            if (isActive.HasValue)
+            {
+                Query.Where(p => p.IsActive == isActive.Value);
+            }
             
             if (!string.IsNullOrEmpty(search))
             {

@@ -23,7 +23,7 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetMyBranches
             int ownerId = _currentUserService.UserId!.Value;
 
             var dataSpec = new BranchesSpec(ownerId, request.PageNumber, request.PageSize, request.Search);
-            var countSpec = new BranchesSearchSpec(ownerId, request.Search);
+            var countSpec = new BranchesFilteredSpec(ownerId, request.Search);
 
             var items = await _unitOfWork.Branches.ListAsync<GetMyBranchesQueryResponse>(dataSpec, cancellationToken);
             var totalCount = await _unitOfWork.Branches.CountAsync(countSpec, cancellationToken);

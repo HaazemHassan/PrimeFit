@@ -22,8 +22,8 @@ namespace PrimeFit.Application.Features.Packages.Queries.GetBranchPackagesForCus
         public async Task<ErrorOr<PaginatedResult<GetBranchPackagesForCustomersQueryResponse>>> Handle(GetBranchPackagesForCustomersQuery request, CancellationToken cancellationToken)
         {
 
-            var packagesSpec = new ActivePackagesPaginatedForBranchSpec(request.BranchId, request.PageNumber, request.PageSize);
-            var packagesCountSpec = new BranchActivePackagesSpec(request.BranchId);
+            var packagesSpec = new ActivePackagesPaginatedForBranchSpec(request.BranchId, request.PageNumber, request.PageSize, request.Search);
+            var packagesCountSpec = new BranchPackagesFilteredSpec(request.BranchId, request.Search, isActive: true);
 
 
             var packages = await _unitOfWork.Packages.ListAsync<GetBranchPackagesForCustomersQueryResponse>(packagesSpec, cancellationToken);

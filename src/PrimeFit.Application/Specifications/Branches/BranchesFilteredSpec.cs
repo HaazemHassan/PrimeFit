@@ -3,20 +3,19 @@ using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Branches
 {
-    public class BranchesSearchSpec : Specification<Branch>
+    public class BranchesFilteredSpec : Specification<Branch>
     {
-        public BranchesSearchSpec(int? ownerId, string? search)
+        public BranchesFilteredSpec(int? ownerId, string? search)
         {
-
             if (ownerId.HasValue)
             {
-                Query.Where(u => u.OwnerId == ownerId.Value);
+                Query.Where(b => b.OwnerId == ownerId.Value);
             }
 
             if (!string.IsNullOrEmpty(search))
             {
                 var lowerSearch = search.ToLower();
-                Query.Where(u => u.Name.ToLower().Contains(lowerSearch));
+                Query.Where(b => b.Name.ToLower().Contains(lowerSearch));
             }
         }
     }

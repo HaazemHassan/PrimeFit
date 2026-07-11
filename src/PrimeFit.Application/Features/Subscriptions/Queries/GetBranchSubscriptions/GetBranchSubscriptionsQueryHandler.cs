@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 using PrimeFit.Application.Common.Pagination;
 using PrimeFit.Application.ServicesContracts.Infrastructure;
@@ -25,7 +25,7 @@ namespace PrimeFit.Application.Features.Subscriptions.Queries.GetBranchSubscript
         {
 
             var dataSpec = new BranchSubscriptionsPaginatedSpec(request.BranchId, request.SubscriptionStatus, request.Search, request.PageNumber, request.PageSize);
-            var countSpec = new BranchSubscriptionSearchSpec(request.BranchId, request.Search);
+            var countSpec = new BranchSubscriptionsFilteredSpec(request.BranchId, request.SubscriptionStatus, request.Search);
 
             var subscriptions = await _unitOfWork.Subscriptions.ListAsync(dataSpec, cancellationToken);
             var totalCount = await _unitOfWork.Subscriptions.CountAsync(countSpec, cancellationToken);

@@ -26,8 +26,8 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
                 request.PageSize,
                 request.Search);
 
-            var branchPackagesSpec = new BranchPackagesSpec(request.BranchId, request.Search);
-            var activePackagesSpec = new BranchActivePackagesSpec(request.BranchId, request.Search);
+            var branchPackagesFilteredSpec = new BranchPackagesFilteredSpec(request.BranchId, request.Search);
+            var activePackagesSpec = new BranchPackagesFilteredSpec(request.BranchId, request.Search, isActive: true);
 
 
             var packages = await _unitOfWork.Packages.
@@ -38,9 +38,9 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
 
             if (packages.Count != 0)
             {
-                totalCount = await _unitOfWork.Packages.CountAsync(branchPackagesSpec, cancellationToken);
+                totalCount = await _unitOfWork.Packages.CountAsync(branchPackagesFilteredSpec, cancellationToken);
                 activeCount = await _unitOfWork.Packages.CountAsync(activePackagesSpec, cancellationToken);
-                averagePrice = await _unitOfWork.Packages.AverageAsync(p => p.Price, branchPackagesSpec, ct: cancellationToken);
+                averagePrice = await _unitOfWork.Packages.AverageAsync(p => p.Price, branchPackagesFilteredSpec, ct: cancellationToken);
             }
 
 

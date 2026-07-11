@@ -27,10 +27,10 @@ namespace PrimeFit.Application.Features.BranchReviews.Queries.GetBranchReviews
             var curUserId = _currentUserService.UserId;
 
             var spec = new BranchReviewsPaginatedSpec(request.BranchId, request.Rating, curUserId, request.PageNumber, request.PageSize, request.Search);
-            var specForCount = new BranchReviewsPaginatedSpec(request.BranchId, request.Rating, null, request.PageNumber, request.PageSize, request.Search);
+            var countSpec = new BranchReviewsFilteredSpec(request.BranchId, request.Rating, request.Search);
 
             var reviews = await _unitOfWork.BranchReviews.ListAsync<GetBranchReviewsQueryResponse>(spec, cancellationToken);
-            var totalCount = await _unitOfWork.BranchReviews.CountAsync(specForCount, cancellationToken);
+            var totalCount = await _unitOfWork.BranchReviews.CountAsync(countSpec, cancellationToken);
 
             GetBranchReviewsQueryResponse? myReview = null;
             bool canReview = false;

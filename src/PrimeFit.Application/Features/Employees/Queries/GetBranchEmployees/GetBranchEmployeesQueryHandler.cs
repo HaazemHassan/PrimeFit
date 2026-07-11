@@ -21,9 +21,10 @@ namespace PrimeFit.Application.Features.Employees.Queries.GetBranchEmployees
         {
 
             var dataSpec = new BranchEmployeesPaginatedSpec(request.BranchId, request.PageNumber, request.PageSize, request.Search);
+            var countSpec = new BranchEmployeesFilteredSpec(request.BranchId, request.Search);
 
             var employees = await _unitOfWork.Employees.ListAsync<GetBranchEmployeesQueryResponse>(dataSpec, cancellationToken);
-            var totalCount = await _unitOfWork.Employees.CountAsync(dataSpec, cancellationToken);
+            var totalCount = await _unitOfWork.Employees.CountAsync(countSpec, cancellationToken);
 
 
             return new PaginatedResult<GetBranchEmployeesQueryResponse>(employees, totalCount, request.PageNumber, request.PageSize);

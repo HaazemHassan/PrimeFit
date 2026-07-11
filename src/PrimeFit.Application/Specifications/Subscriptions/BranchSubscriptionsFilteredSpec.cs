@@ -1,15 +1,21 @@
 using Ardalis.Specification;
+using PrimeFit.Domain.Common.Enums;
 using PrimeFit.Domain.Entities;
 
 namespace PrimeFit.Application.Specifications.Subscriptions
 {
-    public class BranchSubscriptionSearchSpec : Specification<Subscription>
+    public class BranchSubscriptionsFilteredSpec : Specification<Subscription>
     {
 
-        public BranchSubscriptionSearchSpec(int branchId, string? search)
+        public BranchSubscriptionsFilteredSpec(int branchId, SubscriptionStatus? subscriptionStatus, string? search)
         {
 
             Query.Where(s => s.BranchId == branchId);
+
+            if (subscriptionStatus.HasValue)
+            {
+                Query.Where(s => s.Status == subscriptionStatus.Value);
+            }
 
             if (!string.IsNullOrEmpty(search))
             {
