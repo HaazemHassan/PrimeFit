@@ -118,7 +118,8 @@ namespace PrimeFit.Infrastructure.Notifications.Push
                         if (!response.Responses[i].IsSuccess)
                         {
                             _logger.LogWarning(
-                                "Failed to send to token at index {Index}. Error: {Error}",
+                                response.Responses[i].Exception,
+                                "Failed to send to token at index {Index}. ErrorCode: {ErrorCode}",
                                 i, response.Responses[i].Exception?.MessagingErrorCode);
                         }
                     }

@@ -23,10 +23,11 @@ namespace PrimeFit.Application.Features.BranchPackages.Queries.GetBranchPackages
             var branchPackagesPaginatedSpec = new BranchPackagesPaginatedSpec(
                 request.BranchId,
                 request.PageNumber,
-                request.PageSize);
+                request.PageSize,
+                request.Search);
 
-            var branchPackagesSpec = new BranchPackagesSpec(request.BranchId);
-            var activePackagesSpec = new BranchActivePackagesSpec(request.BranchId);
+            var branchPackagesSpec = new BranchPackagesSpec(request.BranchId, request.Search);
+            var activePackagesSpec = new BranchActivePackagesSpec(request.BranchId, request.Search);
 
 
             var packages = await _unitOfWork.Packages.
