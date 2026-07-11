@@ -1,7 +1,7 @@
 using Ardalis.Specification;
 using PrimeFit.Domain.Entities;
 
-namespace PrimeFit.Domain.Specifications.Users
+namespace PrimeFit.Application.Specifications.Branches
 {
     public class BranchesSearchSpec : Specification<Branch>
     {
@@ -15,7 +15,8 @@ namespace PrimeFit.Domain.Specifications.Users
 
             if (!string.IsNullOrEmpty(search))
             {
-                Query.Where(u => u.Name.Contains(search));
+                var lowerSearch = search.ToLower();
+                Query.Where(u => u.Name.ToLower().Contains(lowerSearch));
             }
         }
     }
