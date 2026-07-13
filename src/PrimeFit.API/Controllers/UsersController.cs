@@ -19,6 +19,7 @@ using PrimeFit.Api.Requests.Subscriptions.AddSubscription;
 using PrimeFit.Api.Requests.Subscriptions.CreateMemberWithSubscription;
 using PrimeFit.Api.Requests.Subscriptions.GetBranchSubscriptions;
 using PrimeFit.Api.Requests.Subscriptions.GetSubscriptionAttendanceHistory;
+using PrimeFit.Api.Requests.Subscriptions.GetMySubscriptions;
 using PrimeFit.Api.Requests.Common.Pagination;
 using PrimeFit.Api.Requests.Users.UpdateProfile;
 using PrimeFit.Api.Requests.BranchReviews;
@@ -104,9 +105,9 @@ namespace PrimeFit.API.Controllers
 
         [HttpGet("me/subscriptions")]
         [Authorize]
-        public async Task<IActionResult> GetMySubscriptions([FromQuery] SubscriptionStatus? status)
+        public async Task<IActionResult> GetMySubscriptions([FromQuery] GetMySubscriptionsRequest request)
         {
-            var query = new GetMySubscriptionsQuery { Status = status };
+            var query = _mapper.Map<GetMySubscriptionsQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)
             {
