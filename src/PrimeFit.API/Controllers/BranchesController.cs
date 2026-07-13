@@ -113,6 +113,7 @@ namespace PrimeFit.API.Controllers
         [HttpGet("public")]
         public async Task<IActionResult> GetBranches([FromQuery] GetBranchesForPublicRequest request)
         {
+            request.RadiusInMeters = 100000;
             var query = _mapper.Map<GetBranchesForPublicQuery>(request);
             var result = await Mediator.Send(query);
             if (result.IsError)

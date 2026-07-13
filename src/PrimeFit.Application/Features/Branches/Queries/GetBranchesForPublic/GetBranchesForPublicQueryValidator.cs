@@ -30,6 +30,12 @@ namespace PrimeFit.Application.Features.Branches.Queries.GetBranchesForPublic
             RuleFor(x => x.Search)
               .MaximumLength(100);
 
+            RuleFor(x => x.RadiusInMeters)
+             .LessThanOrEqualTo(100000);
+
+            RuleFor(x => x.RadiusInMeters)
+             .GreaterThanOrEqualTo(0);
+
 
         }
 

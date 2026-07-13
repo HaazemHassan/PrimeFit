@@ -31,7 +31,7 @@ namespace PrimeFit.Application.Features.Branches.Commands.ActivateBranchImages
 
         public async Task<ErrorOr<Success>> Handle(ActivateBranchImagesCommand request, CancellationToken cancellationToken)
         {
-
+          
             var spec = new BranchWithActiveAndSelectedPendingImagesSpec(request.BranchId, request.Images);
 
             var branch = await _unitOfWork.Branches.FirstOrDefaultAsync(spec, cancellationToken);
